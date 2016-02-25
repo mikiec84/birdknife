@@ -1,0 +1,11 @@
+{
+  "name": "ntwt",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "dependencies": {
+    "vorpal": "1.9.5"
+  }
+}
