@@ -69,11 +69,13 @@ vorpal
     .catch('[words...]', 'Tweet')
     .action(function(args, callback) {
         if (!T || !args.words) return;
+        var self = this;
 
         var status = args.words.join(' ');
-        T.post('statuses/update', { status: status }, function(err, data, response) {
-            console.log(data);
-        });
+        T.post('statuses/update', { status: status })
+            .catch(function(err) {
+                if (err) self.log(err);
+            });
         callback();
     });
 
@@ -92,7 +94,19 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
         access_token_secret: nconf.get('auth:access_token_secret')
     });
 
+    T.get('account/verify_credentials', { skip_status: true })
+        .catch(function(err) {
+            vorpal.log('Error: ' + err);
+        })
+        .then(function(result) {
+            vorpal.log("Logged in as " + result.data.screen_name);
+        });
 
+    var stream = T.stream('user');
+    
+    stream.on('tweet', function(tweet) {
+        vorpal.log(tweet.user.screen_name + ": " + tweet.text);
+    })
 }
 
 
