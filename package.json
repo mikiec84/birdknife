@@ -9,6 +9,7 @@
     "vorpal": "1.9.5",
     "nedb": "1.8.0",
     "nconf": "0.8.4",
-    "twitter-pin-auth": "0.1.2"
+    "twitter-pin-auth": "0.1.2",
+    "twit": "2.2.2"
   }
 }

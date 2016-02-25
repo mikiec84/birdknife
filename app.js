@@ -2,8 +2,10 @@ var vorpal = require('vorpal')(),
     DataStore = require('nedb'),
     cache = new DataStore(),
     fs = require('fs'),
-    nconf = require('nconf');
+    nconf = require('nconf'),
+    Twit = require('twit');
 
+var T = null;
 var twitterPinAuth = null;
 
 nconf.argv()
@@ -63,16 +65,38 @@ vorpal
         callback();
     });
 
+vorpal
+    .catch('[words...]', 'Tweet')
+    .action(function(args, callback) {
+        if (!T || !args.words) return;
+
+        var status = args.words.join(' ');
+        T.post('statuses/update', { status: status }, function(err, data, response) {
+            console.log(data);
+        });
+        callback();
+    });
+
 
 vorpal.log('Welcome to ntwt!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
     vorpal.log('Type /login to authenticate with Twitter.');
+} else {
+    vorpal.log('Logging in...');
+
+    T = new Twit({
+        consumer_key:        nconf.get('auth:consumer_key'),
+        consumer_secret:     nconf.get('auth:consumer_secret'),
+        access_token:        nconf.get('auth:access_token'),
+        access_token_secret: nconf.get('auth:access_token_secret')
+    });
+
+
 }
+
+
 
 vorpal
     .delimiter('ntwt>')
     .show();
-
-
-
