@@ -3,7 +3,8 @@ var vorpal = require('vorpal')(),
     cache = new DataStore(),
     fs = require('fs'),
     nconf = require('nconf'),
-    Twit = require('twit');
+    Twit = require('twit'),
+    ShortIdGenerator = require('./ShortIdGenerator');
 
 var T = null;
 var twitterPinAuth = null;
@@ -25,7 +26,7 @@ vorpal
 vorpal
     .mode('/login')
     .description('Authenticate your Twitter account')
-    .delimiter('Login:')
+    .delimiter('PIN:')
     .init(function(args, callback) {
         var self = this;
 
@@ -57,6 +58,12 @@ vorpal
                         console.dir(JSON.parse(data.toString()))
                     });
                 });
+
+                self.log("Authentication successfull.\n\nPlease restart ntwt!");
+
+                var options = {};
+                options.sessionId = self.session.id;
+                self.parent.exit(options);
             })
             .catch(function(err) {
                 self.log('Authentication failed!');
@@ -96,20 +103,44 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 
     T.get('account/verify_credentials', { skip_status: true })
         .catch(function(err) {
-            vorpal.log('Error: ' + err);
+            vorpal.log('Error GET account/verify_credentials: ' + err);
         })
         .then(function(result) {
             vorpal.log("Logged in as " + result.data.screen_name);
         });
 
+    T.get('statuses/home_timeline', { count: 20 })
+        .catch(function(err) {
+            vorpal.log('Error GET statuses/home_timeline: ' + err);
+        })
+        .then(function(result) {
+            vorpal.log(result);
+            result.data.forEach(function(tweet) {
+                displayStatus(tweet);
+            });
+        });
+
     var stream = T.stream('user');
     
     stream.on('tweet', function(tweet) {
-        vorpal.log(tweet.user.screen_name + ": " + tweet.text);
+        displayStatus(tweet);
     })
 }
 
+var displayStatus = function(status) {
+    var id = ShortIdGenerator.generate();
 
+    var doc = {
+        id: id,
+        status: status
+    };
+    cache.insert(doc);
+
+    var line = id + "> ";
+    line += "<@" + status.user.screen_name + ">: ";
+    line += status.text;
+    vorpal.log(line);
+};
 
 vorpal
     .delimiter('ntwt>')
