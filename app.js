@@ -24,6 +24,19 @@ vorpal
     });
 
 vorpal
+    .command('/show <id>', 'Show cached tweet by id')
+    .action(function(args, callback) {
+        var id = args.id || -1;
+        var self = this;
+
+        cache.findOne({ id: id }, function(err, doc) {
+            if (err) return;
+            displayStatus(doc.status);
+        });
+        callback();
+    });
+
+vorpal
     .mode('/login')
     .description('Authenticate your Twitter account')
     .delimiter('PIN:')
