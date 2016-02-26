@@ -51,6 +51,13 @@ vorpal
     });
 
 vorpal
+    .command('/again', 'Reload home timeline')
+    .action(function(args, callback) {
+        api.loadHome();
+        callback();
+    });
+
+vorpal
     .command('/replies', 'Show latest 20 mentions')
     .action(function(args, callback) {
         api.loadReplies();
