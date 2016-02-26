@@ -129,7 +129,6 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
             vorpal.log('Error GET statuses/home_timeline: ' + err);
         })
         .then(function(result) {
-            vorpal.log(result);
             result.data.forEach(function(tweet) {
                 displayStatus(tweet);
             });
@@ -141,6 +140,14 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
         displayStatus(tweet);
     })
 }
+
+var isMention = function(status) {
+    var mention = false;
+    status.entities.user_mentions.forEach(function(mention) {
+        if (mention.screen_name == ME.screen_name) mention = true;
+    });
+    return mention;
+};
 
 var displayStatus = function(status) {
     var id = ShortIdGenerator.generate();
@@ -157,7 +164,7 @@ var displayStatus = function(status) {
         ? status.user.screen_name.underline.yellow
         : status.user.screen_name.underline.blue;
     line += ">: ";
-    line += status.text;
+    line += isMention(status) ? status.text.red : status.text;
     line += '\n';
     vorpal.log(line);
 };
