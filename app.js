@@ -33,7 +33,31 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) return;
-            self.log(doc);
+            self.log(doc.status);
+        });
+        callback();
+    });
+
+vorpal
+    .command('/delete <id>', 'Delete a tweet')
+    .action(function(args, callback) {
+        var id = args.id || -1;
+        var self = this;
+
+        cache.findOne({ id: id }, function(err, doc) {
+            if (err || !T) {
+                err = err || "not authorized";
+                self.log('Error: ' + err);
+                return;
+            }
+            self.log(doc.status.id);
+            T.post('statuses/destroy/:id', { id: doc.status.id_str })
+                .catch(function(err) {
+                    vorpal.log('Error POST statuses/destroy: ' + err);
+                })
+                .then(function(result) {
+                    vorpal.log(('Deleted tweet with status ' + result.data.id_str).yellow);
+                });
         });
         callback();
     });
@@ -155,7 +179,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 
     stream.on('tweet', function(tweet) {
         displayStatus(tweet);
-    })
+    });
 }
 
 var isMention = function(status) {
