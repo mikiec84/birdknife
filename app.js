@@ -33,8 +33,25 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) return;
-            displayStatus(doc.status);
+            self.log(doc);
         });
+        callback();
+    });
+
+vorpal
+    .command('/replies', 'Show latest 20 mentions')
+    .action(function(args, callback) {
+        if (T) {
+            T.get('statuses/mentions_timeline')
+                .catch(function(err) {
+                    vorpal.log('Error GET statuses/mentions_timeline: ' + err);
+                })
+                .then(function(result) {
+                    result.data.reverse().forEach(function(tweet) {
+                        displayStatus(tweet);
+                    });
+                });
+        }
         callback();
     });
 
@@ -129,7 +146,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
             vorpal.log('Error GET statuses/home_timeline: ' + err);
         })
         .then(function(result) {
-            result.data.forEach(function(tweet) {
+            result.data.reverse().forEach(function(tweet) {
                 displayStatus(tweet);
             });
         });
@@ -142,11 +159,11 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 }
 
 var isMention = function(status) {
-    var mention = false;
-    status.entities.user_mentions.forEach(function(mention) {
-        if (mention.screen_name == ME.screen_name) mention = true;
-    });
-    return mention;
+    for (var i in status.entities.user_mentions) {
+        var mention = status.entities.user_mentions[i];
+        if (mention.id == ME.id) return true;
+    }
+    return false;
 };
 
 var displayStatus = function(status) {
