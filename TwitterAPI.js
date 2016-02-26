@@ -104,13 +104,32 @@ module.exports = {
         };
         this.cache.insert(doc);
 
+        var text = status.text;
+
+        this.vorpal.log(status.entities.urls);
+        for (var u in status.entities.urls) {
+            var url = status.entities.urls[u];
+            var _text = text.substring(0, url.indices[0]);
+            _text += url.display_url;
+            _text += text.substring(url.indices[1]);
+            text = _text;
+        }
+
+        for (var m in status.entities.user_mentions) {
+            var mention = status.entities.user_mentions[m];
+            text = text.replace(
+                '@' + mention.screen_name,
+                ('@' + mention.screen_name).bold
+            );
+        }
+
         var line = id + "> ";
         line += "<@";
         line += status.user.screen_name == this.ME.screen_name
             ? status.user.screen_name.underline.yellow
             : status.user.screen_name.underline.blue;
         line += ">: ";
-        line += this.isMention(status) ? status.text.red : status.text;
+        line += this.isMention(status) ? text.red : text;
         line += '\n';
         this.vorpal.log(line);
     }
