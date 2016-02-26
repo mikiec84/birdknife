@@ -3,13 +3,8 @@ var vorpal = require('vorpal')(),
     cache = new DataStore(),
     fs = require('fs'),
     nconf = require('nconf'),
-    Twit = require('twit'),
-    ShortIdGenerator = require('./ShortIdGenerator'),
-    colors = require('colors');
-
-var T = null;
-var ME;
-var twitterPinAuth = null;
+    colors = require('colors'),
+    api = require('./TwitterAPI');
 
 nconf.argv()
     .env()
@@ -45,19 +40,12 @@ vorpal
         var self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
-            if (err || !T) {
+            if (err) {
                 err = err || "not authorized";
                 self.log('Error: ' + err);
                 return;
             }
-            self.log(doc.status.id);
-            T.post('statuses/destroy/:id', { id: doc.status.id_str })
-                .catch(function(err) {
-                    vorpal.log('Error POST statuses/destroy: ' + err);
-                })
-                .then(function(result) {
-                    vorpal.log(('Deleted tweet with status ' + result.data.id_str).yellow);
-                });
+            api.delete(doc.status.id_str);
         });
         callback();
     });
@@ -65,17 +53,7 @@ vorpal
 vorpal
     .command('/replies', 'Show latest 20 mentions')
     .action(function(args, callback) {
-        if (T) {
-            T.get('statuses/mentions_timeline')
-                .catch(function(err) {
-                    vorpal.log('Error GET statuses/mentions_timeline: ' + err);
-                })
-                .then(function(result) {
-                    result.data.reverse().forEach(function(tweet) {
-                        displayStatus(tweet);
-                    });
-                });
-        }
+        api.loadReplies();
         callback();
     });
 
@@ -131,14 +109,11 @@ vorpal
 vorpal
     .catch('[words...]', 'Tweet')
     .action(function(args, callback) {
-        if (!T || !args.words) return;
+        if (!args.words) return;
         var self = this;
 
         var status = args.words.join(' ');
-        T.post('statuses/update', { status: status })
-            .catch(function(err) {
-                if (err) self.log(err);
-            });
+        api.update(status);
         callback();
     });
 
@@ -149,66 +124,15 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 } else {
     vorpal.log('Logging in...');
 
-    T = new Twit({
-        consumer_key:        nconf.get('auth:consumer_key'),
-        consumer_secret:     nconf.get('auth:consumer_secret'),
-        access_token:        nconf.get('auth:access_token'),
-        access_token_secret: nconf.get('auth:access_token_secret')
-    });
-
-    T.get('account/verify_credentials', { skip_status: true })
-        .catch(function(err) {
-            vorpal.log('Error GET account/verify_credentials: ' + err);
-        })
-        .then(function(result) {
-            vorpal.log("Logged in as " + result.data.screen_name);
-            ME = result.data;
-        });
-
-    T.get('statuses/home_timeline', { count: 20 })
-        .catch(function(err) {
-            vorpal.log('Error GET statuses/home_timeline: ' + err);
-        })
-        .then(function(result) {
-            result.data.reverse().forEach(function(tweet) {
-                displayStatus(tweet);
-            });
-        });
-
-    var stream = T.stream('user');
-
-    stream.on('tweet', function(tweet) {
-        displayStatus(tweet);
-    });
+    api.login(nconf.get('auth:consumer_key'),
+              nconf.get('auth:consumer_secret'),
+              nconf.get('auth:access_token'),
+              nconf.get('auth:access_token_secret'),
+              vorpal, cache);
+    api.startStream();
 }
 
-var isMention = function(status) {
-    for (var i in status.entities.user_mentions) {
-        var mention = status.entities.user_mentions[i];
-        if (mention.id == ME.id) return true;
-    }
-    return false;
-};
 
-var displayStatus = function(status) {
-    var id = ShortIdGenerator.generate();
-
-    var doc = {
-        id: id,
-        status: status
-    };
-    cache.insert(doc);
-
-    var line = id + "> ";
-    line += "<@";
-    line += status.user.screen_name == ME.screen_name
-        ? status.user.screen_name.underline.yellow
-        : status.user.screen_name.underline.blue;
-    line += ">: ";
-    line += isMention(status) ? status.text.red : status.text;
-    line += '\n';
-    vorpal.log(line);
-};
 
 vorpal
     .delimiter('ntwt>')
