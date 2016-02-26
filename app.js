@@ -4,9 +4,11 @@ var vorpal = require('vorpal')(),
     fs = require('fs'),
     nconf = require('nconf'),
     Twit = require('twit'),
-    ShortIdGenerator = require('./ShortIdGenerator');
+    ShortIdGenerator = require('./ShortIdGenerator'),
+    colors = require('colors');
 
 var T = null;
+var ME;
 var twitterPinAuth = null;
 
 nconf.argv()
@@ -99,7 +101,6 @@ vorpal
         callback();
     });
 
-
 vorpal.log('Welcome to ntwt!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
@@ -120,6 +121,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
         })
         .then(function(result) {
             vorpal.log("Logged in as " + result.data.screen_name);
+            ME = result.data;
         });
 
     T.get('statuses/home_timeline', { count: 20 })
@@ -134,7 +136,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
         });
 
     var stream = T.stream('user');
-    
+
     stream.on('tweet', function(tweet) {
         displayStatus(tweet);
     })
@@ -150,8 +152,13 @@ var displayStatus = function(status) {
     cache.insert(doc);
 
     var line = id + "> ";
-    line += "<@" + status.user.screen_name + ">: ";
+    line += "<@";
+    line += status.user.screen_name == ME.screen_name
+        ? status.user.screen_name.underline.yellow
+        : status.user.screen_name.underline.blue;
+    line += ">: ";
     line += status.text;
+    line += '\n';
     vorpal.log(line);
 };
 
