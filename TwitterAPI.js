@@ -68,9 +68,9 @@ module.exports = {
             });
     },
     
-    loadConversationRec: function(statuses, in_reply_to_status_id_str) {
+    loadConversationRec: function(statuses, in_reply_to_status_id) {
         const self = this;
-        this.T.get('statuses/show/:id', { id: in_reply_to_status_id_str })
+        this.T.get('statuses/show/:id', { id: in_reply_to_status_id })
             .catch(function(err) {
                 self.vorpal.log('Error GET statuses/show/:id: ' + err);
             })
@@ -88,8 +88,15 @@ module.exports = {
 
     loadConversation: function(originalStatus) {
         const self = this;
-        var statuses = [ originalStatus ];
-        this.loadConversationRec(statuses, originalStatus.in_reply_to_status_id_str);
+        this.loadConversationRec([], originalStatus.id_str);
+    },
+
+    reply: function(tweet, in_reply_to_status_id) {
+        const self = this;
+        this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
+            .catch(function(err) {
+                if (err) self.vorpal.log(err);
+            });
     },
 
     update: function(tweet) {

@@ -65,6 +65,43 @@ vorpal
     });
 
 vorpal
+    .command('/reply <id> <text...>', 'Reply to a tweet')
+    .action(function(args, callback) {
+        if (!args.id || !args.text) {
+            callback();
+            return;
+        }
+        var id = args.id;
+        var text = args.text;
+        var self = this;
+
+        text = text.join(' ');
+
+        cache.findOne({ id: id }, function(err, doc) {
+            if (err) {
+                err = err || "not authorized";
+                self.log('Error: ' + err);
+                return;
+            }
+
+            var status = doc.status;
+
+            for (var m in status.entities.user_mentions) {
+                var mention = status.entities.user_mentions[m];
+                if (text.indexOf(mention.screen_name) < 0) {
+                    text = '@' + mention.screen_name + ' ' + text;
+                }
+            }
+            if (text.indexOf(status.user.screen_name) < 0) {
+                text = '@' + status.user.screen_name + ' ' + text;
+            }
+
+            api.reply(text, status.id_str);
+        });
+        callback();
+    });
+
+vorpal
     .command('/thread <id>', 'Show Conversation')
     .action(function(args, callback) {
         var id = args.id || -1;
