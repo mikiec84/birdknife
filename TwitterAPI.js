@@ -23,10 +23,19 @@ module.exports = {
     startStream: function() {
         const self = this;
         this.stream = this.T.stream('user');
-    
+
+        this.stream.on('error', function(error) {
+            self.vorpal.log('Stream error: ' + error.twitterReply);
+        });
+
         this.stream.on('tweet', function(tweet) {
             self.displayStatus(tweet);
         });
+
+        this.stream.on('user_event', function(event) {
+            self.displayEvent(event);
+        });
+
     },
     loadMyself: function() {
         const self = this;
@@ -151,6 +160,10 @@ module.exports = {
             if (mention.id_str == this.ME.id_str) return true;
         }
         return false;
+    },
+
+    displayEvent: function(event) {
+        this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
     },
 
     displayStatus: function(status, quote) {
