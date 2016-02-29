@@ -104,23 +104,29 @@ module.exports = {
         };
         this.cache.update({ id: id }, doc, { upsert: true });
 
-        var text = status.text;
+        var isRetweet = status.retweeted_status ? true : false;
 
-        this.vorpal.log(status.entities.urls);
-        for (var u in status.entities.urls) {
-            var url = status.entities.urls[u];
+        var text = isRetweet ? status.retweeted_status.text : status.text;
+        var entities = isRetweet ? status.retweeted_status.entities : status.entities;
+
+        for (var u in entities.urls) {
+            var url = entities.urls[u];
             var _text = text.substring(0, url.indices[0]);
-            _text += url.display_url;
+            _text += url.expanded_url;
             _text += text.substring(url.indices[1]);
             text = _text;
         }
 
-        for (var m in status.entities.user_mentions) {
-            var mention = status.entities.user_mentions[m];
+        for (var m in entities.user_mentions) {
+            var mention = entities.user_mentions[m];
             text = text.replace(
                 '@' + mention.screen_name,
                 ('@' + mention.screen_name).bold
             );
+        }
+        
+        if (isRetweet) {
+            text = "RT " + ("@" + status.retweeted_status.user.screen_name + ": ").bold + text;
         }
 
         var line = id + "> ";
