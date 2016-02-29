@@ -65,7 +65,36 @@ vorpal
     });
 
 vorpal
+    .command('/retweet <id>', 'Retweet status with id')
+    .alias('/rt')
+    .action(function(args, callback) {
+        cache.findOne({ id: args.id }, function(err, doc) {
+            if (err) {
+                self.log('Error: ' + err);
+                return;
+            }
+            api.retweet(doc.status.id_str);
+        });
+        callback();
+    });
+
+vorpal
+    .command('/like <id>', 'Like/Favorite status with id')
+    .alias('/fav')
+    .action(function(args, callback) {
+        cache.findOne({ id: args.id }, function(err, doc) {
+            if (err) {
+                self.log('Error: ' + err);
+                return;
+            }
+            api.like(doc.status.id_str);
+        });
+        callback();
+    });
+
+vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
+    .alias('/re')
     .action(function(args, callback) {
         if (!args.id || !args.text) {
             callback();
@@ -79,7 +108,6 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
-                err = err || "not authorized";
                 self.log('Error: ' + err);
                 return;
             }
