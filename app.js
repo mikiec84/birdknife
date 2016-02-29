@@ -65,6 +65,23 @@ vorpal
     });
 
 vorpal
+    .command('/thread <id>', 'Show Conversation')
+    .action(function(args, callback) {
+        var id = args.id || -1;
+        var self = this;
+
+        cache.findOne({ id: id }, function(err, doc) {
+            if (err) {
+                err = err || "not authorized";
+                self.log('Error: ' + err);
+                return;
+            }
+            api.loadConversation(doc.status);
+        });
+        callback();
+    });
+
+vorpal
     .mode('/login')
     .description('Authenticate your Twitter account')
     .delimiter('PIN:')
