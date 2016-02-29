@@ -117,6 +117,7 @@ vorpal
             for (var m in status.entities.user_mentions) {
                 var mention = status.entities.user_mentions[m];
                 if (text.indexOf(mention.screen_name) < 0) {
+                    if (mention.screen_name == api.ME.screen_name) continue;
                     text = '@' + mention.screen_name + ' ' + text;
                 }
             }
