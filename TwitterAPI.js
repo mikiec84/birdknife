@@ -23,7 +23,7 @@ module.exports = {
     startStream: function() {
         const self = this;
         this.stream = this.T.stream('user');
-
+    
         this.stream.on('tweet', function(tweet) {
             self.displayStatus(tweet);
         });
@@ -67,6 +67,30 @@ module.exports = {
                 });
             });
     },
+    
+    loadConversationRec: function(statuses, in_reply_to_status_id_str) {
+        const self = this;
+        this.T.get('statuses/show/:id', { id: in_reply_to_status_id_str })
+            .catch(function(err) {
+                self.vorpal.log('Error GET statuses/show/:id: ' + err);
+            })
+            .then(function(result) {
+                statuses.push(result.data);
+                if (result.data.in_reply_to_status_id_str) {
+                    self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
+                } else {
+                    statuses.reverse().forEach(function(status) {
+                        self.displayStatus(status);
+                    })
+                }
+            });
+    },
+
+    loadConversation: function(originalStatus) {
+        const self = this;
+        var statuses = [ originalStatus ];
+        this.loadConversationRec(statuses, originalStatus.in_reply_to_status_id_str);
+    },
 
     update: function(tweet) {
         const self = this;
@@ -90,7 +114,7 @@ module.exports = {
     isMention: function(status) {
         for (var m in status.entities.user_mentions) {
             var mention = status.entities.user_mentions[m];
-            if (mention.id == this.ME.id) return true;
+            if (mention.id_str == this.ME.id_str) return true;
         }
         return false;
     },
