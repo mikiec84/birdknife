@@ -70,11 +70,17 @@ module.exports = {
     
     loadConversationRec: function(statuses, in_reply_to_status_id) {
         const self = this;
-        this.T.get('statuses/show/:id', { id: in_reply_to_status_id })
+        this.T.get('statuses/show/:id', { id: in_reply_to_status_id, include_entities: 'true' })
             .catch(function(err) {
                 self.vorpal.log('Error GET statuses/show/:id: ' + err);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    statuses.reverse().forEach(function(status) {
+                        self.displayStatus(status);
+                    });
+                    return;
+                }
                 statuses.push(result.data);
                 if (result.data.in_reply_to_status_id_str) {
                     self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
@@ -87,7 +93,6 @@ module.exports = {
     },
 
     loadConversation: function(originalStatus) {
-        const self = this;
         this.loadConversationRec([], originalStatus.id_str);
     },
 
