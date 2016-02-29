@@ -44,7 +44,7 @@ module.exports = {
 
     loadHome: function() {
         const self = this;
-        this.T.get('statuses/home_timeline', { count: 20 })
+        this.T.get('statuses/home_timeline', { count: 50 })
             .catch(function(err) {
                 self.vorpal.log('Error GET statuses/home_timeline: ' + err);
             })
@@ -95,7 +95,7 @@ module.exports = {
         return false;
     },
 
-    displayStatus: function(status) {
+    displayStatus: function(status, quote) {
         var id = ShortIdGenerator.generate();
 
         var doc = {
@@ -129,14 +129,24 @@ module.exports = {
             text = "RT " + ("@" + status.retweeted_status.user.screen_name + ": ").bold + text;
         }
 
+        if (this.isMention(status)) text = text.red;
+        else if (quote) text = text.green;
+
         var line = id + "> ";
-        line += "<@";
+        if (quote) line += "\t";
+        line += "<";
+        if (quote) line += "↑";
+        line += "@";
         line += status.user.screen_name == this.ME.screen_name
             ? status.user.screen_name.underline.yellow
             : status.user.screen_name.underline.blue;
         line += ">: ";
-        line += this.isMention(status) ? text.red : text;
+        line += text;
         line += '\n';
         this.vorpal.log(line);
+
+        if (status.quoted_status) {
+            this.displayStatus(status.quoted_status, true);
+        }
     }
 };
