@@ -24,6 +24,7 @@
 
 ## CLI stuff
 
+* HTML entities
 * Improved readline with character count
 * Settings
 * Persistent cache
