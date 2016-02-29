@@ -100,7 +100,7 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
             .catch(function(err) {
-                if (err) self.vorpal.log(err);
+                self.vorpal.log('Error statuses/update: ' + err);
             });
     },
 
@@ -108,8 +108,30 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet })
             .catch(function(err) {
-                if (err) self.vorpal.log(err);
+                self.vorpal.log('Error statuses/update: ' + err);
             });
+    },
+
+    retweet: function(id) {
+        const self = this;
+        this.T.post('statuses/retweet/:id', { id: id })
+            .catch(function(err) {
+                self.vorpal.log('Error statuses/retweet/:id: ' + err);
+            })
+            .then(function(result) {
+                self.vorpal.log('-- Retweeted status with ID ' + result.data.id_str);
+            });
+    },
+
+    like: function(id) {
+        const self = this;
+        this.T.post('favorites/create', { id: id })
+            .catch(function(err) {
+                self.vorpal.log('Error favorites/create: ' + err);
+            })
+            .then(function(result) {
+                self.vorpal.log('-- Liked status with ID ' + result.data.id_str);
+            })
     },
 
     delete: function(id) {
