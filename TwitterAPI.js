@@ -102,7 +102,7 @@ module.exports = {
             id: id,
             status: status
         };
-        this.cache.insert(doc);
+        this.cache.update({ id: id }, doc, { upsert: true });
 
         var text = status.text;
 
