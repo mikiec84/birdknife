@@ -3,7 +3,8 @@ var vorpal = require('vorpal')(),
     cache = new DataStore(),
     nconf = require('nconf'),
     colors = require('colors'),
-    api = require('./TwitterAPI');
+    api = require('./TwitterAPI'),
+    twitter = require('twitter-text');
 
 nconf.argv()
     .env()
@@ -239,6 +240,18 @@ vorpal
         callback();
     });
 
+vorpal
+    .on('keypress', function(event) {
+        var p = this.ui.input();
+        if (!p || p.length == 0 || p.charAt(0) == '/') {
+            this.ui.delimiter('ntwt [---]> ');
+        } else {
+            var pad = '000';
+            var _c = 140 - twitter.getTweetLength(p);
+            this.ui.delimiter('ntwt [' + (pad + _c).slice(-pad.length) + ']> ');
+        }
+    });
+
 vorpal.log('Welcome to ntwt!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
@@ -257,5 +270,5 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 
 
 vorpal
-    .delimiter('ntwt>')
+    .delimiter('ntwt [---]>')
     .show();
