@@ -23,6 +23,8 @@
 
 * Indicate hashtags
 
+* Parse and display events
+
 ## CLI stuff
 
 * HTML entities
