@@ -198,6 +198,36 @@ module.exports = {
             });
     },
 
+    follow: function(screen_name) {
+        const self = this;
+        this.T.post('friendships/create', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(('Error friendships/create: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                self.vorpal.log(('-- Followed user: ' + ('@' + result.data.screen_name).bold).yellow);
+            });
+    },
+
+    unfollow: function(screen_name) {
+        const self = this;
+        this.T.post('friendships/destroy', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(('Error friendships/destroy: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                self.vorpal.log(('-- Unfollowed user: ' + ('@' + result.data.screen_name).bold).yellow);
+            });
+    },
+
     delete: function(status) {
         const self = this;
 
