@@ -57,11 +57,33 @@ module.exports = {
             });
     },
 
+    loadTimeline: function(screen_name) {
+        if (screen_name) this.loadUserTimeline(screen_name);
+        else this.loadHome();
+    },
+
     loadHome: function() {
         const self = this;
         this.T.get('statuses/home_timeline', { count: 20, include_entities: 'true' })
             .catch(function(err) {
                 self.vorpal.log(('Error GET statuses/home_timeline: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                result.data.reverse().forEach(function(tweet) {
+                    self.displayStatus(tweet);
+                });
+            });
+    },
+
+    loadUserTimeline: function(screen_name) {
+        const self = this;
+        this.T.get('statuses/user_timeline', { count: 50, screen_name: screen_name, include_entities: 'true'})
+            .catch(function(err) {
+                self.vorpal.log(('Error GET statuses/user_timeline: ' + err).red);
             })
             .then(function(result) {
                 if (result.data.errors) {
