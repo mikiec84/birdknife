@@ -2,7 +2,6 @@
 
 ## Twitter Stuff
 
-* Follow / Unfollow
 * Block
 * Mute
 

@@ -106,6 +106,20 @@ vorpal
     });
 
 vorpal
+    .command('/follow <screen_name>', 'Follow user with given name')
+    .action(function(args, callback) {
+        api.follow(args.screen_name);
+        callback();
+    });
+
+vorpal
+    .command('/unfollow <screen_name>', 'Unfollow user with given name')
+    .action(function(args, callback) {
+        api.unfollow(args.screen_name);
+        callback();
+    });
+
+vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
     .action(function(args, callback) {
