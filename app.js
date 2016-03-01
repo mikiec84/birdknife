@@ -64,6 +64,13 @@ vorpal
     });
 
 vorpal
+    .command('/search <query>', 'Search')
+    .action(function(args, callback) {
+        api.search(args.query);
+        callback();
+    });
+
+vorpal
     .command('/retweet <id>', 'Retweet status with id')
     .alias('/rt')
     .action(function(args, callback) {
