@@ -23,7 +23,7 @@ vorpal
     .command('/show <id>', 'Show cached tweet by id')
     .action(function(args, callback) {
         var id = args.id || -1;
-        var self = this;
+        const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) return;
@@ -36,7 +36,7 @@ vorpal
     .command('/delete <id>', 'Delete a tweet')
     .action(function(args, callback) {
         var id = args.id || -1;
-        var self = this;
+        const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
@@ -50,9 +50,9 @@ vorpal
     });
 
 vorpal
-    .command('/again', 'Reload home timeline')
+    .command('/again [screen_name]', 'Reload home timeline or specified users timeline')
     .action(function(args, callback) {
-        api.loadHome();
+        api.loadTimeline(args.screen_name);
         callback();
     });
 
@@ -67,6 +67,7 @@ vorpal
     .command('/retweet <id>', 'Retweet status with id')
     .alias('/rt')
     .action(function(args, callback) {
+        const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(('Error: ' + err).red);
@@ -81,6 +82,7 @@ vorpal
     .command('/like <id>', 'Like/Favorite status with id')
     .alias('/fav')
     .action(function(args, callback) {
+        const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(('Error: ' + err).red);
@@ -95,6 +97,7 @@ vorpal
     .command('/unlike <id>', 'Remove like/favorite from status with id')
     .alias('/unfav')
     .action(function(args, callback) {
+        const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(('Error: ' + err).red);
@@ -123,13 +126,13 @@ vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
     .action(function(args, callback) {
+        const self = this;
         if (!args.id || !args.text) {
             callback();
             return;
         }
         var id = args.id;
         var text = args.text;
-        var self = this;
 
         text = text.join(' ');
 
@@ -161,7 +164,7 @@ vorpal
     .command('/thread <id>', 'Show Conversation')
     .action(function(args, callback) {
         var id = args.id || -1;
-        var self = this;
+        const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
@@ -179,7 +182,7 @@ vorpal
     .description('Authenticate your Twitter account')
     .delimiter('PIN:')
     .init(function(args, callback) {
-        var self = this;
+        const self = this;
 
         var TwitterPinAuth = require('twitter-pin-auth');
         twitterPinAuth = new TwitterPinAuth(
@@ -196,7 +199,7 @@ vorpal
         callback();
     })
     .action(function(arg, callback) {
-        var self = this;
+        const self = this;
         twitterPinAuth.authorize(arg)
             .then(function(data) {
                 nconf.set('auth:access_token', data.accessTokenKey);
@@ -222,7 +225,7 @@ vorpal
     .catch('[words...]', 'Tweet')
     .action(function(args, callback) {
         if (!args.words) return;
-        var self = this;
+        const self = this;
 
         var status = args.words.join(' ');
         api.update(status);
