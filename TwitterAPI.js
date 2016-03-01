@@ -87,8 +87,11 @@ module.exports = {
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    statuses.reverse().forEach(function(status) {
-                        self.displayStatus(status);
+                    statuses = statuses.reverse(); //TODO sort by status id
+
+                    self.displayStatus(statuses[0], false);
+                    statuses.slice(1).forEach(function(status) {
+                        self.displayStatus(status, true);
                     });
                     return;
                 }
@@ -96,8 +99,11 @@ module.exports = {
                 if (result.data.in_reply_to_status_id_str) {
                     self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
                 } else {
-                    statuses.reverse().forEach(function(status) {
-                        self.displayStatus(status);
+                    statuses = statuses.reverse(); //TODO sort by status id
+
+                    self.displayStatus(statuses[0], false);
+                    statuses.slice(1).forEach(function(status) {
+                        self.displayStatus(status, true);
                     })
                 }
             });
@@ -182,10 +188,19 @@ module.exports = {
 
     displayEvent: function(event) {
         //TODO
-        this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
+        // this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
+
+        switch (event.event) {
+            case 'favorite':
+                
+                break;
+            default:
+                this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
+                break;
+        }
     },
 
-    displayStatus: function(status, quote) {
+    displayStatus: function(status, indented) {
         var id = ShortIdGenerator.generate();
 
         var doc = {
@@ -203,18 +218,18 @@ module.exports = {
         }
 
         if (this.isMention(status)) text = text.red;
-        else if (quote) text = text.green;
+        else if (indented) text = text.green;
 
         var line = id + "> ";
-        if (quote) line += "\t";
+        if (indented) line += "|\t";
         line += "<";
-        if (quote) line += "↑";
+        if (indented) line += "↑";
         line += "@";
         line += status.user.screen_name == this.ME.screen_name
             ? status.user.screen_name.underline.yellow
             : status.user.screen_name.underline.blue;
         line += ">: ";
-        line += text;
+        line += indented ? text.replace(/(?:\r\n|\r|\n)/g, '\n\t') : text;
         line += '\n';
         this.vorpal.log(line);
 
