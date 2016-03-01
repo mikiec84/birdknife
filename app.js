@@ -1,7 +1,6 @@
 var vorpal = require('vorpal')(),
     DataStore = require('nedb'),
     cache = new DataStore(),
-    fs = require('fs'),
     nconf = require('nconf'),
     colors = require('colors'),
     api = require('./TwitterAPI');
@@ -176,12 +175,7 @@ vorpal
                 self.log(data.accessTokenSecret);
                 nconf.set('auth:access_token', data.accessTokenKey);
                 nconf.set('auth:access_token_secret', data.accessTokenSecret);
-
-                nconf.save(function (err) {
-                    fs.readFile('config.json', function (err, data) {
-                        console.dir(JSON.parse(data.toString()))
-                    });
-                });
+                nconf.save();
 
                 self.log("Authentication successfull.\n\nPlease restart ntwt!");
 
