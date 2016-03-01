@@ -1,5 +1,7 @@
 var Twit = require('twit'),
-    ShortIdGenerator = require('./ShortIdGenerator');
+    ShortIdGenerator = require('./ShortIdGenerator'),
+    colors = require('colors'),
+    ntwt_text = require('./ntwt-text');
 
 module.exports = {
     T: null,
@@ -53,7 +55,7 @@ module.exports = {
 
     loadHome: function() {
         const self = this;
-        this.T.get('statuses/home_timeline', { count: 50 })
+        this.T.get('statuses/home_timeline', { count: 20, include_entities: 'true' })
             .catch(function(err) {
                 self.vorpal.log(('Error GET statuses/home_timeline: ' + err).red);
             })
@@ -194,24 +196,7 @@ module.exports = {
 
         var isRetweet = status.retweeted_status ? true : false;
 
-        var text = isRetweet ? status.retweeted_status.text : status.text;
-        var entities = isRetweet ? status.retweeted_status.entities : status.entities;
-
-        for (var u in entities.urls) {
-            var url = entities.urls[u];
-            var _text = text.substring(0, url.indices[0]);
-            _text += url.expanded_url;
-            _text += text.substring(url.indices[1]);
-            text = _text;
-        }
-
-        for (var m in entities.user_mentions) {
-            var mention = entities.user_mentions[m];
-            text = text.replace(
-                '@' + mention.screen_name,
-                ('@' + mention.screen_name).bold
-            );
-        }
+        var text = ntwt_text.autoBoldEntities(status);
         
         if (isRetweet) {
             text = "RT " + ("@" + status.retweeted_status.user.screen_name + ": ").bold + text;
