@@ -183,6 +183,21 @@ module.exports = {
             })
     },
 
+    unlike: function(id) {
+        const self = this;
+        this.T.post('favorites/destroy', { id: id })
+            .catch(function(err) {
+                self.vorpal.log(('Error favorites/destroy: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                self.vorpal.log(('-- Removed like from status with ID ' + result.data.id_str.bold).yellow);
+            });
+    },
+
     delete: function(status) {
         const self = this;
 
