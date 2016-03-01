@@ -25,3 +25,11 @@
 * Persistent cache
 * Improved cache with usernames,...
 * Autocompletion
+
+## Ideas
+
+### Multiple Accounts / Screens
+vorpal can handle multiple instances.
+
+-> Multiple screens for different TLs (multiple accounts, replies, events, searches,...)
+
