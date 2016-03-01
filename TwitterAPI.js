@@ -187,17 +187,30 @@ module.exports = {
     },
 
     displayEvent: function(event) {
-        //TODO
-        // this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
-
+        if (event.source.id_str == this.ME.id_str) return;
+        var line = '';
+        var status = null;
         switch (event.event) {
             case 'favorite':
-                
+                line += ('@' + event.source.screen_name).bold;
+                line += ' liked your tweet: ';
+                line += '"' + ntwt_text.autoBoldEntities(event.target_object) + '"';
+                break;
+            case 'follow':
+                line += ('@' + event.source.screen_name).bold;
+                line += ' started following you.';
+                break;
+            case 'quoted_tweet':
+                line += ('@' + event.source.screen_name).bold;
+                line += ' quoted your tweet: ';
+                status = event.target_object;
                 break;
             default:
                 this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
                 break;
         }
+        this.vorpal.log(line);
+        if (status) this.displayStatus(status, true);
     },
 
     displayStatus: function(status, indented) {
