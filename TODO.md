@@ -6,9 +6,6 @@
 * Mute
 
 * View user + Follow status
-* Get user tweets
-
-* Search
 
 * Location
 

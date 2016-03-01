@@ -112,6 +112,24 @@ module.exports = {
                 });
             });
     },
+
+    search: function(query) {
+        const self = this;
+        query = encodeURIComponent(query);
+        this.T.get('search/tweets', { q: query, count: 50 })
+            .catch(function(err) {
+                self.vorpal.log(('Error GET search/tweets: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                result.data.statuses.reverse().forEach(function(tweet) {
+                    self.displayStatus(tweet);
+                });
+            });
+    },
     
     loadConversationRec: function(statuses, in_reply_to_status_id) {
         const self = this;
