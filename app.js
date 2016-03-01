@@ -92,6 +92,20 @@ vorpal
     });
 
 vorpal
+    .command('/unlike <id>', 'Remove like/favorite from status with id')
+    .alias('/unfav')
+    .action(function(args, callback) {
+        cache.findOne({ id: args.id }, function(err, doc) {
+            if (err) {
+                self.log(('Error: ' + err).red);
+                return;
+            }
+            api.unlike(doc.status.id_str);
+        });
+        callback();
+    });
+
+vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
     .action(function(args, callback) {

@@ -2,8 +2,6 @@
 
 ## Twitter Stuff
 
-* Destroy likes
-
 * Follow / Unfollow
 * Block
 * Mute
@@ -21,9 +19,7 @@
 
 * List stuff
 
-* Indicate hashtags
-
-* Parse and display events
+* Display retweets of user's tweets as events
 
 ## CLI stuff
 
