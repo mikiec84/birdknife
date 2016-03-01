@@ -248,7 +248,12 @@ vorpal
         } else {
             var pad = '000';
             var _c = 140 - twitter.getTweetLength(p);
-            this.ui.delimiter('ntwt [' + (pad + _c).slice(-pad.length) + ']> ');
+            if (_c < 0) _c = 0;
+
+            var _s = (pad + _c).slice(-pad.length);
+            if (_c <= 15) _s = _s.red;
+
+            this.ui.delimiter('ntwt [' + _s + ']> ');
         }
     });
 
