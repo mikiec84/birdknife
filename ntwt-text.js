@@ -19,6 +19,9 @@ module.exports = {
         for (var key in entities.hashtags) {
             flat_entities.push(entities.hashtags[key]);
         }
+        for (var key in entities.media) {
+            flat_entities.push(entities.media[key]);
+        }
 
         flat_entities.sort(function(a, b) {
             return a.indices[0] - b.indices[0];
@@ -29,7 +32,9 @@ module.exports = {
             var entity = flat_entities[i];
             result += text.substring(beginIndex, entity.indices[0]);
 
-            if (entity.expanded_url) { //url
+            if (entity.type) {//Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
+                result += entity.display_url.bold;
+            } else if (entity.expanded_url) { //url
                 result += entity.expanded_url.bold;
             } else if (entity.screen_name) { //mention
                 result += ('@' + entity.screen_name).bold;
