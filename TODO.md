@@ -2,7 +2,6 @@
 
 ## Twitter Stuff
 
-* Destroy retweets
 * Destroy likes
 
 * Follow / Unfollow
@@ -21,6 +20,8 @@
 * Update status with media
 
 * List stuff
+
+* Indicate hashtags
 
 ## CLI stuff
 

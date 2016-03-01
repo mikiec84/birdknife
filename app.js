@@ -44,7 +44,7 @@ vorpal
                 self.log('Error: ' + err);
                 return;
             }
-            api.delete(doc.status.id_str);
+            api.delete(doc.status);
         });
         callback();
     });

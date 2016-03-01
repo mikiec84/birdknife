@@ -143,15 +143,31 @@ module.exports = {
             })
     },
 
-    delete: function(id) {
+    delete: function(status) {
         const self = this;
-        this.T.post('statuses/destroy/:id', { id: id })
-            .catch(function(err) {
-                self.vorpal.log('Error POST statuses/destroy: ' + err);
-            })
-            .then(function(result) {
-                self.vorpal.log(('Deleted tweet with status ' + result.data.id_str).yellow);
-            });
+
+        if (status.user.id_str != this.ME.id_str) {
+            this.vorpal.log("Can't delete status posted by another user!".red);
+        }
+        
+        if (status.retweeted_status) {
+            this.T.post('statuses/unretweet/:id', { id: status.id_str })
+                .catch(function(err) {
+                    self.vorpal.log('Error POST statuses/unretweet/:id: ' + err);
+                })
+                .then(function(result) {
+                    self.vorpal.log(('Deleted retweet of status ' + result.data.id_str).yellow);
+                });
+        }
+        else {
+            this.T.post('statuses/destroy/:id', { id: status.id_str })
+                .catch(function(err) {
+                    self.vorpal.log('Error POST statuses/destroy/:id: ' + err);
+                })
+                .then(function(result) {
+                    self.vorpal.log(('Deleted status ' + result.data.id_str).yellow);
+                });
+        }
     },
 
     isMention: function(status) {
