@@ -46,6 +46,10 @@ module.exports = {
                 self.vorpal.log(('Error GET account/verify_credentials: ' + err).red);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
                 self.vorpal.log(("Logged in as " + result.data.screen_name.bold).green);
                 self.ME = result.data;
 
@@ -60,6 +64,10 @@ module.exports = {
                 self.vorpal.log(('Error GET statuses/home_timeline: ' + err).red);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
                 result.data.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -73,6 +81,10 @@ module.exports = {
                 self.vorpal.log(('Error GET statuses/mentions_timeline: ' + err).red);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
                 result.data.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -93,6 +105,8 @@ module.exports = {
                     statuses.slice(1).forEach(function(status) {
                         self.displayStatus(status, true);
                     });
+
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
                     return;
                 }
                 statuses.push(result.data);
@@ -118,6 +132,11 @@ module.exports = {
         this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
             .catch(function(err) {
                 self.vorpal.log(('Error statuses/update: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                }
             });
     },
 
@@ -126,6 +145,11 @@ module.exports = {
         this.T.post('statuses/update', { status: tweet })
             .catch(function(err) {
                 self.vorpal.log(('Error statuses/update: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                }
             });
     },
 
@@ -136,6 +160,10 @@ module.exports = {
                 self.vorpal.log(('Error statuses/retweet/:id: ' + err).red);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
                 self.vorpal.log(('-- Retweeted status with ID ' + result.data.id_str.bold).yellow);
             });
     },
@@ -147,6 +175,10 @@ module.exports = {
                 self.vorpal.log(('Error favorites/create: ' + err).red);
             })
             .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
                 self.vorpal.log(('-- Liked status with ID ' + result.data.id_str.bold).yellow);
             })
     },
@@ -164,6 +196,10 @@ module.exports = {
                     self.vorpal.log(('Error POST statuses/unretweet/:id: ' + err).red);
                 })
                 .then(function(result) {
+                    if (result.data.errors) {
+                        self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                        return;
+                    }
                     self.vorpal.log(('Deleted retweet of status ' + result.data.id_str.bold).yellow);
                 });
         }
@@ -173,6 +209,10 @@ module.exports = {
                     self.vorpal.log(('Error POST statuses/destroy/:id: ' + err).red);
                 })
                 .then(function(result) {
+                    if (result.data.errors) {
+                        self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                        return;
+                    }
                     self.vorpal.log(('Deleted status ' + result.data.id_str.bold).yellow);
                 });
         }
