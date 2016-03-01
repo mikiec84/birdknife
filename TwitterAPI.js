@@ -25,7 +25,7 @@ module.exports = {
         this.stream = this.T.stream('user');
 
         this.stream.on('error', function(error) {
-            self.vorpal.log('Stream error: ' + error.twitterReply);
+            self.vorpal.log(('Stream error: ' + error.twitterReply).red);
         });
 
         this.stream.on('tweet', function(tweet) {
@@ -41,10 +41,10 @@ module.exports = {
         const self = this;
         this.T.get('account/verify_credentials', { skip_status: true })
             .catch(function(err) {
-                self.vorpal.log('Error GET account/verify_credentials: ' + err);
+                self.vorpal.log(('Error GET account/verify_credentials: ' + err).red);
             })
             .then(function(result) {
-                self.vorpal.log("Logged in as " + result.data.screen_name);
+                self.vorpal.log(("Logged in as " + result.data.screen_name.bold).green);
                 self.ME = result.data;
 
                 self.loadHome();
@@ -55,7 +55,7 @@ module.exports = {
         const self = this;
         this.T.get('statuses/home_timeline', { count: 50 })
             .catch(function(err) {
-                self.vorpal.log('Error GET statuses/home_timeline: ' + err);
+                self.vorpal.log(('Error GET statuses/home_timeline: ' + err).red);
             })
             .then(function(result) {
                 result.data.reverse().forEach(function(tweet) {
@@ -68,7 +68,7 @@ module.exports = {
         const self = this;
         this.T.get('statuses/mentions_timeline')
             .catch(function(err) {
-                self.vorpal.log('Error GET statuses/mentions_timeline: ' + err);
+                self.vorpal.log(('Error GET statuses/mentions_timeline: ' + err).red);
             })
             .then(function(result) {
                 result.data.reverse().forEach(function(tweet) {
@@ -81,7 +81,7 @@ module.exports = {
         const self = this;
         this.T.get('statuses/show/:id', { id: in_reply_to_status_id, include_entities: 'true' })
             .catch(function(err) {
-                self.vorpal.log('Error GET statuses/show/:id: ' + err);
+                self.vorpal.log(('Error GET statuses/show/:id: ' + err).red);
             })
             .then(function(result) {
                 if (result.data.errors) {
@@ -109,7 +109,7 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
             .catch(function(err) {
-                self.vorpal.log('Error statuses/update: ' + err);
+                self.vorpal.log(('Error statuses/update: ' + err).red);
             });
     },
 
@@ -117,7 +117,7 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet })
             .catch(function(err) {
-                self.vorpal.log('Error statuses/update: ' + err);
+                self.vorpal.log(('Error statuses/update: ' + err).red);
             });
     },
 
@@ -125,10 +125,10 @@ module.exports = {
         const self = this;
         this.T.post('statuses/retweet/:id', { id: id })
             .catch(function(err) {
-                self.vorpal.log('Error statuses/retweet/:id: ' + err);
+                self.vorpal.log(('Error statuses/retweet/:id: ' + err).red);
             })
             .then(function(result) {
-                self.vorpal.log('-- Retweeted status with ID ' + result.data.id_str);
+                self.vorpal.log(('-- Retweeted status with ID ' + result.data.id_str.bold).yellow);
             });
     },
 
@@ -136,10 +136,10 @@ module.exports = {
         const self = this;
         this.T.post('favorites/create', { id: id })
             .catch(function(err) {
-                self.vorpal.log('Error favorites/create: ' + err);
+                self.vorpal.log(('Error favorites/create: ' + err).red);
             })
             .then(function(result) {
-                self.vorpal.log('-- Liked status with ID ' + result.data.id_str);
+                self.vorpal.log(('-- Liked status with ID ' + result.data.id_str.bold).yellow);
             })
     },
 
@@ -153,19 +153,19 @@ module.exports = {
         if (status.retweeted_status) {
             this.T.post('statuses/unretweet/:id', { id: status.id_str })
                 .catch(function(err) {
-                    self.vorpal.log('Error POST statuses/unretweet/:id: ' + err);
+                    self.vorpal.log(('Error POST statuses/unretweet/:id: ' + err).red);
                 })
                 .then(function(result) {
-                    self.vorpal.log(('Deleted retweet of status ' + result.data.id_str).yellow);
+                    self.vorpal.log(('Deleted retweet of status ' + result.data.id_str.bold).yellow);
                 });
         }
         else {
             this.T.post('statuses/destroy/:id', { id: status.id_str })
                 .catch(function(err) {
-                    self.vorpal.log('Error POST statuses/destroy/:id: ' + err);
+                    self.vorpal.log(('Error POST statuses/destroy/:id: ' + err).red);
                 })
                 .then(function(result) {
-                    self.vorpal.log(('Deleted status ' + result.data.id_str).yellow);
+                    self.vorpal.log(('Deleted status ' + result.data.id_str.bold).yellow);
                 });
         }
     },
@@ -179,6 +179,7 @@ module.exports = {
     },
 
     displayEvent: function(event) {
+        //TODO
         this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
     },
 

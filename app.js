@@ -41,7 +41,7 @@ vorpal
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
                 err = err || "not authorized";
-                self.log('Error: ' + err);
+                self.log(('Error: ' + err).red);
                 return;
             }
             api.delete(doc.status);
@@ -69,7 +69,7 @@ vorpal
     .action(function(args, callback) {
         cache.findOne({ id: args.id }, function(err, doc) {
             if (err) {
-                self.log('Error: ' + err);
+                self.log(('Error: ' + err).red);
                 return;
             }
             api.retweet(doc.status.id_str);
@@ -83,7 +83,7 @@ vorpal
     .action(function(args, callback) {
         cache.findOne({ id: args.id }, function(err, doc) {
             if (err) {
-                self.log('Error: ' + err);
+                self.log(('Error: ' + err).red);
                 return;
             }
             api.like(doc.status.id_str);
@@ -107,7 +107,7 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
-                self.log('Error: ' + err);
+                self.log(('Error: ' + err).red);
                 return;
             }
 
@@ -138,7 +138,7 @@ vorpal
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
                 err = err || "not authorized";
-                self.log('Error: ' + err);
+                self.log(('Error: ' + err).red);
                 return;
             }
             api.loadConversation(doc.status);
@@ -160,10 +160,10 @@ vorpal
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
-                self.log("Login and copy the PIN number: " + url);
+                self.log("Login and copy the PIN number: ".yellow + url.underline);
             })
             .catch(function(err) {
-                self.log(err);
+                self.log(('Error: ' + err).red);
             });
         callback();
     })
@@ -171,20 +171,20 @@ vorpal
         var self = this;
         twitterPinAuth.authorize(arg)
             .then(function(data) {
-                self.log(data.accessTokenKey);
-                self.log(data.accessTokenSecret);
                 nconf.set('auth:access_token', data.accessTokenKey);
                 nconf.set('auth:access_token_secret', data.accessTokenSecret);
+
+                self.log('Saving access token...'.blue);
                 nconf.save();
 
-                self.log("Authentication successfull.\n\nPlease restart ntwt!");
+                self.log("Authentication successfull!\n\nPlease restart ntwt!".green.bold);
 
                 var options = {};
                 options.sessionId = self.session.id;
                 self.parent.exit(options);
             })
             .catch(function(err) {
-                self.log('Authentication failed!');
+                self.log('Authentication failed!'.red);
                 self.log(err);
             });
         callback();
@@ -204,9 +204,9 @@ vorpal
 vorpal.log('Welcome to ntwt!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
-    vorpal.log('Type /login to authenticate with Twitter.');
+    vorpal.log('Type /login to authenticate with Twitter.'.green);
 } else {
-    vorpal.log('Logging in...');
+    vorpal.log('Logging in...'.blue);
 
     api.login(nconf.get('auth:consumer_key'),
               nconf.get('auth:consumer_secret'),
