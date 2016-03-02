@@ -285,6 +285,16 @@ vorpal
     });
 
 vorpal
+    .command('/dm <screen_name> <words...>]')
+    .description('Send direct message')
+    .action(function(args, callback) {
+        var screen_name = args.screen_name;
+        var message = args.words.join(' ');
+        api.message(screen_name, message);
+        callback();
+    });
+
+vorpal
     .catch('[words...]', 'Tweet')
     .action(function(args, callback) {
         if (!args.words) return;
