@@ -204,6 +204,8 @@ vorpal
                 }
 
                 api.reply(text, status.id_str);
+            } else if (doc.type == 'message') {
+                api.message(doc.message.sender_screen_name, text);
             } else {
                 self.log('Warning: Unsupported command for this element.'.red);
             }
