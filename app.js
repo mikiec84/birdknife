@@ -286,6 +286,14 @@ vorpal
     });
 
 vorpal
+    .command('/user <screen_name>')
+    .description('Display user information')
+    .action(function(args, callback) {
+        api.loadUser(args.screen_name);
+        callback();
+    });
+
+vorpal
     .command('/dm <screen_name> <words...>]')
     .description('Send direct message')
     .action(function(args, callback) {
@@ -337,7 +345,6 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
               nconf.get('auth:access_token'),
               nconf.get('auth:access_token_secret'),
               vorpal, cache);
-    api.startStream();
 }
 
 
