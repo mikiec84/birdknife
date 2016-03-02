@@ -1,6 +1,6 @@
 var Twit = require('twit'),
     ShortIdGenerator = require('./ShortIdGenerator'),
-    colors = require('colors'),
+    color = require('./color_definitions'),
     ntwt_text = require('./ntwt-text');
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
         this.stream = this.T.stream('user');
 
         this.stream.on('error', function(error) {
-            self.vorpal.log(('Stream error: ' + error.twitterReply).red);
+            self.vorpal.log(color.error('Stream error: ' + error.twitterReply));
         });
 
         this.stream.on('tweet', function(tweet) {
@@ -48,14 +48,14 @@ module.exports = {
         const self = this;
         this.T.get('account/verify_credentials', { skip_status: true })
             .catch(function(err) {
-                self.vorpal.log(('Error GET account/verify_credentials: ' + err).red);
+                self.vorpal.log(color.error('Error GET account/verify_credentials: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(("Logged in as " + result.data.screen_name.bold).green);
+                self.vorpal.log(color.success("Logged in as " + color.bold(result.data.screen_name)));
                 self.ME = result.data;
 
                 self.loadHome();
@@ -72,11 +72,11 @@ module.exports = {
         const self = this;
         this.T.get('statuses/home_timeline', { count: 20, include_entities: 'true' })
             .catch(function(err) {
-                self.vorpal.log(('Error GET statuses/home_timeline: ' + err).red);
+                self.vorpal.log(color.error('Error GET statuses/home_timeline: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 result.data.reverse().forEach(function(tweet) {
@@ -90,11 +90,11 @@ module.exports = {
         const self = this;
         this.T.get('statuses/user_timeline', { count: 50, screen_name: screen_name, include_entities: 'true'})
             .catch(function(err) {
-                self.vorpal.log(('Error GET statuses/user_timeline: ' + err).red);
+                self.vorpal.log(color.error('Error GET statuses/user_timeline: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 result.data.reverse().forEach(function(tweet) {
@@ -108,11 +108,11 @@ module.exports = {
         const self = this;
         this.T.get('statuses/mentions_timeline')
             .catch(function(err) {
-                self.vorpal.log(('Error GET statuses/mentions_timeline: ' + err).red);
+                self.vorpal.log(color.error('Error GET statuses/mentions_timeline: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 result.data.reverse().forEach(function(tweet) {
@@ -126,11 +126,11 @@ module.exports = {
         const self = this;
         this.T.get('direct_messages')
             .catch(function(err) {
-                self.vorpal.log(('Error GET direct_messages: ' + err).red);
+                self.vorpal.log(color.error('Error GET direct_messages: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 result.data.reverse().forEach(function(message) {
@@ -145,11 +145,11 @@ module.exports = {
         query = encodeURIComponent(query);
         this.T.get('search/tweets', { q: query, count: 50 })
             .catch(function(err) {
-                self.vorpal.log(('Error GET search/tweets: ' + err).red);
+                self.vorpal.log(color.error('Error GET search/tweets: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 result.data.statuses.reverse().forEach(function(tweet) {
@@ -163,7 +163,7 @@ module.exports = {
         const self = this;
         this.T.get('statuses/show/:id', { id: in_reply_to_status_id, include_entities: 'true' })
             .catch(function(err) {
-                self.vorpal.log(('Error GET statuses/show/:id: ' + err).red);
+                self.vorpal.log(color.error('Error GET statuses/show/:id: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
@@ -174,7 +174,7 @@ module.exports = {
                         self.displayStatus(status, true);
                     });
 
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
                 statuses.push(result.data);
@@ -200,11 +200,11 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
             .catch(function(err) {
-                self.vorpal.log(('Error statuses/update: ' + err).red);
+                self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                 }
             });
     },
@@ -214,11 +214,11 @@ module.exports = {
         const self = this;
         this.T.post('statuses/update', { status: tweet })
             .catch(function(err) {
-                self.vorpal.log(('Error statuses/update: ' + err).red);
+                self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                 }
             });
     },
@@ -228,11 +228,11 @@ module.exports = {
         const self = this;
         this.T.post('direct_messages/new', { screen_name: screen_name, text: message })
             .catch(function(err) {
-                self.vorpal.log(('Error POST direct_messages/new: ' + err).red);
+                self.vorpal.log(color.error('Error POST direct_messages/new: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                 }
             });
     },
@@ -242,14 +242,14 @@ module.exports = {
         const self = this;
         this.T.post('statuses/retweet/:id', { id: id })
             .catch(function(err) {
-                self.vorpal.log(('Error statuses/retweet/:id: ' + err).red);
+                self.vorpal.log(color.error('Error POST statuses/retweet/:id: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(('-- Retweeted status with ID ' + result.data.id_str.bold).yellow);
+                self.vorpal.log(color.event('-- Retweeted status with ID ' + color.bold(result.data.id_str)));
             });
     },
 
@@ -258,14 +258,14 @@ module.exports = {
         const self = this;
         this.T.post('favorites/create', { id: id })
             .catch(function(err) {
-                self.vorpal.log(('Error favorites/create: ' + err).red);
+                self.vorpal.log(color.error('Error POST favorites/create: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(('-- Liked status with ID ' + result.data.id_str.bold).yellow);
+                self.vorpal.log(color.event('-- Liked status with ID ' + color.bold(result.data.id_str)));
             })
     },
 
@@ -274,14 +274,14 @@ module.exports = {
         const self = this;
         this.T.post('favorites/destroy', { id: id })
             .catch(function(err) {
-                self.vorpal.log(('Error favorites/destroy: ' + err).red);
+                self.vorpal.log(color.error('Error POST favorites/destroy: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(('-- Removed like from status with ID ' + result.data.id_str.bold).yellow);
+                self.vorpal.log(color.event('-- Removed like from status with ID ' + color.bold(result.data.id_str)));
             });
     },
 
@@ -290,14 +290,14 @@ module.exports = {
         const self = this;
         this.T.post('friendships/create', { screen_name: screen_name })
             .catch(function(err) {
-                self.vorpal.log(('Error friendships/create: ' + err).red);
+                self.vorpal.log(color.error('Error POST friendships/create: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(('-- Followed user: ' + ('@' + result.data.screen_name).bold).yellow);
+                self.vorpal.log(color.event('-- Followed user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
 
@@ -306,14 +306,14 @@ module.exports = {
         const self = this;
         this.T.post('friendships/destroy', { screen_name: screen_name })
             .catch(function(err) {
-                self.vorpal.log(('Error friendships/destroy: ' + err).red);
+                self.vorpal.log(color.error('Error POST friendships/destroy: ' + err));
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(('-- Unfollowed user: ' + ('@' + result.data.screen_name).bold).yellow);
+                self.vorpal.log(color.event('-- Unfollowed user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
 
@@ -322,33 +322,33 @@ module.exports = {
         const self = this;
 
         if (status.user.id_str != this.ME.id_str) {
-            this.vorpal.log("Can't delete status posted by another user!".red);
+            this.vorpal.log(color.error("Can't delete status posted by another user!"));
         }
         
         if (status.retweeted_status) {
             this.T.post('statuses/unretweet/:id', { id: status.id_str })
                 .catch(function(err) {
-                    self.vorpal.log(('Error POST statuses/unretweet/:id: ' + err).red);
+                    self.vorpal.log(color.error('Error POST statuses/unretweet/:id: ' + err));
                 })
                 .then(function(result) {
                     if (result.data.errors) {
-                        self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                        self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                         return;
                     }
-                    self.vorpal.log(('Deleted retweet of status ' + result.data.id_str.bold).yellow);
+                    self.vorpal.log(color.event('Deleted retweet of status ' + color.bold(result.data.id_str)));
                 });
         }
         else {
             this.T.post('statuses/destroy/:id', { id: status.id_str })
                 .catch(function(err) {
-                    self.vorpal.log(('Error POST statuses/destroy/:id: ' + err).red);
+                    self.vorpal.log(color.error('Error POST statuses/destroy/:id: ' + err));
                 })
                 .then(function(result) {
                     if (result.data.errors) {
-                        self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                        self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                         return;
                     }
-                    self.vorpal.log(('Deleted status ' + result.data.id_str.bold).yellow);
+                    self.vorpal.log(color.event('Deleted status ' + color.bold(result.data.id_str)));
                 });
         }
     },
@@ -363,28 +363,29 @@ module.exports = {
 
     displayEvent: function(event) {
         if (event.source.id_str == this.ME.id_str) return;
-        var line = '';
+        var line = '-- ';
         var status = null;
         switch (event.event) {
             case 'favorite':
-                line += ('@' + event.source.screen_name).bold;
+                line += color.bold('@' + event.source.screen_name);
                 line += ' liked your tweet: ';
                 line += '"' + ntwt_text.autoBoldEntities(event.target_object) + '"';
                 break;
             case 'follow':
-                line += ('@' + event.source.screen_name).bold;
+                line += color.bold('@' + event.source.screen_name);
                 line += ' started following you.';
                 break;
             case 'quoted_tweet':
-                line += ('@' + event.source.screen_name).bold;
+                line += color.bold('@' + event.source.screen_name);
                 line += ' quoted your tweet: ';
                 status = event.target_object;
                 break;
             default:
-                this.vorpal.log(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name);
+                this.vorpal.log(color.unknown_event(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name));
                 break;
         }
-        this.vorpal.log(line);
+        line += '\n';
+        this.vorpal.log(color.event(line));
         if (status) this.displayStatus(status, true);
     },
 
@@ -399,10 +400,11 @@ module.exports = {
         this.cache.update({ id: id }, doc, { upsert: true });
 
         var line = id + '> ';
-        line += ('[@' + message.sender_screen_name + ' | ' + message.created_at + ']: ').bold;
+        line += color.bold('[@' + message.sender_screen_name + ' | ' + message.created_at + ']: ');
         line += message.text;
+        line += '\n';
         
-        this.vorpal.log(line.green);
+        this.vorpal.log(color.dm(line));
     },
 
     displayStatus: function(status, indented) {
@@ -420,11 +422,11 @@ module.exports = {
         var text = ntwt_text.autoBoldEntities(status);
         
         if (isRetweet) {
-            text = "RT " + ("@" + status.retweeted_status.user.screen_name + ": ").bold + text;
+            text = "RT " + color.bold("@" + status.retweeted_status.user.screen_name + ": ") + text;
         }
 
-        if (this.isMention(status)) text = text.red;
-        else if (indented) text = text.green;
+        if (this.isMention(status)) text = color.reply(text);
+        else if (indented) text = color.indented(text);
 
         var line = id + "> ";
         if (indented) line += "|\t";
@@ -432,8 +434,8 @@ module.exports = {
         if (indented) line += "↑";
         line += "@";
         line += status.user.screen_name == this.ME.screen_name
-            ? status.user.screen_name.underline.yellow
-            : status.user.screen_name.underline.blue;
+            ? color.my_screen_name(status.user.screen_name)
+            : color.screen_name(status.user.screen_name);
         line += ">: ";
         line += indented ? text.replace(/(?:\r\n|\r|\n)/g, '\n\t') : text;
         line += '\n';

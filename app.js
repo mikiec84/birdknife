@@ -2,7 +2,7 @@ var vorpal = require('vorpal')(),
     DataStore = require('nedb'),
     cache = new DataStore(),
     nconf = require('nconf'),
-    colors = require('colors'),
+    color = require('./color_definitions'),
     api = require('./TwitterAPI'),
     twitter = require('twitter-text');
 
@@ -30,7 +30,7 @@ vorpal
         cache.findOne({ id: id }, function(err, doc) {
             if (doc.type != 'status') return;
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             var status = doc.status;
@@ -38,20 +38,20 @@ vorpal
                 self.log(status);
             } else {
                 var log = '\n';
-                log += '|\tUser: ' + status.user.name + ' (@' + status.user.screen_name + ')\n';
+                log += '|\t' + color.bold('User: ') + status.user.name + ' (@' + status.user.screen_name + ')\n';
                 log += '|\t\n';
-                log += '|\tText: ' + status.text + '\n';
-                log += '|\tCreated At: ' + status.created_at + '\n';
-                log += '|\tFavorites: ' + (status.favorite_count || '0') + '\n';
-                log += '|\tRetweets: ' + (status.retweet_count || '0') + '\n';
+                log += '|\t' + color.bold('Text: ') + status.text + '\n';
+                log += '|\t' + color.bold('Created At: ') + status.created_at + '\n';
+                log += '|\t' + color.bold('Favorites: ') + (status.favorite_count || '0') + '\n';
+                log += '|\t' + color.bold('Retweets: ') + (status.retweet_count || '0') + '\n';
                 if (status.place) {
-                    log += '|\tLocation: ' + place.full_name + '\n';
+                    log += '|\t' + color.bold('Location: ') + place.full_name + '\n';
                 }
                 if (status.coordinates) {
                     var coordinates = status.coordinates[0];
-                    log += '|\tLocation (Coordinates): ' + coordinates[0] + ', ' + coordinates[1] + '\n';
+                    log += '|\t' + color.bold('Location (Coordinates): ') + coordinates[0] + ', ' + coordinates[1] + '\n';
                 }
-                log += '|\tSource: ' + status.source + '\n';
+                log += '|\t' + color.bold('Source: ') + status.source + '\n';
                 self.log(log);
             }
         });
@@ -66,14 +66,14 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             if (doc.type == 'status') {
                 api.delete(doc.status);
                 //TODO delete from cache?
             } else {
-                self.log('Warning: Unsupported command for this element.'.red);
+                self.log(color.error('Warning: Unsupported command for this element.'));
             }
         });
         callback();
@@ -115,7 +115,7 @@ vorpal
         cache.findOne({ id: args.id }, function(err, doc) {
             if (doc.type != 'status') return;
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             api.retweet(doc.status.id_str);
@@ -131,7 +131,7 @@ vorpal
         cache.findOne({ id: args.id }, function(err, doc) {
             if (doc.type != 'status') return;
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             api.like(doc.status.id_str);
@@ -147,7 +147,7 @@ vorpal
         cache.findOne({ id: args.id }, function(err, doc) {
             if (doc.type != 'status') return;
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             api.unlike(doc.status.id_str);
@@ -185,7 +185,7 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
 
@@ -207,7 +207,7 @@ vorpal
             } else if (doc.type == 'message') {
                 api.message(doc.message.sender_screen_name, text);
             } else {
-                self.log('Warning: Unsupported command for this element.'.red);
+                self.log(color.error('Warning: Unsupported command for this element.'));
             }
         });
         callback();
@@ -222,8 +222,7 @@ vorpal
         cache.findOne({ id: id }, function(err, doc) {
             if (doc.type != 'status') return;
             if (err) {
-                err = err || "not authorized";
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
                 return;
             }
             api.loadConversation(doc.status);
@@ -244,10 +243,10 @@ vorpal
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
-                self.log("Login and copy the PIN number: ".yellow + url.underline);
+                self.log(color.yellow("Login and copy the PIN number: ") + chalk.url(url));
             })
             .catch(function(err) {
-                self.log(('Error: ' + err).red);
+                self.log(color.error('Error: ' + err));
             });
 
         this.prompt({
@@ -265,9 +264,9 @@ vorpal
                     self.log('Saving access token...'.blue);
                     nconf.save();
 
-                    self.log("Authentication successfull!\n\n".green.bold);
+                    self.log(color.success("Authentication successfull!\n\n"));
 
-                    self.log('Logging in...'.blue);
+                    self.log(color.blue('Logging in...'));
 
                     api.login(nconf.get('auth:consumer_key'),
                         nconf.get('auth:consumer_secret'),
@@ -279,7 +278,7 @@ vorpal
                     callback();
                 })
                 .catch(function(err) {
-                    self.log('Authentication failed!'.red);
+                    self.log(color.error('Authentication failed!'));
                     self.log(err);
                     callback();
                 });
@@ -320,7 +319,7 @@ vorpal
             if (_c < 0) _c = 0;
 
             var _s = (pad + _c).slice(-pad.length);
-            if (_c <= 15) _s = _s.red;
+            if (_c <= 15) _s = color.delimiter_warning(_s);
 
             this.ui.delimiter('ntwt [' + _s + ']> ');
         }
@@ -329,9 +328,9 @@ vorpal
 vorpal.log('Welcome to ntwt!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
-    vorpal.log('Type /login to authenticate with Twitter.'.green);
+    vorpal.log(color.green('Type /login to authenticate with Twitter.'));
 } else {
-    vorpal.log('Logging in...'.blue);
+    vorpal.log(color.blue('Logging in...'));
 
     api.login(nconf.get('auth:consumer_key'),
               nconf.get('auth:consumer_secret'),

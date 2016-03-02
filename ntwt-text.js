@@ -1,5 +1,4 @@
-// var twitter = require('twitter-text');
-var colors = require('colors');
+var color = require('./color_definitions');
 
 module.exports = {
     autoBoldEntities: function(status) {
@@ -33,13 +32,13 @@ module.exports = {
             result += text.substring(beginIndex, entity.indices[0]);
 
             if (entity.type) {//Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
-                result += entity.display_url.bold;
+                result += color.bold(entity.display_url);
             } else if (entity.expanded_url) { //url
-                result += entity.expanded_url.bold;
-            } else if (entity.screen_name) { //mention
-                result += ('@' + entity.screen_name).bold;
+                result += color.bold(entity.expanded_url);
+            } else if (entity.screen_name) { //reply
+                result += color.bold('@' + entity.screen_name);
             } else if (entity.text) { //hashtag
-                result += ('#' + entity.text).bold;
+                result += color.bold('#' + entity.text);
             }
             beginIndex = entity.indices[1];
         }
