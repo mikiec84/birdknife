@@ -22,13 +22,34 @@ vorpal
 
 vorpal
     .command('/show <id>', 'Show cached tweet by id')
+    .option('--debug', 'Show full tweet object')
     .action(function(args, callback) {
         var id = args.id || -1;
         const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) return;
-            self.log(doc.status);
+            var status = doc.status;
+            if (args.options.debug) {
+                self.log(status);
+            } else {
+                var log = '\n';
+                log += '|\tUser: ' + status.user.name + ' (@' + status.user.screen_name + ')\n';
+                log += '|\t\n';
+                log += '|\tText: ' + status.text + '\n';
+                log += '|\tCreated At: ' + status.created_at + '\n';
+                log += '|\tFavorites: ' + (status.favorite_count || '0') + '\n';
+                log += '|\tRetweets: ' + (status.retweet_count || '0') + '\n';
+                if (status.place) {
+                    log += '|\tLocation: ' + place.full_name + '\n';
+                }
+                if (status.coordinates) {
+                    var coordinates = status.coordinates[0];
+                    log += '|\tLocation (Coordinates): ' + coordinates[0] + ', ' + coordinates[1] + '\n';
+                }
+                log += '|\tSource: ' + status.source + '\n';
+                self.log(log);
+            }
         });
         callback();
     });
