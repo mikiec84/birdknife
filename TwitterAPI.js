@@ -34,6 +34,10 @@ module.exports = {
             self.displayStatus(tweet);
         });
 
+        this.stream.on('direct_message', function(message) {
+            self.displayDM(message.direct_message);
+        });
+
         this.stream.on('user_event', function(event) {
             self.displayEvent(event);
         });
