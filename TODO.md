@@ -5,9 +5,7 @@
 * Block
 * Mute
 
-* View user + Follow status
-
-* Location
+* Update status with location
 
 * Update status with media
 

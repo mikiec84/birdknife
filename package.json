@@ -12,6 +12,7 @@
     "twitter-pin-auth": "0.1.2",
     "twit": "2.2.2",
     "chalk": "1.1.1",
-    "twitter-text": "1.13.3"
+    "twitter-text": "1.13.3",
+    "html-entities": "1.2.0"
   }
 }
