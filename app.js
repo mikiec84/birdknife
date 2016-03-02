@@ -186,10 +186,9 @@ vorpal
     });
 
 vorpal
-    .mode('/login')
-    .description('Authenticate your Twitter account')
-    .delimiter('PIN:')
-    .init(function(args, callback) {
+    .command('/login')
+    .description('Authenticate with your Twitter account')
+    .action(function(arg, callback) {
         const self = this;
 
         var TwitterPinAuth = require('twitter-pin-auth');
@@ -204,36 +203,47 @@ vorpal
             .catch(function(err) {
                 self.log(('Error: ' + err).red);
             });
-        callback();
-    })
-    .action(function(arg, callback) {
-        const self = this;
-        twitterPinAuth.authorize(arg)
-            .then(function(data) {
-                nconf.set('auth:access_token', data.accessTokenKey);
-                nconf.set('auth:access_token_secret', data.accessTokenSecret);
 
-                self.log('Saving access token...'.blue);
-                nconf.save();
+        this.prompt({
+            type: 'input',
+            name: 'pin',
+            default: null,
+            message: 'PIN:'
+        }, function(result) {
+            if (!result.pin) return;
+            twitterPinAuth.authorize(result.pin)
+                .then(function(data) {
+                    nconf.set('auth:access_token', data.accessTokenKey);
+                    nconf.set('auth:access_token_secret', data.accessTokenSecret);
 
-                self.log("Authentication successfull!\n\nPlease restart ntwt!".green.bold);
+                    self.log('Saving access token...'.blue);
+                    nconf.save();
 
-                var options = {};
-                options.sessionId = self.session.id;
-                self.parent.exit(options);
-            })
-            .catch(function(err) {
-                self.log('Authentication failed!'.red);
-                self.log(err);
-            });
-        callback();
+                    self.log("Authentication successfull!\n\n".green.bold);
+
+                    self.log('Logging in...'.blue);
+
+                    api.login(nconf.get('auth:consumer_key'),
+                        nconf.get('auth:consumer_secret'),
+                        nconf.get('auth:access_token'),
+                        nconf.get('auth:access_token_secret'),
+                        vorpal, cache);
+                    api.startStream();
+
+                    callback();
+                })
+                .catch(function(err) {
+                    self.log('Authentication failed!'.red);
+                    self.log(err);
+                    callback();
+                });
+        });
     });
 
 vorpal
     .catch('[words...]', 'Tweet')
     .action(function(args, callback) {
         if (!args.words) return;
-        const self = this;
 
         var status = args.words.join(' ');
         api.update(status);
