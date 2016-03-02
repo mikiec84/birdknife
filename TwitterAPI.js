@@ -40,6 +40,7 @@ module.exports = {
 
     },
     loadMyself: function() {
+        if (!T) return;
         const self = this;
         this.T.get('account/verify_credentials', { skip_status: true })
             .catch(function(err) {
@@ -63,6 +64,7 @@ module.exports = {
     },
 
     loadHome: function() {
+        if (!T) return;
         const self = this;
         this.T.get('statuses/home_timeline', { count: 20, include_entities: 'true' })
             .catch(function(err) {
@@ -80,6 +82,7 @@ module.exports = {
     },
 
     loadUserTimeline: function(screen_name) {
+        if (!T) return;
         const self = this;
         this.T.get('statuses/user_timeline', { count: 50, screen_name: screen_name, include_entities: 'true'})
             .catch(function(err) {
@@ -97,6 +100,7 @@ module.exports = {
     },
 
     loadReplies: function() {
+        if (!T) return;
         const self = this;
         this.T.get('statuses/mentions_timeline')
             .catch(function(err) {
@@ -114,6 +118,7 @@ module.exports = {
     },
 
     loadDMs: function() {
+        if (!T) return;
         const self = this;
         this.T.get('direct_messages')
             .catch(function(err) {
@@ -131,6 +136,7 @@ module.exports = {
     },
 
     search: function(query) {
+        if (!T) return;
         const self = this;
         query = encodeURIComponent(query);
         this.T.get('search/tweets', { q: query, count: 50 })
@@ -149,6 +155,7 @@ module.exports = {
     },
     
     loadConversationRec: function(statuses, in_reply_to_status_id) {
+        if (!T) return;
         const self = this;
         this.T.get('statuses/show/:id', { id: in_reply_to_status_id, include_entities: 'true' })
             .catch(function(err) {
@@ -185,6 +192,7 @@ module.exports = {
     },
 
     reply: function(tweet, in_reply_to_status_id) {
+        if (!T) return;
         const self = this;
         this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
             .catch(function(err) {
@@ -198,6 +206,7 @@ module.exports = {
     },
 
     update: function(tweet) {
+        if (!T) return;
         const self = this;
         this.T.post('statuses/update', { status: tweet })
             .catch(function(err) {
@@ -211,6 +220,7 @@ module.exports = {
     },
 
     retweet: function(id) {
+        if (!T) return;
         const self = this;
         this.T.post('statuses/retweet/:id', { id: id })
             .catch(function(err) {
@@ -226,6 +236,7 @@ module.exports = {
     },
 
     like: function(id) {
+        if (!T) return;
         const self = this;
         this.T.post('favorites/create', { id: id })
             .catch(function(err) {
@@ -241,6 +252,7 @@ module.exports = {
     },
 
     unlike: function(id) {
+        if (!T) return;
         const self = this;
         this.T.post('favorites/destroy', { id: id })
             .catch(function(err) {
@@ -256,6 +268,7 @@ module.exports = {
     },
 
     follow: function(screen_name) {
+        if (!T) return;
         const self = this;
         this.T.post('friendships/create', { screen_name: screen_name })
             .catch(function(err) {
@@ -271,6 +284,7 @@ module.exports = {
     },
 
     unfollow: function(screen_name) {
+        if (!T) return;
         const self = this;
         this.T.post('friendships/destroy', { screen_name: screen_name })
             .catch(function(err) {
@@ -286,6 +300,7 @@ module.exports = {
     },
 
     delete: function(status) {
+        if (!T) return;
         const self = this;
 
         if (status.user.id_str != this.ME.id_str) {
