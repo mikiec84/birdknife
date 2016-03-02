@@ -28,7 +28,11 @@ vorpal
         const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
-            if (err) return;
+            if (doc.type != 'status') return;
+            if (err) {
+                self.log(('Error: ' + err).red);
+                return;
+            }
             var status = doc.status;
             if (args.options.debug) {
                 self.log(status);
@@ -62,11 +66,15 @@ vorpal
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
-                err = err || "not authorized";
                 self.log(('Error: ' + err).red);
                 return;
             }
-            api.delete(doc.status);
+            if (doc.type == 'status') {
+                api.delete(doc.status);
+                //TODO delete from cache?
+            } else {
+                self.log('Warning: Unsupported command for this element.'.red);
+            }
         });
         callback();
     });
@@ -105,6 +113,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
+            if (doc.type != 'status') return;
             if (err) {
                 self.log(('Error: ' + err).red);
                 return;
@@ -120,6 +129,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
+            if (doc.type != 'status') return;
             if (err) {
                 self.log(('Error: ' + err).red);
                 return;
@@ -135,6 +145,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
+            if (doc.type != 'status') return;
             if (err) {
                 self.log(('Error: ' + err).red);
                 return;
@@ -178,20 +189,24 @@ vorpal
                 return;
             }
 
-            var status = doc.status;
+            if (doc.type == 'status') {
+                var status = doc.status;
 
-            for (var m in status.entities.user_mentions) {
-                var mention = status.entities.user_mentions[m];
-                if (text.indexOf(mention.screen_name) < 0) {
-                    if (mention.screen_name == api.ME.screen_name) continue;
-                    text = '@' + mention.screen_name + ' ' + text;
+                for (var m in status.entities.user_mentions) {
+                    var mention = status.entities.user_mentions[m];
+                    if (text.indexOf(mention.screen_name) < 0) {
+                        if (mention.screen_name == api.ME.screen_name) continue;
+                        text = '@' + mention.screen_name + ' ' + text;
+                    }
                 }
-            }
-            if (text.indexOf(status.user.screen_name) < 0) {
-                text = '@' + status.user.screen_name + ' ' + text;
-            }
+                if (text.indexOf(status.user.screen_name) < 0) {
+                    text = '@' + status.user.screen_name + ' ' + text;
+                }
 
-            api.reply(text, status.id_str);
+                api.reply(text, status.id_str);
+            } else {
+                self.log('Warning: Unsupported command for this element.'.red);
+            }
         });
         callback();
     });
@@ -203,6 +218,7 @@ vorpal
         const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
+            if (doc.type != 'status') return;
             if (err) {
                 err = err || "not authorized";
                 self.log(('Error: ' + err).red);
