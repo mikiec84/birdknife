@@ -208,7 +208,7 @@ vorpal
             type: 'input',
             name: 'pin',
             default: null,
-            message: 'PIN:'
+            message: 'PIN: '
         }, function(result) {
             if (!result.pin) return;
             twitterPinAuth.authorize(result.pin)
@@ -252,6 +252,9 @@ vorpal
 
 vorpal
     .on('keypress', function(event) {
+        var current = this.ui.delimiter();
+        if (current == 'PIN: ') return;
+
         var p = this.ui.input();
         if (!p || p.length == 0 || p.charAt(0) == '/') {
             this.ui.delimiter('ntwt [---]> ');
