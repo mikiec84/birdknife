@@ -1,4 +1,7 @@
-var color = require('./color_definitions');
+var color = require('./color_definitions'),
+    Entities = require('html-entities').AllHtmlEntities;
+
+var htmlEntities = new Entities();
 
 module.exports = {
     autoBoldText: function(text, entities) {
@@ -24,7 +27,7 @@ module.exports = {
             beginIndex = entity.indices[1];
         }
         result += text.substring(beginIndex, text.length);
-        return result;
+        return htmlEntities.decode(result);
     },
     autoBoldStatusEntities: function(status) {
         var isRetweet = status.retweeted_status ? true : false;
