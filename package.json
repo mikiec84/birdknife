@@ -11,7 +11,7 @@
     "nconf": "0.8.4",
     "twitter-pin-auth": "0.1.2",
     "twit": "2.2.2",
-    "colors": "1.1.2",
+    "chalk": "1.1.1",
     "twitter-text": "1.13.3"
   }
 }
