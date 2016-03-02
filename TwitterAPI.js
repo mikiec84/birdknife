@@ -113,6 +113,23 @@ module.exports = {
             });
     },
 
+    loadDMs: function() {
+        const self = this;
+        this.T.get('direct_messages')
+            .catch(function(err) {
+                self.vorpal.log(('Error GET direct_messages: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                    return;
+                }
+                result.data.reverse().forEach(function(message) {
+                    self.displayDM(message);
+                });
+            });
+    },
+
     search: function(query) {
         const self = this;
         query = encodeURIComponent(query);
@@ -338,11 +355,29 @@ module.exports = {
         if (status) this.displayStatus(status, true);
     },
 
+    displayDM: function(message) {
+        var id = ShortIdGenerator.generateSpecial('d');
+
+        var doc = {
+            id: id,
+            type: 'message',
+            message: message
+        };
+        this.cache.update({ id: id }, doc, { upsert: true });
+
+        var line = id + '> ';
+        line += ('[@' + message.sender_screen_name + ' | ' + message.created_at + ']: ').bold;
+        line += message.text;
+        
+        this.vorpal.log(line.green);
+    },
+
     displayStatus: function(status, indented) {
         var id = ShortIdGenerator.generate();
 
         var doc = {
             id: id,
+            type: 'status',
             status: status
         };
         this.cache.update({ id: id }, doc, { upsert: true });
