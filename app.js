@@ -79,6 +79,13 @@ vorpal
     });
 
 vorpal
+    .command('/dms', 'Show DMs')
+    .action(function(args, callback) {
+        api.loadDMs();
+        callback();
+    });
+
+vorpal
     .command('/replies', 'Show latest 20 mentions')
     .action(function(args, callback) {
         api.loadReplies();
