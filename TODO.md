@@ -9,9 +9,6 @@
 
 * Location
 
-* Direct Messages
-* Cache and display DMs from stream
-
 * Update status with media
 
 * List stuff
