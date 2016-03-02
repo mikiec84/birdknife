@@ -11,6 +11,7 @@ module.exports = {
     vorpal: null,
     cache: null,
     login: function(ckey, csecret, akey, asecret, vorpal, cache) {
+        const self = this;
         this.vorpal = vorpal;
         this.cache = cache;
         this.T = new Twit({
@@ -21,9 +22,18 @@ module.exports = {
         });
 
         this.loadMyself();
+
+        setTimeout(function() {
+            self.startStream();
+            self.loadHome();
+        }, 5000);
     },
     startStream: function() {
+        if (!this.T) return;
         const self = this;
+
+        this.vorpal.log(color.blue('Starting Stream...'));
+
         this.stream = this.T.stream('user');
 
         this.stream.on('error', function(error) {
@@ -58,8 +68,6 @@ module.exports = {
                 }
                 self.vorpal.log(color.success("Logged in as " + color.bold(result.data.screen_name)));
                 self.ME = result.data;
-
-                self.loadHome();
             });
     },
 
@@ -137,6 +145,29 @@ module.exports = {
                 result.data.reverse().forEach(function(message) {
                     self.displayDM(message);
                 });
+            });
+    },
+
+    loadUser: function(screen_name) {
+        if (!this.T) return;
+        const self = this;
+        this.T.get('users/show', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error GET users/show: ' + err));
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    return;
+                }
+
+                self.T.get('friendships/show', { source_id: self.ME.id_str, target_id: result.data.id_str })
+                    .catch(function(err) {
+                        self.vorpal.log(color.error('Error GET users/show: ' + err));
+                    })
+                    .then(function(result2) {
+                        self.displayUser(result.data, result2.data.relationship);
+                    });
             });
     },
 
@@ -370,7 +401,7 @@ module.exports = {
             case 'favorite':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' liked your tweet: ';
-                line += '"' + ntwt_text.autoBoldEntities(event.target_object) + '"';
+                line += '"' + ntwt_text.autoBoldStatusEntities(event.target_object) + '"';
                 break;
             case 'follow':
                 line += color.bold('@' + event.source.screen_name);
@@ -388,6 +419,40 @@ module.exports = {
         line += '\n';
         this.vorpal.log(color.event(line));
         if (status) this.displayStatus(status, true);
+    },
+
+    displayUser: function(user, relationship) {
+        var bio = ntwt_text.autoBoldBioEntities(user);
+
+        var line = '\n';
+        line += '|\t' + color.bold('Name: ') + user.name + ' (@' + user.screen_name + ')\n';
+        line += '|\t' + color.bold('Created At: ') + user.created_at + '\n';
+        line += '|\t' + color.bold('Follower: ') + user.followers_count
+            + '\t' + color.bold('Following: ') + user.friends_count + '\n';
+        line += '|\t' + color.bold('Tweets: ') + user.statuses_count + '\n';
+        line += '|\n';
+        line += '|\t' + color.bold('URL: ') + (user.entities.url ? user.entities.url.urls[0].expanded_url : user.url) + '\n';
+        line += '|\t' + color.bold('Location: ') + user.location + '\n';
+        line += '|\n';
+        line += '|\t' + color.bold('----------------------- Bio -----------------------') + '\n';
+        line += ntwt_text.formatUserBio(user);
+        line += '|\t' + color.bold('---------------------------------------------------') + '\n';
+        line += '|\n';
+        if (user.id_str == this.ME.id_str) {
+            line += '|\t' + color.bold('This is you.');
+        }
+
+        if (relationship.target.following && relationship.target.followed_by) {
+            line += '|\t' + color.bold('You are friends with this user.');
+        } else if (relationship.target.following) {
+            line += '|\t' + color.bold('This user is following you.');
+        } else if (relationship.target.followed_by) {
+            line += '|\t' + color.bold('You are following this user.');
+        }
+        
+        line += '\n';
+
+        this.vorpal.log(line);
     },
 
     displayDM: function(message) {
@@ -420,7 +485,7 @@ module.exports = {
 
         var isRetweet = status.retweeted_status ? true : false;
 
-        var text = ntwt_text.autoBoldEntities(status);
+        var text = ntwt_text.autoBoldStatusEntities(status);
         
         if (isRetweet) {
             text = "RT " + color.bold("@" + status.retweeted_status.user.screen_name + ": ") + text;

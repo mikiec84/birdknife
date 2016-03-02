@@ -1,8 +1,32 @@
 var color = require('./color_definitions');
 
 module.exports = {
-    autoBoldEntities: function(status) {
+    autoBoldText: function(text, entities) {
         var result = "";
+        entities.sort(function(a, b) {
+            return a.indices[0] - b.indices[0];
+        });
+
+        var beginIndex = 0;
+        for (var i = 0; i < entities.length; i++) {
+            var entity = entities[i];
+            result += text.substring(beginIndex, entity.indices[0]);
+
+            if (entity.type) {//Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
+                result += color.bold(entity.display_url);
+            } else if (entity.expanded_url) { //url
+                result += color.bold(entity.expanded_url);
+            } else if (entity.screen_name) { //reply
+                result += color.bold('@' + entity.screen_name);
+            } else if (entity.text) { //hashtag
+                result += color.bold('#' + entity.text);
+            }
+            beginIndex = entity.indices[1];
+        }
+        result += text.substring(beginIndex, text.length);
+        return result;
+    },
+    autoBoldStatusEntities: function(status) {
         var isRetweet = status.retweeted_status ? true : false;
         var text = isRetweet ? status.retweeted_status.text : status.text;
         var entities = isRetweet ? status.retweeted_status.entities : status.entities;
@@ -22,27 +46,21 @@ module.exports = {
             flat_entities.push(entities.media[key]);
         }
 
-        flat_entities.sort(function(a, b) {
-            return a.indices[0] - b.indices[0];
-        });
+        return this.autoBoldText(text, flat_entities);
+    },
+    autoBoldBioEntities: function(user) {
+        var flat_entities = [];
 
-        var beginIndex = 0;
-        for (var i = 0; i < flat_entities.length; i++) {
-            var entity = flat_entities[i];
-            result += text.substring(beginIndex, entity.indices[0]);
-
-            if (entity.type) {//Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
-                result += color.bold(entity.display_url);
-            } else if (entity.expanded_url) { //url
-                result += color.bold(entity.expanded_url);
-            } else if (entity.screen_name) { //reply
-                result += color.bold('@' + entity.screen_name);
-            } else if (entity.text) { //hashtag
-                result += color.bold('#' + entity.text);
-            }
-            beginIndex = entity.indices[1];
+        for (var key in user.entities.description.urls) {
+            flat_entities.push(user.entities.description.urls[key]);
         }
-        result += text.substring(beginIndex, text.length);
-        return result;
+
+        return this.autoBoldText(user.description, flat_entities);
+    },
+    formatUserBio: function(user) {
+        var description = this.autoBoldBioEntities(user);
+        description = description.replace(/(?:\r\n|\r|\n)/g, '\n|\t')
+
+        return '|\t' + description + '\n';
     }
 };
