@@ -219,6 +219,20 @@ module.exports = {
             });
     },
 
+    message: function(screen_name, message) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('direct_messages/new', { screen_name: screen_name, text: message })
+            .catch(function(err) {
+                self.vorpal.log(('Error POST direct_messages/new: ' + err).red);
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(('Error: ' + result.data.errors[0].message).red);
+                }
+            });
+    },
+
     retweet: function(id) {
         if (!this.T) return;
         const self = this;
