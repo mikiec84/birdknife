@@ -15,6 +15,9 @@
   "bugs": {
     "url": "https://github.com/vanita5/birdknife/issues"
   },
+  "scripts": {
+    "test": "echo 'No tests yet.'"
+  },
   "license": "MIT",
   "keywords": [
     "twitter",
