@@ -1,4 +1,5 @@
 # birdknife
+[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://github.com/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife)
 
 > Twitter CLI
 
@@ -20,57 +21,6 @@
 `.:///++++++++++++++++/:-`                    
    `.--:///++++//::-.`                        
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
