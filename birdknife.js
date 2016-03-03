@@ -16,7 +16,7 @@ nconf.argv()
 vorpal.commands = [];
 
 vorpal
-    .command('/exit', 'Exit ntwt')
+    .command('/exit', 'Exit birdknife')
     .action(function(args) {
         args.options = args.options || {};
         args.options.sessionId = this.session.id;
@@ -323,7 +323,7 @@ vorpal
 
         var p = this.ui.input();
         if (!p || p.length == 0 || p.charAt(0) == '/') {
-            this.ui.delimiter('ntwt [---]> ');
+            this.ui.delimiter('birdknife [---]> ');
         } else {
             var pad = '000';
             var _c = 140 - twitter.getTweetLength(p);
@@ -332,11 +332,11 @@ vorpal
             var _s = (pad + _c).slice(-pad.length);
             if (_c <= 15) _s = color.delimiter_warning(_s);
 
-            this.ui.delimiter('ntwt [' + _s + ']> ');
+            this.ui.delimiter('birdknife [' + _s + ']> ');
         }
     });
 
-vorpal.log('Welcome to ntwt!');
+vorpal.log('Welcome to birdknife!');
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
@@ -353,5 +353,5 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
 
 
 vorpal
-    .delimiter('ntwt [---]>')
+    .delimiter('birdknife [---]>')
     .show();

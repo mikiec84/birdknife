@@ -1,19 +1,19 @@
 {
-  "name": "ntwt",
+  "name": "birdknife",
   "version": "0.1.0",
   "description": "Twitter CLI based on vorpal",
-  "main": "ntwt.js",
-  "homepage": "https://github.com/vanita5/ntwt",
+  "main": "birdknife.js",
+  "homepage": "https://github.com/vanita5/birdknife",
   "author": {
     "name": "vanita5",
     "email": "mail@vanit.as"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vanita5/ntwt.git"
+    "url": "git+https://github.com/vanita5/birdknife.git"
   },
   "bugs": {
-    "url": "https://github.com/vanita5/ntwt/issues"
+    "url": "https://github.com/vanita5/birdknife/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -37,6 +37,6 @@
   },
   "preferGlobal": true,
   "bin": {
-    "ntwt": "ntwt.js"
+    "birdknife": "birdknife.js"
   }
 }
