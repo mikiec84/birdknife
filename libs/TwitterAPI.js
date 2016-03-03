@@ -1,7 +1,7 @@
 var Twit = require('twit'),
     ShortIdGenerator = require('./ShortIdGenerator'),
     color = require('./color_definitions'),
-    ntwt_text = require('./ntwt-text');
+    birdknife_text = require('./birdknife-text');
 
 module.exports = {
     T: null,
@@ -401,7 +401,7 @@ module.exports = {
             case 'favorite':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' liked your tweet: ';
-                line += '"' + ntwt_text.autoBoldStatusEntities(event.target_object) + '"';
+                line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
                 break;
             case 'follow':
                 line += color.bold('@' + event.source.screen_name);
@@ -422,7 +422,7 @@ module.exports = {
     },
 
     displayUser: function(user, relationship) {
-        var bio = ntwt_text.autoBoldBioEntities(user);
+        var bio = birdknife_text.autoBoldBioEntities(user);
 
         var line = '\n';
         line += '|\t' + color.bold('Name: ') + user.name + ' (@' + user.screen_name + ')\n';
@@ -435,7 +435,7 @@ module.exports = {
         line += '|\t' + color.bold('Location: ') + user.location + '\n';
         line += '|\n';
         line += '|\t' + color.bold('----------------------- Bio -----------------------') + '\n';
-        line += ntwt_text.formatUserBio(user);
+        line += birdknife_text.formatUserBio(user);
         line += '|\t' + color.bold('---------------------------------------------------') + '\n';
         line += '|\n';
         if (user.id_str == this.ME.id_str) {
@@ -485,7 +485,7 @@ module.exports = {
 
         var isRetweet = status.retweeted_status ? true : false;
 
-        var text = ntwt_text.autoBoldStatusEntities(status);
+        var text = birdknife_text.autoBoldStatusEntities(status);
         
         if (isRetweet) {
             text = "RT " + color.bold("@" + status.retweeted_status.user.screen_name + ": ") + text;
