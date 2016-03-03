@@ -1,4 +1,4 @@
-@ bi@dknife
+# birdknife
 
 > Twitter CLI
 
