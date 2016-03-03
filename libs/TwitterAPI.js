@@ -23,10 +23,12 @@ module.exports = {
 
         this.loadMyself();
 
-        setTimeout(function() {
-            self.startStream();
-            self.loadHome();
-        }, 5000);
+        if (process.env.NODE_ENV != 'test') {
+            setTimeout(function() {
+                self.startStream();
+                self.loadHome();
+            }, 5000);
+        }
     },
     startStream: function() {
         if (!this.T) return;
