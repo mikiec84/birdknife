@@ -1,5 +1,5 @@
 # birdknife
-[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://github.com/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife)
+[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://github.com/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![Dependency Status](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014)
 
 > Twitter CLI
 
