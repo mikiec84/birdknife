@@ -1,4 +1,5 @@
 language: node_js
+
 node_js:
   - "0.12"
   - "0.11"
@@ -6,3 +7,6 @@ node_js:
   - "4.2.0"
   - "iojs-v2"
 sudo: false
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_c1c91f2fa9d5_key -iv $encrypted_c1c91f2fa9d5_iv -in config_travis.json.enc -out test/config_travis.json -d
