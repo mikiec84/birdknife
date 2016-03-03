@@ -62,7 +62,7 @@ module.exports = {
     },
     formatUserBio: function(user) {
         var description = this.autoBoldBioEntities(user);
-        description = description.replace(/(?:\r\n|\r|\n)/g, '\n|\t')
+        description = description.replace(/(?:\r\n|\r|\n)/g, '\n|\t');
 
         return '|\t' + description + '\n';
     }
