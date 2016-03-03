@@ -5,8 +5,8 @@ var vorpal = require('vorpal')(),
     DataStore = require('nedb'),
     cache = new DataStore(),
     nconf = require('nconf'),
-    color = require('./color_definitions'),
-    api = require('./TwitterAPI'),
+    color = require('./libs/color_definitions'),
+    api = require('./libs/TwitterAPI'),
     twitter = require('twitter-text');
 
 nconf.argv()
