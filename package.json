@@ -16,7 +16,7 @@
     "url": "https://github.com/vanita5/birdknife/issues"
   },
   "scripts": {
-    "test": "echo 'No tests yet.'"
+    "test": "./node_modules/.bin/gulp test"
   },
   "license": "MIT",
   "keywords": [
@@ -41,5 +41,12 @@
   "preferGlobal": true,
   "bin": {
     "birdknife": "birdknife.js"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^2.2.0",
+    "gulp-util": "^3.0.7",
+    "mocha": "^2.4.5"
   }
 }
