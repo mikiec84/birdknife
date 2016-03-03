@@ -1,10 +1,30 @@
 {
   "name": "ntwt",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./app.js"
+  "version": "0.1.0",
+  "description": "Twitter CLI based on vorpal",
+  "main": "ntwt.js",
+  "homepage": "https://github.com/vanita5/ntwt",
+  "author": {
+    "name": "vanita5",
+    "email": "mail@vanit.as"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanita5/ntwt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vanita5/ntwt/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "twitter",
+    "cli",
+    "vorpal",
+    "shell",
+    "app",
+    "application",
+    "inquirer"
+  ],
   "dependencies": {
     "vorpal": "1.9.7",
     "nedb": "1.8.0",
@@ -14,5 +34,9 @@
     "chalk": "1.1.1",
     "twitter-text": "1.13.3",
     "html-entities": "1.2.0"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "ntwt": "ntwt.js"
   }
 }
