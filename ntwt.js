@@ -1,4 +1,7 @@
+#! /usr/bin/env node
+
 var vorpal = require('vorpal')(),
+    path = require('path'),
     DataStore = require('nedb'),
     cache = new DataStore(),
     nconf = require('nconf'),
@@ -8,7 +11,7 @@ var vorpal = require('vorpal')(),
 
 nconf.argv()
     .env()
-    .file({ file: 'config.json' });
+    .file({ file: path.join(path.dirname(require.main.filename), 'config.json') });
 
 vorpal.commands = [];
 
@@ -243,7 +246,7 @@ vorpal
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
-                self.log(color.yellow("Login and copy the PIN number: ") + chalk.url(url));
+                self.log(color.yellow("Login and copy the PIN number: ") + color.url(url));
             })
             .catch(function(err) {
                 self.log(color.error('Error: ' + err));
