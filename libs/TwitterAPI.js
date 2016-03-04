@@ -47,7 +47,7 @@ module.exports = {
         });
 
         this.stream.on('direct_message', function(message) {
-            if (message.direct_message.sender_screen_name == this.ME.screen_name) return;
+            if (message.direct_message.recipient_screen_name != self.ME.screen_name) return;
             self.displayDM(message.direct_message);
         });
 
