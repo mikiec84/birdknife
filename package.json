@@ -2,7 +2,7 @@
   "name": "birdknife",
   "version": "0.1.6",
   "description": "Twitter CLI based on vorpal",
-  "main": "birdknife.js",
+  "main": "./birdknife.js",
   "homepage": "https://github.com/vanita5/birdknife",
   "author": {
     "name": "vanita5",
@@ -40,7 +40,7 @@
   },
   "preferGlobal": true,
   "bin": {
-    "birdknife": "birdknife.js"
+    "birdknife": "./birdknife.js"
   },
   "devDependencies": {
     "chai": "^3.5.0",

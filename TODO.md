@@ -21,6 +21,7 @@
 * Persistent cache
 * Improved cache with usernames,...
 * Autocompletion
+* Notifications
 
 ## Ideas
 
