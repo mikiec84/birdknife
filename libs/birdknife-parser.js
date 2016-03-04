@@ -1,12 +1,13 @@
 module.exports = {
-    parse: function(command, args) {
+    parseStatus: function(command, args) {
         if (!command || command.charAt(0) == '/') return command;
         return '\'' + args.replace(/'/g, "&bquot;") + '\'';
     },
-    parseReply: function(command, args) {
-        var c = '/reply';
-        var id = command.split(' ')[1]; //id is the first word after the command
-        var s = args.substring(3); //remove id + whitespace
-        return c + ' ' + id + ' ' + '\'' + s.replace(/'/g, "&bquot;") + '\'';
+    parseCommand: function(command, args) {
+        if (!command || command.charAt(0) != '/') return command;
+        var c = command.split(' ')[0];
+        var arg1 = command.split(' ')[1];
+        var s = args.substring(arg1.length + 1); //remove arg1 + whitespace
+        return c + ' ' + arg1 + ' ' + '\'' + s.replace(/'/g, "&bquot;") + '\'';
     }
 };
