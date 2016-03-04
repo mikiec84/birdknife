@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
 var vorpal = require('vorpal')(),
     path = require('path'),
@@ -15,14 +15,6 @@ nconf.argv()
     .file({ file: path.join(path.dirname(require.main.filename), 'config.json') });
 
 vorpal.commands = [];
-
-vorpal
-    .command('/exit', 'Exit birdknife')
-    .action(function(args) {
-        args.options = args.options || {};
-        args.options.sessionId = this.session.id;
-        this.parent.exit(args.options);
-    });
 
 vorpal
     .command('/show <id>', 'Show cached tweet by id')
@@ -341,6 +333,35 @@ vorpal
             this.ui.delimiter('birdknife [' + _s + ']> ');
         }
     });
+
+vorpal.command('/exit').alias('/quit').description('Exits birdknife.').action(function (args) {
+    args.options = args.options || {};
+    args.options.sessionId = this.session.id;
+    this.parent.exit(args.options);
+});
+
+vorpal.command('/help [command...]').description('Provides help for a given command.').action(function (args, cb) {
+    var self = this;
+    if (args.command) {
+        args.command = args.command.join(' ');
+        var name = _.find(this.parent.commands, { _name: String(args.command).toLowerCase().trim() });
+        if (name && !name._hidden) {
+            if (_.isFunction(name._help)) {
+                name._help(args.command, function (str) {
+                    self.log(str);
+                    cb();
+                });
+                return;
+            }
+            this.log(name.helpInformation());
+        } else {
+            this.log(this.parent._commandHelp(args.command));
+        }
+    } else {
+        this.log(this.parent._commandHelp(args.command));
+    }
+    cb();
+});
 
 vorpal.log('Welcome to birdknife!');
 
