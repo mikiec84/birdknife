@@ -476,6 +476,7 @@ module.exports = {
     },
 
     displayStatus: function(status, indented) {
+        if (!this.ME) return;
         var id = ShortIdGenerator.generate();
 
         var doc = {
