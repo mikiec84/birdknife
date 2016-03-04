@@ -7,7 +7,8 @@ var vorpal = require('vorpal')(),
     nconf = require('nconf'),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
-    twitter = require('twitter-text');
+    twitter = require('twitter-text'),
+    parser = require('./libs/birdknife-parser');
 
 nconf.argv()
     .env()
@@ -175,6 +176,7 @@ vorpal
 vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
+    .parse(parser.parseReply)
     .action(function(args, callback) {
         const self = this;
         if (!args.id || !args.text) {
@@ -185,6 +187,7 @@ vorpal
         var text = args.text;
 
         text = text.join(' ');
+        text =  text.replace(/&bquot;/g, "'");
 
         cache.findOne({ id: id }, function(err, doc) {
             if (err) {
@@ -308,10 +311,11 @@ vorpal
 
 vorpal
     .catch('[words...]', 'Tweet')
+    .parse(parser.parse)
     .action(function(args, callback) {
-        if (!args.words) return;
-
         var status = args.words.join(' ');
+        status = status.replace(/&bquot;/g, "'");
+
         api.update(status);
         callback();
     });
