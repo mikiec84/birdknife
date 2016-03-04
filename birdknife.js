@@ -176,7 +176,7 @@ vorpal
 vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
-    .parse(parser.parseReply)
+    .parse(parser.parseCommand)
     .action(function(args, callback) {
         const self = this;
         if (!args.id || !args.text) {
@@ -302,16 +302,18 @@ vorpal
 vorpal
     .command('/dm <screen_name> <words...>]')
     .description('Send direct message')
+    .parse(parser.parseCommand)
     .action(function(args, callback) {
         var screen_name = args.screen_name;
         var message = args.words.join(' ');
+        message = message.replace(/&bquot;/g, "'");
         api.message(screen_name, message);
         callback();
     });
 
 vorpal
     .catch('[words...]', 'Tweet')
-    .parse(parser.parse)
+    .parse(parser.parseStatus)
     .action(function(args, callback) {
         var status = args.words.join(' ');
         status = status.replace(/&bquot;/g, "'");
