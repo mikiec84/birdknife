@@ -8,6 +8,7 @@ var vorpal = require('vorpal')(),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
     twitter = require('twitter-text'),
+    birdknife_text = require('./libs/birdknife-text'),
     parser = require('./libs/birdknife-parser'),
     fs = require('fs'),
     _ = require('lodash');
@@ -238,20 +239,8 @@ vorpal
             }
 
             if (doc.type === 'status') {
-                var status = doc.status;
-
-                for (var m in status.entities.user_mentions) {
-                    var mention = status.entities.user_mentions[m];
-                    if (text.indexOf(mention.screen_name) < 0) {
-                        if (mention.screen_name === api.ME.screen_name) continue;
-                        text = '@' + mention.screen_name + ' ' + text;
-                    }
-                }
-                if (text.indexOf(status.user.screen_name) < 0) {
-                    text = '@' + status.user.screen_name + ' ' + text;
-                }
-
-                api.reply(text, status.id_str);
+                text = birdknife_text.addMentionsToReply(api.ME.screen_name, text, doc.status);
+                api.reply(text, doc.status.id_str);
             } else if (doc.type === 'message') {
                 api.message(doc.message.sender_screen_name, text);
             } else {
@@ -399,11 +388,12 @@ vorpal
         if (this.ui.delimiter() === 'PIN: ') return;
         const self = this;
 
-        var _c;
+        var _c, _p;
         var p = this.ui.input();
         var pad = '000';
-        var quote = p.match(/^\/quote\s([a-z0-9]{2})\s/);
         var command = p.match(/^\//);
+        var quote = p.match(/^\/quote\s([a-z0-9]{2})\s/);
+        var reply = p.match(/^\/reply\s([a-z0-9]{2})\s/);
 
         var updateDelimiter = function() {
             if (_c < 0) _c = 0;
@@ -414,11 +404,27 @@ vorpal
             self.ui.delimiter('birdknife [' + _s + ']> ');
         };
 
-        if (p.length === 0 || (command && !quote)) {
+        if (p.length === 0 || (command && !quote && !reply)) {
             this.ui.delimiter('birdknife [---]> ');
             return;
+        } else if (reply) {
+            _p = p.replace(reply[0], '');
+            var id = reply[1];
+
+            cache.findOne({ id: id }, function(err, doc) {
+                if (doc.type !== 'status') return;
+                if (err) {
+                    self.log(color.error('Error: ' + err));
+                    return;
+                }
+
+                _p = birdknife_text.addMentionsToReply(api.ME.screen_name, _p, doc.status);
+                _c = 140 - twitter.getTweetLength(_p);
+
+                updateDelimiter();
+            });
         } else if (quote) {
-            var _p = p.replace(quote[0], '');
+            _p = p.replace(quote[0], '');
             var id = quote[1];
 
             cache.findOne({ id: id }, function(err, doc) {
