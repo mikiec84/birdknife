@@ -8,7 +8,8 @@ var vorpal = require('vorpal')(),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
     twitter = require('twitter-text'),
-    parser = require('./libs/birdknife-parser');
+    parser = require('./libs/birdknife-parser'),
+    _ = require('lodash');
 
 nconf.argv()
     .env()
@@ -24,7 +25,7 @@ vorpal
         const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
-            if (doc.type != 'status') return;
+            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -41,7 +42,7 @@ vorpal
                 log += '|\t' + color.bold('Favorites: ') + (status.favorite_count || '0') + '\n';
                 log += '|\t' + color.bold('Retweets: ') + (status.retweet_count || '0') + '\n';
                 if (status.place) {
-                    log += '|\t' + color.bold('Location: ') + place.full_name + '\n';
+                    log += '|\t' + color.bold('Location: ') + status.place.full_name + '\n';
                 }
                 if (status.coordinates) {
                     var coordinates = status.coordinates[0];
@@ -65,7 +66,7 @@ vorpal
                 self.log(color.error('Error: ' + err));
                 return;
             }
-            if (doc.type == 'status') {
+            if (doc.type === 'status') {
                 api.delete(doc.status);
                 //TODO delete from cache?
             } else {
@@ -109,7 +110,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type != 'status') return;
+            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -125,7 +126,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type != 'status') return;
+            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -141,7 +142,7 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         cache.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type != 'status') return;
+            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -187,13 +188,13 @@ vorpal
                 return;
             }
 
-            if (doc.type == 'status') {
+            if (doc.type === 'status') {
                 var status = doc.status;
 
                 for (var m in status.entities.user_mentions) {
                     var mention = status.entities.user_mentions[m];
                     if (text.indexOf(mention.screen_name) < 0) {
-                        if (mention.screen_name == api.ME.screen_name) continue;
+                        if (mention.screen_name === api.ME.screen_name) continue;
                         text = '@' + mention.screen_name + ' ' + text;
                     }
                 }
@@ -202,7 +203,7 @@ vorpal
                 }
 
                 api.reply(text, status.id_str);
-            } else if (doc.type == 'message') {
+            } else if (doc.type === 'message') {
                 api.message(doc.message.sender_screen_name, text);
             } else {
                 self.log(color.error('Warning: Unsupported command for this element.'));
@@ -218,7 +219,7 @@ vorpal
         const self = this;
 
         cache.findOne({ id: id }, function(err, doc) {
-            if (doc.type != 'status') return;
+            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -317,10 +318,10 @@ vorpal
 vorpal
     .on('keypress', function(event) {
         var current = this.ui.delimiter();
-        if (current == 'PIN: ') return;
+        if (current === 'PIN: ') return;
 
         var p = this.ui.input();
-        if (!p || p.length == 0 || p.charAt(0) == '/') {
+        if (!p || p.length === 0 || p.charAt(0) == '/') {
             this.ui.delimiter('birdknife [---]> ');
         } else {
             var pad = '000';

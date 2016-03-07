@@ -47,7 +47,7 @@ module.exports = {
         });
 
         this.stream.on('direct_message', function(message) {
-            if (message.direct_message.recipient_screen_name != self.ME.screen_name) return;
+            if (message.direct_message.recipient_screen_name !== self.ME.screen_name) return;
             self.displayDM(message.direct_message);
         });
 
@@ -355,7 +355,7 @@ module.exports = {
         if (!this.T) return;
         const self = this;
 
-        if (status.user.id_str != this.ME.id_str) {
+        if (status.user.id_str !== this.ME.id_str) {
             this.vorpal.log(color.error("Can't delete status posted by another user!"));
         }
         
@@ -390,13 +390,13 @@ module.exports = {
     isMention: function(status) {
         for (var m in status.entities.user_mentions) {
             var mention = status.entities.user_mentions[m];
-            if (mention.id_str == this.ME.id_str) return true;
+            if (mention.id_str === this.ME.id_str) return true;
         }
         return false;
     },
 
     displayEvent: function(event) {
-        if (event.source.id_str == this.ME.id_str) return;
+        if (event.source.id_str === this.ME.id_str) return;
         var line = '-- ';
         var status = null;
         switch (event.event) {
@@ -424,8 +424,6 @@ module.exports = {
     },
 
     displayUser: function(user, relationship) {
-        var bio = birdknife_text.autoBoldBioEntities(user);
-
         var line = '\n';
         line += '|\t' + color.bold('Name: ') + user.name + ' (@' + user.screen_name + ')\n';
         line += '|\t' + color.bold('Created At: ') + user.created_at + '\n';
@@ -440,7 +438,7 @@ module.exports = {
         line += birdknife_text.formatUserBio(user);
         line += '|\t' + color.bold('---------------------------------------------------') + '\n';
         line += '|\n';
-        if (user.id_str == this.ME.id_str) {
+        if (user.id_str === this.ME.id_str) {
             line += '|\t' + color.bold('This is you.');
         }
 
@@ -502,7 +500,7 @@ module.exports = {
         line += "<";
         if (indented) line += "↑";
         line += "@";
-        line += status.user.screen_name == this.ME.screen_name
+        line += status.user.screen_name === this.ME.screen_name
             ? color.my_screen_name(status.user.screen_name)
             : color.screen_name(status.user.screen_name);
         line += ">: ";
