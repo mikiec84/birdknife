@@ -65,5 +65,18 @@ module.exports = {
         description = description.replace(/(?:\r\n|\r|\n)/g, '\n|\t');
 
         return '|\t' + description + '\n';
+    },
+    addMentionsToReply: function(ignore_screen_name, text, status) {
+        for (var m in status.entities.user_mentions) {
+            var mention = status.entities.user_mentions[m];
+            if (text.indexOf(mention.screen_name) < 0) {
+                if (mention.screen_name === ignore_screen_name) continue;
+                text = '@' + mention.screen_name + ' ' + text;
+            }
+        }
+        if (text.indexOf(status.user.screen_name) < 0) {
+            text = '@' + status.user.screen_name + ' ' + text;
+        }
+        return text;
     }
 };
