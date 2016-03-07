@@ -9,14 +9,32 @@ var vorpal = require('vorpal')(),
     api = require('./libs/TwitterAPI'),
     twitter = require('twitter-text'),
     parser = require('./libs/birdknife-parser'),
+    fs = require('fs'),
     _ = require('lodash');
 
 const pkg = require('./package.json'),
       update = require('update-notifier');
 
+var configPath = path.join(process.env[(process.platform == 'win32' ? 'USERPROFILE' : 'HOME')], '.birdknife.json');
+
+//Copy config file if needed
+try {
+    fs.accessSync(configPath, fs.F_OK); //config file already exists
+} catch (e) {
+    try {
+        fs.writeFileSync(configPath,
+            fs.readFileSync('./config.json')
+        );
+    } catch (e) {
+        //Error copying file. Use config from inside the packge.
+        console.log(e);
+        configPath = path.join(path.dirname(require.main.filename), 'config.json');
+    }
+}
+
 nconf.argv()
     .env()
-    .file({ file: path.join(path.dirname(require.main.filename), 'config.json') });
+    .file({ file: configPath });
 
 vorpal.commands = [];
 
