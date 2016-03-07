@@ -262,6 +262,36 @@ vorpal
     });
 
 vorpal
+    .command('/quote <id> <text...>', 'Quote a tweet')
+    .parse(parser.parseCommand)
+    .action(function(args, callback) {
+        const self = this;
+        if (!args.id || !args.text) {
+            callback();
+            return;
+        }
+        var id = args.id;
+        var text = args.text;
+
+        text = text.join(' ');
+        text =  text.replace(/&bquot;/g, "'");
+
+        cache.findOne({ id: id }, function(err, doc) {
+            if (err) {
+                self.log(color.error('Error: ' + err));
+                return;
+            }
+            if (doc.type !== 'status') {
+                self.log(color.error('Error: You can only quote tweets.'));
+            }
+
+            text += ' https://twitter.com/' + doc.status.screen_name + '/status/' + doc.status.id_str;
+            api.update(text);
+        });
+        callback();
+    });
+
+vorpal
     .command('/thread <id>', 'Show Conversation')
     .action(function(args, callback) {
         var id = args.id || -1;
@@ -366,21 +396,47 @@ vorpal
 
 vorpal
     .on('keypress', function(event) {
-        var current = this.ui.delimiter();
-        if (current === 'PIN: ') return;
+        if (this.ui.delimiter() === 'PIN: ') return;
+        const self = this;
 
+        var _c;
         var p = this.ui.input();
-        if (!p || p.length === 0 || p.charAt(0) == '/') {
-            this.ui.delimiter('birdknife [---]> ');
-        } else {
-            var pad = '000';
-            var _c = 140 - twitter.getTweetLength(p);
+        var pad = '000';
+        var quote = p.match(/^\/quote\s([a-z0-9]{2})\s/);
+        var command = p.match(/^\//);
+
+        var updateDelimiter = function() {
             if (_c < 0) _c = 0;
 
             var _s = (pad + _c).slice(-pad.length);
             if (_c <= 15) _s = color.delimiter_warning(_s);
 
-            this.ui.delimiter('birdknife [' + _s + ']> ');
+            self.ui.delimiter('birdknife [' + _s + ']> ');
+        };
+
+        if (p.length === 0 || (command && !quote)) {
+            this.ui.delimiter('birdknife [---]> ');
+            return;
+        } else if (quote) {
+            var _p = p.replace(quote[0], '');
+            var id = quote[1];
+
+            cache.findOne({ id: id }, function(err, doc) {
+                if (doc.type !== 'status') return;
+                if (err) {
+                    self.log(color.error('Error: ' + err));
+                    return;
+                }
+
+                _p += ' https://twitter.com/' + doc.status.screen_name + '/status/' + doc.status.id_str;
+                _c = 140 - twitter.getTweetLength(_p);
+
+                updateDelimiter();
+            });
+        } else {
+            _c = 140 - twitter.getTweetLength(p);
+
+            updateDelimiter();
         }
     });
 
