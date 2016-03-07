@@ -7,7 +7,7 @@ var vorpal = require('vorpal')(),
     nconf = require('nconf'),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
-    twitter = require('twitter-text'),
+    birdknife_delimiter = require('./libs/birdknife-delimiter'),
     birdknife_text = require('./libs/birdknife-text'),
     parser = require('./libs/birdknife-parser'),
     fs = require('fs'),
@@ -386,64 +386,7 @@ vorpal
 vorpal
     .on('keypress', function(event) {
         if (this.ui.delimiter() === 'PIN: ') return;
-        const self = this;
-
-        var _c, _p;
-        var p = this.ui.input();
-        var pad = '000';
-        var command = p.match(/^\//);
-        var quote = p.match(/^\/quote\s([a-z0-9]{2})\s/);
-        var reply = p.match(/^\/reply\s([a-z0-9]{2})\s/);
-
-        var updateDelimiter = function() {
-            if (_c < 0) _c = 0;
-
-            var _s = (pad + _c).slice(-pad.length);
-            if (_c <= 15) _s = color.delimiter_warning(_s);
-
-            self.ui.delimiter('birdknife [' + _s + ']> ');
-        };
-
-        if (p.length === 0 || (command && !quote && !reply)) {
-            this.ui.delimiter('birdknife [---]> ');
-            return;
-        } else if (reply) {
-            _p = p.replace(reply[0], '');
-            var id = reply[1];
-
-            cache.findOne({ id: id }, function(err, doc) {
-                if (doc.type !== 'status') return;
-                if (err) {
-                    self.log(color.error('Error: ' + err));
-                    return;
-                }
-
-                _p = birdknife_text.addMentionsToReply(api.ME.screen_name, _p, doc.status);
-                _c = 140 - twitter.getTweetLength(_p);
-
-                updateDelimiter();
-            });
-        } else if (quote) {
-            _p = p.replace(quote[0], '');
-            var id = quote[1];
-
-            cache.findOne({ id: id }, function(err, doc) {
-                if (doc.type !== 'status') return;
-                if (err) {
-                    self.log(color.error('Error: ' + err));
-                    return;
-                }
-
-                _p += ' https://twitter.com/' + doc.status.screen_name + '/status/' + doc.status.id_str;
-                _c = 140 - twitter.getTweetLength(_p);
-
-                updateDelimiter();
-            });
-        } else {
-            _c = 140 - twitter.getTweetLength(p);
-
-            updateDelimiter();
-        }
+        birdknife_delimiter.set(this, cache, api, this.ui.input());
     });
 
 vorpal.command('/exit').alias('/quit').description('Exits birdknife.').action(function (args) {
