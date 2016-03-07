@@ -13,7 +13,7 @@ describe('ShortIdGenerator', function() {
             var id = shortIdGenerator.generate();
             expect(id).to.equal('a1');
         });
-        it('returns "a0" again after 933 iterations', function() {
+        it('returns "a0" again after 934 iterations', function() {
             var id;
             for (var i = 0; i < 934; i++) { // MAX - MIN - 2
                 id = shortIdGenerator.generate();
