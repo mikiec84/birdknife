@@ -69,6 +69,18 @@ a1> <@twitter>: #birdknife is kinda nice!
 birdknife [133]> /reply a1 FAAAKE!
 ```
 
+##### Quote a tweet
+
+```bash
+a1> <@twitter>: #birdknife is kinda nice!
+
+birdknife [133]> /quote a1 FAAAKE!
+
+a2> <@_vanita5>: FAAAKE! https://twitter.com/twitter/status/12345678901234
+
+a3> |   <↑@twitter>: #birdknife is kinda nice!
+```
+
 ##### Retweet
 
 ```bash
@@ -98,6 +110,26 @@ birdknife [---]> /follow _vanita5
 
 ```bash
 birdknife [---]> /unfollow _vanita5
+```
+
+##### Block / Unblock
+
+```bash
+birdknife [---]> /block _vanita5
+```
+
+```bash
+birdknife [---]> /unblock _vanita5
+```
+
+##### Mute / Unmute
+
+```bash
+birdknife [---]> /mute _vanita5
+```
+
+```bash
+birdknife [---]> /unmute _vanita5
 ```
 
 ##### Mentions / Replies
