@@ -350,6 +350,38 @@ module.exports = {
                 self.vorpal.log(color.event('-- Unfollowed user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
+    
+    block: function(screen_name) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('blocks/create', { screen_name : screen_name })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error POST blocks/create: ' + err));
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    return;
+                }
+                self.vorpal.log(color.event('-- Blocked user: ' + color.bold('@' + result.data.screen_name)));
+            });
+    },
+
+    unblock: function(screen_name) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('blocks/destroy', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error POST blocks/destroy: ' + err));
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    return;
+                }
+                self.vorpal.log(color.event('-- Unblocked user: ' + color.bold('@' + result.data.screen_name)));
+            });
+    },
 
     delete: function(status) {
         if (!this.T) return;
