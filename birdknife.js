@@ -170,6 +170,20 @@ vorpal
     });
 
 vorpal
+    .command('/block <screen_name>', 'Block user with given name')
+    .action(function(args, callback) {
+        api.block(args.screen_name);
+        callback();
+    });
+
+vorpal
+    .command('/unblock <screen_name>', 'Unblock user with given name')
+    .action(function(args, callback) {
+        api.unblock(args.screen_name);
+        callback();
+    });
+
+vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
     .parse(parser.parseCommand)
