@@ -383,6 +383,38 @@ module.exports = {
             });
     },
 
+    mute: function(screen_name) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('mutes/users/create', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error POST mutes/users/create: ' + err));
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    return;
+                }
+                self.vorpal.log(color.event('-- Muted user: ' + color.bold('@' + result.data.screen_name)));
+            });
+    },
+
+    unmute: function(screen_name) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('mutes/users/destroy', { screen_name: screen_name })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error POST mutes/users/destroy: ' + err));
+            })
+            .then(function(result) {
+                if (result.data.errors) {
+                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    return;
+                }
+                self.vorpal.log(color.event('-- Unmuted user: ' + color.bold('@' + result.data.screen_name)));
+            });
+    },
+
     delete: function(status) {
         if (!this.T) return;
         const self = this;

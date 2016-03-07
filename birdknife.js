@@ -184,6 +184,20 @@ vorpal
     });
 
 vorpal
+    .command('/mute <screen_name>', 'Mute user with given name')
+    .action(function(args, callback) {
+        api.mute(args.screen_name);
+        callback();
+    });
+
+vorpal
+    .command('/unmute <screen_name>', 'Unmute user with given name')
+    .action(function(args, callback) {
+        api.unmute(args.screen_name);
+        callback();
+    });
+
+vorpal
     .command('/reply <id> <text...>', 'Reply to a tweet')
     .alias('/re')
     .parse(parser.parseCommand)
