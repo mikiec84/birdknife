@@ -7,6 +7,7 @@ describe('birdknife-parser', function() {
     describe('#parseStatus', function() {
         it('returns the unmodified command if command is falsy', function() {
             var parsed = birdknife_parser.parseStatus(null, null);
+            //noinspection BadExpressionStatementJS
             expect(parsed).to.not.be.ok;
         });
 
@@ -19,6 +20,7 @@ describe('birdknife-parser', function() {
 
         it('correctly escapes single and double quotes', function() {
             var command = 'This is a \'Test\' with "Quotes"';
+            //noinspection UnnecessaryLocalVariableJS
             var args = command;
             var parsed = birdknife_parser.parseStatus(command, args);
 
@@ -29,6 +31,7 @@ describe('birdknife-parser', function() {
     describe('#parseCommand', function() {
         it('returns the unmodified command if command is falsy', function() {
             var parsed = birdknife_parser.parseCommand(null, null);
+            //noinspection BadExpressionStatementJS
             expect(parsed).to.not.be.ok;
         });
 

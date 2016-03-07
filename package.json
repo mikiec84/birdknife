@@ -36,7 +36,8 @@
     "twit": "2.2.2",
     "chalk": "1.1.1",
     "twitter-text": "1.13.4",
-    "html-entities": "1.2.0"
+    "html-entities": "1.2.0",
+    "lodash": "^4.5.1"
   },
   "preferGlobal": true,
   "bin": {

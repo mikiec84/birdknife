@@ -36,17 +36,17 @@ module.exports = {
 
         var flat_entities = [];
 
-        for (var key in entities.user_mentions) {
-            flat_entities.push(entities.user_mentions[key]);
+        for (var um in entities.user_mentions) {
+            flat_entities.push(entities.user_mentions[um]);
         }
-        for (var key in entities.urls) {
-            flat_entities.push(entities.urls[key]);
+        for (var url in entities.urls) {
+            flat_entities.push(entities.urls[url]);
         }
-        for (var key in entities.hashtags) {
-            flat_entities.push(entities.hashtags[key]);
+        for (var h in entities.hashtags) {
+            flat_entities.push(entities.hashtags[h]);
         }
-        for (var key in entities.media) {
-            flat_entities.push(entities.media[key]);
+        for (var m in entities.media) {
+            flat_entities.push(entities.media[m]);
         }
 
         return this.autoBoldText(text, flat_entities);
