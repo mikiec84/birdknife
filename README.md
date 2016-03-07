@@ -158,6 +158,11 @@ Display user information
 Display a tweet with additional information.
 
 
+## Development
+
+Fork, clone, `npm install`, code, pull request. :)
+
+
 ## License
 
 ```
