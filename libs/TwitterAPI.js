@@ -284,7 +284,8 @@ module.exports = {
                     self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(color.event('-- Retweeted status with ID ' + color.bold(result.data.id_str)));
+                var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
+                self.vorpal.log(color.event('-- Retweeted status: ' + text));
             });
     },
 
@@ -300,7 +301,8 @@ module.exports = {
                     self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(color.event('-- Liked status with ID ' + color.bold(result.data.id_str)));
+                var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
+                self.vorpal.log(color.event('-- Liked status: ' + text));
             })
     },
 
@@ -316,7 +318,8 @@ module.exports = {
                     self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(color.event('-- Removed like from status with ID ' + color.bold(result.data.id_str)));
+                var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
+                self.vorpal.log(color.event('-- Removed like from status: ' + text));
             });
     },
 
