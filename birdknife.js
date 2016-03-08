@@ -45,11 +45,11 @@ cache.hashtags = new DataStore({
     autoload: true
 });
 
-cache.usernames.ensureIndex({ fieldName: 'u', unique: true}, function(error) {
+cache.usernames.ensureIndex({ fieldName: 'k', unique: true}, function(error) {
     if (error) vorpal.log(color.error('Database error: ' + error));
 });
 
-cache.hashtags.ensureIndex({ fieldName: 'h', unique: true}, function(error) {
+cache.hashtags.ensureIndex({ fieldName: 'k', unique: true}, function(error) {
     if (error) vorpal.log(color.error('Database error: ' + error));
 });
 
