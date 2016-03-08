@@ -9,12 +9,12 @@ module.exports = {
     ME: null,
     PINAuth: null,
     vorpal: null,
-    cache: null,
+    store: null,
     TEST: process.env.NODE_ENV == 'test',
-    login: function(ckey, csecret, akey, asecret, vorpal, cache) {
+    login: function(ckey, csecret, akey, asecret, vorpal, store) {
         const self = this;
         this.vorpal = vorpal;
-        this.cache = cache;
+        this.store = store;
         this.T = new Twit({
             consumer_key:        ckey,
             consumer_secret:     csecret,
@@ -563,7 +563,7 @@ module.exports = {
             type: 'message',
             message: message
         };
-        this.cache.update({ id: id }, doc, { upsert: true });
+        this.store.update({ id: id }, doc, { upsert: true });
 
         var line = id + '> ';
         line += color.bold('[@' + message.sender_screen_name + ' | ' + message.created_at + ']: ');
@@ -583,7 +583,7 @@ module.exports = {
             type: 'status',
             status: status
         };
-        this.cache.update({ id: id }, doc, { upsert: true });
+        this.store.update({ id: id }, doc, { upsert: true });
 
         var isRetweet = status.retweeted_status ? true : false;
 

@@ -3,7 +3,6 @@ var color = require('./color_definitions'),
     text = require('./birdknife-text');
 
 module.exports = {
-    cache: null,
     PAD: '000',
 
     setDelimiter: function(ui, count) {
@@ -18,9 +17,8 @@ module.exports = {
         ui.delimiter('birdknife [---]> ');
     },
 
-    set: function(vorpal, cache, api, input) {
+    set: function(vorpal, store, api, input) {
         const self = this;
-        this.cache = cache;
 
         var _c;
 
@@ -36,7 +34,7 @@ module.exports = {
 
             var id = reply[1];
             input = input.replace(reply[0], '');
-            cache.findOne({ id: id }, function(err, doc) {
+            store.findOne({ id: id }, function(err, doc) {
                 if (doc.type !== 'status') return;
                 if (err) {
                     vorpal.log(color.error('Error: ' + err));
@@ -54,7 +52,7 @@ module.exports = {
 
             var id = quote[1];
             input = input.replace(quote[0], '');
-            cache.findOne({ id: id }, function(err, doc) {
+            store.findOne({ id: id }, function(err, doc) {
                 if (doc.type !== 'status') return;
                 if (err) {
                     vorpal.log(color.error('Error: ' + err));
