@@ -478,6 +478,11 @@ module.exports = {
                 line += ' quoted your tweet: ';
                 status = event.target_object;
                 break;
+            case 'retweet':
+                line += color.bold('@' + event.status.user.screen_name);
+                line += ' retweeted your tweet: ';
+                line += '"' + birdknife_text.autoBoldStatusEntities(event.status.retweeted_status) + '"';
+                break;
             default:
                 this.vorpal.log(color.unknown_event(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name));
                 break;
@@ -485,6 +490,17 @@ module.exports = {
         line += '\n';
         this.vorpal.log(color.event(line));
         if (status) this.displayStatus(status, true);
+    },
+
+    displayRetweet: function(status) {
+        var dummy = {
+            "event": "retweet",
+            "source": {
+                "id_str": -1
+            },
+            "status": status
+        };
+        this.displayEvent(dummy);
     },
 
     displayUser: function(user, relationship) {
@@ -502,12 +518,13 @@ module.exports = {
         line += birdknife_text.formatUserBio(user);
         line += '|\t' + color.bold('---------------------------------------------------') + '\n';
         line += '|\n';
+
         if (user.id_str === this.ME.id_str) {
             line += '|\t' + color.bold('This is you.');
         }
 
         if (relationship.target.following && relationship.target.followed_by) {
-            line += '|\t' + color.bold('You are friends with this user.');
+            line += '|\t' + color.bold('You are following each other.');
         } else if (relationship.target.following) {
             line += '|\t' + color.bold('This user is following you.');
         } else if (relationship.target.followed_by) {
@@ -539,6 +556,7 @@ module.exports = {
 
     displayStatus: function(status, indented) {
         if (!this.ME) return;
+
         var id = ShortIdGenerator.generate();
 
         var doc = {
@@ -549,6 +567,11 @@ module.exports = {
         this.cache.update({ id: id }, doc, { upsert: true });
 
         var isRetweet = status.retweeted_status ? true : false;
+
+        if (isRetweet && status.retweeted_status.user.id_str === this.ME.id_str) {
+            this.displayRetweet(status, indented);
+            return;
+        }
 
         var text = birdknife_text.autoBoldStatusEntities(status);
         
