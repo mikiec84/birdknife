@@ -487,6 +487,21 @@ module.exports = {
                 line += ' retweeted your tweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.status.retweeted_status) + '"';
                 break;
+            case 'blocked':
+                line += color.bold('@' + event.source.screen_name);
+                line += ' blocked ';
+                line += color.bold('@' + event.target.screen_name);
+                break;
+            case 'retweeted_retweet':
+                line += color.bold('@' + event.source.screen_name);
+                line += ' retweeted your retweet: ';
+                line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
+                break;
+            case 'favorited_retweet':
+                line += color.bold('@' + event.source.screen_name);
+                line += ' liked your retweet: ';
+                line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
+                break;
             default:
                 this.vorpal.log(color.unknown_event(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name));
                 break;
