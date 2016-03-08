@@ -26,7 +26,7 @@ try {
 } catch (e) {
     try {
         fs.writeFileSync(configPath,
-            fs.readFileSync('./config.json')
+            fs.readFileSync(path.join(path.dirname(require.main.filename), 'config.json'))
         );
     } catch (e) {
         //Error copying file. Use config from inside the packge.
