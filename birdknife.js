@@ -9,6 +9,7 @@ var vorpal = require('vorpal')(),
     api = require('./libs/TwitterAPI'),
     birdknife_delimiter = require('./libs/birdknife-delimiter'),
     birdknife_text = require('./libs/birdknife-text'),
+    autocompleter = require('./libs/birdknife-autocompletion'),
     parser = require('./libs/birdknife-parser'),
     timer = require('./libs/birdknife-timer'),
     fs = require('fs'),
@@ -38,7 +39,8 @@ nconf.argv()
     .env()
     .file({ file: configPath });
 
-vorpal.commands = [];
+var help = vorpal.find('help'); if (help) help.remove();
+var exit = vorpal.find('exit'); if (exit) exit.remove();
 
 vorpal
     .command('/show <id>', 'Show cached tweet by id')
@@ -386,6 +388,7 @@ vorpal
 
 vorpal
     .on('keypress', function(event) {
+        if (event.key === 'tab') autocompleter.autocomplete(this);
         if (this.ui.delimiter() === 'PIN: ') return;
         birdknife_delimiter.set(this, cache, api, this.ui.input());
     });

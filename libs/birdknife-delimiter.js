@@ -1,22 +1,10 @@
 var color = require('./color_definitions'),
     twitter = require('twitter-text'),
-    birdknife_text = require('./birdknife-text');
+    text = require('./birdknife-text');
 
 module.exports = {
     cache: null,
     PAD: '000',
-
-    isCommand: function(input) {
-        return input.match(/^\//);
-    },
-
-    isQuote: function(input) {
-        return input.match(/^\/quote\s([a-z0-9]{2})\s/);
-    },
-
-    isReply: function(input) {
-        return input.match(/^\/reply\s([a-z0-9]{2})\s/);
-    },
 
     setDelimiter: function(ui, count) {
         if (count < 0) count = 0;
@@ -39,12 +27,12 @@ module.exports = {
         //if input is a command but not /reply or /quote
         //noinspection OverlyComplexBooleanExpressionJS
         if (input.length === 0 || (
-                this.isCommand(input) && !this.isQuote(input) && !this.isReply(input)
+                text.isCommand(input) && !text.isQuote(input) && !text.isReply(input)
             )) {
             this.setDefaultDelimiter(vorpal.ui);
         }
-        else if (this.isReply(input)) {
-            var reply = this.isReply(input);
+        else if (text.isReply(input)) {
+            var reply = text.isReply(input);
 
             var id = reply[1];
             input = input.replace(reply[0], '');
@@ -55,14 +43,14 @@ module.exports = {
                     return;
                 }
 
-                input = birdknife_text.addMentionsToReply(api.ME.screen_name, input, doc.status);
+                input = text.addMentionsToReply(api.ME.screen_name, input, doc.status);
                 _c = 140 - twitter.getTweetLength(input);
 
                 self.setDelimiter(vorpal.ui, _c);
             });
         }
-        else if (this.isQuote(input)) {
-            var quote = this.isQuote(input);
+        else if (text.isQuote(input)) {
+            var quote = text.isQuote(input);
 
             var id = quote[1];
             input = input.replace(quote[0], '');
@@ -73,7 +61,7 @@ module.exports = {
                     return;
                 }
 
-                input += ' ' + birdknife_text.getStatusURL(doc.status);
+                input += ' ' + text.getStatusURL(doc.status);
                 _c = 140 - twitter.getTweetLength(input);
 
                 self.setDelimiter(vorpal.ui, _c);
