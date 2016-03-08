@@ -35,6 +35,24 @@ try {
     }
 }
 
+var cache = {};
+cache.usernames = new DataStore({
+    filename: 'usernames.db',
+    autoload: true
+});
+cache.hashtags = new DataStore({
+    filename: 'hashtags.db',
+    autoload: true
+});
+
+cache.usernames.ensureIndex({ fieldName: 'u', unique: true}, function(error) {
+    if (error) vorpal.log(color.error('Database error: ' + error));
+});
+
+cache.hashtags.ensureIndex({ fieldName: 'h', unique: true}, function(error) {
+    if (error) vorpal.log(color.error('Database error: ' + error));
+});
+
 nconf.argv()
     .env()
     .file({ file: configPath });
@@ -342,7 +360,7 @@ vorpal
                         nconf.get('auth:consumer_secret'),
                         nconf.get('auth:access_token'),
                         nconf.get('auth:access_token_secret'),
-                        vorpal, store);
+                        vorpal, store, cache);
                     api.startStream();
 
                     callback();
@@ -388,7 +406,7 @@ vorpal
 
 vorpal
     .on('keypress', function(event) {
-        if (event.key === 'tab') autocompleter.autocomplete(this);
+        if (event.key === 'tab') autocompleter.autocomplete(this, cache);
         if (this.ui.delimiter() === 'PIN: ') return;
         birdknife_delimiter.set(this, store, api, this.ui.input());
     });
@@ -438,7 +456,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
               nconf.get('auth:consumer_secret'),
               nconf.get('auth:access_token'),
               nconf.get('auth:access_token_secret'),
-              vorpal, store);
+              vorpal, store, cache);
 }
 
 
