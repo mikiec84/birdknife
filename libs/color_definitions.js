@@ -16,5 +16,6 @@ module.exports = {
     reply: chalk.red,
     screen_name: chalk.underline.blue,
     my_screen_name: chalk.underline.yellow,
-    indented: chalk.green
+    indented: chalk.green,
+    timer: chalk.blue
 };

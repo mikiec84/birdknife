@@ -10,6 +10,7 @@ var vorpal = require('vorpal')(),
     birdknife_delimiter = require('./libs/birdknife-delimiter'),
     birdknife_text = require('./libs/birdknife-text'),
     parser = require('./libs/birdknife-parser'),
+    timer = require('./libs/birdknife-timer'),
     fs = require('fs'),
     _ = require('lodash');
 
@@ -421,6 +422,9 @@ vorpal.command('/help [command...]').description('Provides help for a given comm
 vorpal.log('Welcome to birdknife! ' + '(' + pkg.version + ')');
 
 update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ }).notify();
+
+timer.vorpal = vorpal;
+timer.start();
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
