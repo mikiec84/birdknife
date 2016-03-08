@@ -10,11 +10,13 @@ module.exports = {
     PINAuth: null,
     vorpal: null,
     store: null,
+    cache: null,
     TEST: process.env.NODE_ENV == 'test',
-    login: function(ckey, csecret, akey, asecret, vorpal, store) {
+    login: function(ckey, csecret, akey, asecret, vorpal, store, cache) {
         const self = this;
         this.vorpal = vorpal;
         this.store = store;
+        this.cache = cache;
         this.T = new Twit({
             consumer_key:        ckey,
             consumer_secret:     csecret,
@@ -511,6 +513,20 @@ module.exports = {
         if (status) this.displayStatus(status, true);
     },
 
+    cacheFromStatus: function(status) {
+        this.cache.usernames.insert({ u: '@' + status.user.screen_name });
+
+        for (var u in status.entities.user_mentions) {
+            var mention = status.entities.user_mentions[u];
+            this.cache.usernames.insert({ u: '@' + mention.screen_name });
+        }
+
+        for (var h in status.entities.hashtags) {
+            var hashtag = status.entities.hashtags[h];
+            this.cache.hashtags.insert({ h: '#' + hashtag.text });
+        }
+    },
+
     displayRetweet: function(status) {
         var dummy = {
             "event": "retweet",
@@ -584,6 +600,7 @@ module.exports = {
             status: status
         };
         this.store.update({ id: id }, doc, { upsert: true });
+        this.cacheFromStatus(status);
 
         var isRetweet = status.retweeted_status ? true : false;
 
