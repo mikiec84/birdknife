@@ -10,6 +10,7 @@ module.exports = {
     PINAuth: null,
     vorpal: null,
     cache: null,
+    TEST: process.env.NODE_ENV == 'test',
     login: function(ckey, csecret, akey, asecret, vorpal, cache) {
         const self = this;
         this.vorpal = vorpal;
@@ -23,7 +24,7 @@ module.exports = {
 
         this.loadMyself();
 
-        if (process.env.NODE_ENV != 'test') {
+        if (!this.TEST) {
             setTimeout(function() {
                 self.startStream();
                 self.loadHome();
@@ -68,7 +69,7 @@ module.exports = {
                     self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
-                self.vorpal.log(color.success("Logged in as " + color.bold(result.data.screen_name)));
+                if (!self.TEST) self.vorpal.log(color.success("Logged in as " + color.bold(result.data.screen_name)));
                 self.ME = result.data;
             });
     },
