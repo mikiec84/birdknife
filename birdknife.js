@@ -3,7 +3,7 @@
 var vorpal = require('vorpal')(),
     path = require('path'),
     DataStore = require('nedb'),
-    cache = new DataStore(),
+    store = new DataStore(),
     nconf = require('nconf'),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
@@ -43,13 +43,13 @@ var help = vorpal.find('help'); if (help) help.remove();
 var exit = vorpal.find('exit'); if (exit) exit.remove();
 
 vorpal
-    .command('/show <id>', 'Show cached tweet by id')
+    .command('/show <id>', 'Show stored tweet by id')
     .option('--debug', 'Show full tweet object')
     .action(function(args, callback) {
         var id = args.id || -1;
         const self = this;
 
-        cache.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: id }, function(err, doc) {
             if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
@@ -86,14 +86,14 @@ vorpal
         var id = args.id || -1;
         const self = this;
 
-        cache.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
             if (doc.type === 'status') {
                 api.delete(doc.status);
-                //TODO delete from cache?
+                //TODO delete from store?
             } else {
                 self.log(color.error('Warning: Unsupported command for this element.'));
             }
@@ -134,7 +134,7 @@ vorpal
     .alias('/rt')
     .action(function(args, callback) {
         const self = this;
-        cache.findOne({ id: args.id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
@@ -150,7 +150,7 @@ vorpal
     .alias('/fav')
     .action(function(args, callback) {
         const self = this;
-        cache.findOne({ id: args.id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
@@ -166,7 +166,7 @@ vorpal
     .alias('/unfav')
     .action(function(args, callback) {
         const self = this;
-        cache.findOne({ id: args.id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
@@ -235,7 +235,7 @@ vorpal
         text = text.join(' ');
         text =  text.replace(/&bquot;/g, "'");
 
-        cache.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -268,7 +268,7 @@ vorpal
         text = text.join(' ');
         text =  text.replace(/&bquot;/g, "'");
 
-        cache.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
@@ -289,7 +289,7 @@ vorpal
         var id = args.id || -1;
         const self = this;
 
-        cache.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: id }, function(err, doc) {
             if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
@@ -342,7 +342,7 @@ vorpal
                         nconf.get('auth:consumer_secret'),
                         nconf.get('auth:access_token'),
                         nconf.get('auth:access_token_secret'),
-                        vorpal, cache);
+                        vorpal, store);
                     api.startStream();
 
                     callback();
@@ -390,7 +390,7 @@ vorpal
     .on('keypress', function(event) {
         if (event.key === 'tab') autocompleter.autocomplete(this);
         if (this.ui.delimiter() === 'PIN: ') return;
-        birdknife_delimiter.set(this, cache, api, this.ui.input());
+        birdknife_delimiter.set(this, store, api, this.ui.input());
     });
 
 vorpal.command('/exit').alias('/quit').description('Exits birdknife.').action(function (args) {
@@ -438,7 +438,7 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
               nconf.get('auth:consumer_secret'),
               nconf.get('auth:access_token'),
               nconf.get('auth:access_token_secret'),
-              vorpal, cache);
+              vorpal, store);
 }
 
 

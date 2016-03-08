@@ -5,7 +5,7 @@ var expect = require('chai').expect,
     nconf = require('nconf'),
     path = require('path'),
     DataStore = require('nedb'),
-    cache = new DataStore(),
+    store = new DataStore(),
     api = require('../libs/TwitterAPI');
 
 nconf.argv()
@@ -19,7 +19,7 @@ describe('TwitterAPI', function() {
                 nconf.get('auth:consumer_secret'),
                 nconf.get('auth:access_token'),
                 nconf.get('auth:access_token_secret'),
-                vorpal, cache);
+                vorpal, store);
         });
 
         it('should have authorized after 4 seconds', function(done) {
