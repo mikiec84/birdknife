@@ -514,16 +514,16 @@ module.exports = {
     },
 
     cacheFromStatus: function(status) {
-        this.cache.usernames.insert({ u: '@' + status.user.screen_name });
+        this.cache.usernames.insert({ k: '@' + status.user.screen_name });
 
         for (var u in status.entities.user_mentions) {
             var mention = status.entities.user_mentions[u];
-            this.cache.usernames.insert({ u: '@' + mention.screen_name });
+            this.cache.usernames.insert({ k: '@' + mention.screen_name });
         }
 
         for (var h in status.entities.hashtags) {
             var hashtag = status.entities.hashtags[h];
-            this.cache.hashtags.insert({ h: '#' + hashtag.text });
+            this.cache.hashtags.insert({ k: '#' + hashtag.text });
         }
     },
 
