@@ -4,6 +4,7 @@ var color = require('./color_definitions'),
 var htmlEntities = new Entities();
 
 module.exports = {
+
     autoBoldText: function(text, entities) {
         var result = "";
         entities.sort(function(a, b) {
@@ -29,6 +30,7 @@ module.exports = {
         result += text.substring(beginIndex, text.length);
         return htmlEntities.decode(result);
     },
+
     autoBoldStatusEntities: function(status) {
         var isRetweet = status.retweeted_status ? true : false;
         var text = isRetweet ? status.retweeted_status.text : status.text;
@@ -51,6 +53,7 @@ module.exports = {
 
         return this.autoBoldText(text, flat_entities);
     },
+
     autoBoldBioEntities: function(user) {
         var flat_entities = [];
 
@@ -60,12 +63,14 @@ module.exports = {
 
         return this.autoBoldText(user.description, flat_entities);
     },
+
     formatUserBio: function(user) {
         var description = this.autoBoldBioEntities(user);
         description = description.replace(/(?:\r\n|\r|\n)/g, '\n|\t');
 
         return '|\t' + description + '\n';
     },
+
     addMentionsToReply: function(ignore_screen_name, text, status) {
         for (var m in status.entities.user_mentions) {
             var mention = status.entities.user_mentions[m];
@@ -78,5 +83,9 @@ module.exports = {
             text = '@' + status.user.screen_name + ' ' + text;
         }
         return text;
+    },
+    
+    getStatusURL: function(status) {
+        return 'https://twitter.com/' + status.user.screen_name + '/status/' + status.id_str;
     }
 };

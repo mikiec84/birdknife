@@ -73,7 +73,7 @@ module.exports = {
                     return;
                 }
 
-                input += ' https://twitter.com/' + doc.status.user.screen_name + '/status/' + doc.status.id_str;
+                input += ' ' + birdknife_text.getStatusURL(doc.status);
                 _c = 140 - twitter.getTweetLength(input);
 
                 self.setDelimiter(vorpal.ui, _c);
