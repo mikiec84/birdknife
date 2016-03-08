@@ -5,6 +5,18 @@ var htmlEntities = new Entities();
 
 module.exports = {
 
+    isCommand: function(input) {
+        return input.match(/^\//);
+    },
+
+    isQuote: function(input) {
+        return input.match(/^\/quote\s([a-z0-9]{2})\s/);
+    },
+
+    isReply: function(input) {
+        return input.match(/^\/reply\s([a-z0-9]{2})\s/);
+    },
+
     autoBoldText: function(text, entities) {
         var result = "";
         entities.sort(function(a, b) {
