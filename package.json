@@ -34,6 +34,7 @@
     "lodash": "^4.5.1",
     "nconf": "0.8.4",
     "nedb": "1.8.0",
+    "node-schedule": "^1.0.0",
     "twit": "2.2.3",
     "twitter-pin-auth": "0.1.2",
     "twitter-text": "1.13.4",
