@@ -27,7 +27,7 @@
 > Ascii Art from ascii-code.com by `cjr`
 
 birdknife is a Twitter CLI based on [Vorpal](https://github.com/dthree/vorpal) inspired by [TTYtter](http://www.floodgap.com/software/ttytter/).
-TTYtter hasn't been updated for some time now and doesn't support some new features introduced by Twitter. This project aims to be a completely
+TTYtter hasn't been updated for some time now and doesn't support new features introduced by Twitter. This project aims to be a completely
 functional Twitter client for your CLI.
 
 ## Installation
@@ -42,7 +42,7 @@ $ npm install birdknife -g
 
 ##### Login (PIN authorization)
 
-```bash
+```
 birdknife [---]> /login
 
 Login and copy the PIN number: https://twitter.com/oauth/authorize?oauth_token=XXXX-XXXXXXXXXXXXXXXXXXXXXX
@@ -51,19 +51,19 @@ PIN:
 
 ##### Tweet
 
-```bash
+```
 birdknife [128]> Hello World!
 ```
 
 ##### View threads / conversations
 
-```bash
+```
 birdknife [---]> /thread <id>
 ```
 
 ##### Reply to a tweet
 
-```bash
+```
 a1> <@twitter>: #birdknife is kinda nice!
 
 birdknife [133]> /reply a1 FAAAKE!
@@ -71,7 +71,7 @@ birdknife [133]> /reply a1 FAAAKE!
 
 ##### Quote a tweet
 
-```bash
+```
 a1> <@twitter>: #birdknife is kinda nice!
 
 birdknife [133]> /quote a1 FAAAKE!
@@ -83,58 +83,58 @@ a3> |   <↑@twitter>: #birdknife is kinda nice!
 
 ##### Retweet
 
-```bash
+```
 birdknife [---]> /retweet <id>
 ```
 Alias: ```/rt```
 
 ##### Like / Favorite
 
-```bash
+```
 birdknife [---]> /like <id>
 ```
 Alias: ```/fav```
 
 ##### Remove from likes / favorites
 
-```bash
+```
 birdknife [---]> /unlike <id>
 ```
 Alias: ```/unfav```
 
 ##### Follow / Unfollow
 
-```bash
+```
 birdknife [---]> /follow _vanita5
 ```
 
-```bash
+```
 birdknife [---]> /unfollow _vanita5
 ```
 
 ##### Block / Unblock
 
-```bash
+```
 birdknife [---]> /block _vanita5
 ```
 
-```bash
+```
 birdknife [---]> /unblock _vanita5
 ```
 
 ##### Mute / Unmute
 
-```bash
+```
 birdknife [---]> /mute _vanita5
 ```
 
-```bash
+```
 birdknife [---]> /unmute _vanita5
 ```
 
 ##### Mentions / Replies
 
-```bash
+```
 birdknife [---]> /replies
 ```
 Show recent mentions.
@@ -143,48 +143,48 @@ Show recent mentions.
 
 **Note: You can reply to dms directly with the ```/reply <id>``` command!** 
 
-```bash
+```
 birdknife [---]> /dms
 ```
 Display direct messages inbox.
 
-```bash
+```
 birdknife [---]> /dm _vanita5 Hello, this is a test from birdknife.
 ```
 Send DMs to a user.
 
 ##### Search
 
-```bash
+```
 birdknife [---]> /search <query>
 ```
 Search for tweets.
 
 ##### Quit
 
-```bash
+```
 birdknife [---]> /exit
 ```
 
 ##### Other commands
 
-```bash
+```
 /again [screen_name]
 ```
 Reloads your timeline or loads recent tweets of a user if screen_name is given.
 
 
-```bash
+```
 /delete <id>
 ```
 Delete a tweet.
 
-```bash
+```
 /user [screen_name]
 ```
 Display user information
 
-```bash
+```
 /show <id>
 ```
 Display a tweet with additional information.
