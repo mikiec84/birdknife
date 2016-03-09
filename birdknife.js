@@ -463,6 +463,8 @@ vorpal.command('/help [command...]').description('Provides help for a given comm
     cb();
 });
 
+vorpal.history('birdknife');
+
 vorpal.log('Welcome to birdknife! (' + pkg.version + ')');
 
 update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ }).notify();
