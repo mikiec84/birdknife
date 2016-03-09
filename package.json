@@ -1,6 +1,6 @@
 {
   "name": "birdknife",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Twitter CLI based on vorpal",
   "main": "./birdknife.js",
   "homepage": "https://github.com/vanita5/birdknife",
