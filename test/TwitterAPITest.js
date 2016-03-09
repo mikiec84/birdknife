@@ -15,11 +15,7 @@ nconf.argv()
 describe('TwitterAPI', function() {
     describe('Login', function() {
         before('Authorizing', function() {
-            api.login(nconf.get('auth:consumer_key'),
-                nconf.get('auth:consumer_secret'),
-                nconf.get('auth:access_token'),
-                nconf.get('auth:access_token_secret'),
-                vorpal, store);
+            api.login(nconf, vorpal, store);
         });
 
         it('should have authorized after 4 seconds', function(done) {
