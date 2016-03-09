@@ -28,7 +28,7 @@ module.exports = {
             var entity = entities[i];
             result += text.substring(beginIndex, entity.indices[0]);
 
-            if (entity.type) {//Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
+            if (entity.type) { //Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
                 result += color.bold(entity.display_url);
             } else if (entity.expanded_url) { //url
                 result += color.bold(entity.expanded_url);
@@ -44,9 +44,9 @@ module.exports = {
     },
 
     autoBoldStatusEntities: function(status) {
-        var isRetweet = status.retweeted_status ? true : false;
-        var text = isRetweet ? status.retweeted_status.text : status.text;
-        var entities = isRetweet ? status.retweeted_status.entities : status.entities;
+        var retweet = status.retweeted_status;
+        var text = retweet ? retweet.text : status.text;
+        var entities = retweet ? retweet.entities : status.entities;
 
         var flat_entities = [];
 

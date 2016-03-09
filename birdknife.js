@@ -57,71 +57,75 @@ nconf.argv()
     .env()
     .file({ file: configPath });
 
-var help = vorpal.find('help'); if (help) help.remove();
-var exit = vorpal.find('exit'); if (exit) exit.remove();
-
 vorpal
     .command('/show <id>', 'Show stored tweet by id')
     .option('--debug', 'Show full tweet object')
     .action(function(args, callback) {
-        var id = args.id || -1;
         const self = this;
 
-        store.findOne({ id: id }, function(err, doc) {
-            if (doc.type !== 'status') return;
+        store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
+                callback();
                 return;
             }
-            var status = doc.status;
-            if (args.options.debug) {
-                self.log(status);
+            if (!doc) {
+                self.log(color.error('Warning: No status found with this id.'));
+                callback();
+                return;
+            }
+
+            var obj = doc.status ? doc.status : doc.message;
+            if (args.options.debug || doc.type === 'message') {
+                self.log(obj);
             } else {
                 var log = '\n';
-                log += '|\t' + color.bold('User: ') + status.user.name + ' (@' + status.user.screen_name + ')\n';
+                log += '|\t' + color.bold('User: ') + obj.user.name + ' (@' + obj.user.screen_name + ')\n';
                 log += '|\t\n';
-                log += '|\t' + color.bold('Text: ') + status.text + '\n';
-                log += '|\t' + color.bold('Created At: ') + status.created_at + '\n';
-                log += '|\t' + color.bold('Favorites: ') + (status.favorite_count || '0') + '\n';
-                log += '|\t' + color.bold('Retweets: ') + (status.retweet_count || '0') + '\n';
-                if (status.place) {
-                    log += '|\t' + color.bold('Location: ') + status.place.full_name + '\n';
+                log += '|\t' + color.bold('Text: ') + obj.text + '\n';
+                log += '|\t' + color.bold('Created At: ') + obj.created_at + '\n';
+                log += '|\t' + color.bold('Favorites: ') + (obj.favorite_count || '0') + '\n';
+                log += '|\t' + color.bold('Retweets: ') + (obj.retweet_count || '0') + '\n';
+                if (obj.place) {
+                    log += '|\t' + color.bold('Location: ') + obj.place.full_name + '\n';
                 }
-                if (status.coordinates) {
-                    var coordinates = status.coordinates[0];
+                if (obj.coordinates) {
+                    var coordinates = obj.coordinates[0];
                     log += '|\t' + color.bold('Location (Coordinates): ') + coordinates[0] + ', ' + coordinates[1] + '\n';
                 }
-                log += '|\t' + color.bold('Source: ') + status.source + '\n';
+                log += '|\t' + color.bold('Source: ') + obj.source + '\n';
                 self.log(log);
             }
+            callback();
         });
-        callback();
     });
 
 vorpal
     .command('/delete <id>', 'Delete a tweet')
+    .alias('/del')
     .action(function(args, callback) {
-        var id = args.id || -1;
         const self = this;
 
-        store.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
+                callback();
                 return;
             }
-            if (doc.type === 'status') {
-                api.delete(doc.status);
-                //TODO delete from store?
-            } else {
-                self.log(color.error('Warning: Unsupported command for this element.'));
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                callback();
+                return;
             }
+
+            api.delete(doc.status, callback);
         });
-        callback();
     });
 
 vorpal
     .command('/again [screen_name]', 'Reload home timeline or specified users timeline')
     .action(function(args, callback) {
+        this.log(color.blue('-- Loading tweets...'));
         api.loadTimeline(args.screen_name);
         callback();
     });
@@ -129,6 +133,7 @@ vorpal
 vorpal
     .command('/dms', 'Show DMs')
     .action(function(args, callback) {
+        this.log(color.blue('-- Loading DMs...'));
         api.loadDMs();
         callback();
     });
@@ -136,13 +141,16 @@ vorpal
 vorpal
     .command('/replies', 'Show latest 20 mentions')
     .action(function(args, callback) {
+        this.log(color.blue('-- Loading replies...'));
         api.loadReplies();
         callback();
     });
 
 vorpal
     .command('/search <query>', 'Search')
+    .alias('/se')
     .action(function(args, callback) {
+        this.log(color.blue('-- Searching...'));
         api.search(args.query);
         callback();
     });
@@ -153,11 +161,15 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                return;
+            }
+
             api.retweet(doc.status.id_str);
         });
         callback();
@@ -169,11 +181,15 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                return;
+            }
+
             api.like(doc.status.id_str);
         });
         callback();
@@ -185,11 +201,15 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (doc.type !== 'status') return;
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                return;
+            }
+
             api.unlike(doc.status.id_str);
         });
         callback();
@@ -243,19 +263,17 @@ vorpal
     .parse(parser.parseCommand)
     .action(function(args, callback) {
         const self = this;
-        if (!args.id || !args.text) {
-            callback();
-            return;
-        }
-        var id = args.id;
-        var text = args.text;
 
-        text = text.join(' ');
+        var text = args.text.join(' ');
         text =  text.replace(/&bquot;/g, "'");
 
-        store.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
+                return;
+            }
+            if (!doc) {
+                self.log(color.error('Warning: No status or message found with this id.'));
                 return;
             }
 
@@ -276,23 +294,18 @@ vorpal
     .parse(parser.parseCommand)
     .action(function(args, callback) {
         const self = this;
-        if (!args.id || !args.text) {
-            callback();
-            return;
-        }
-        var id = args.id;
-        var text = args.text;
 
-        text = text.join(' ');
+        var text = args.text.join(' ');
         text =  text.replace(/&bquot;/g, "'");
 
-        store.findOne({ id: id }, function(err, doc) {
+        store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
-            if (doc.type !== 'status') {
-                self.log(color.error('Error: You can only quote tweets.'));
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                return;
             }
 
             text += ' https://twitter.com/' + doc.status.screen_name + '/status/' + doc.status.id_str;
@@ -304,15 +317,20 @@ vorpal
 vorpal
     .command('/thread <id>', 'Show Conversation')
     .action(function(args, callback) {
-        var id = args.id || -1;
         const self = this;
 
-        store.findOne({ id: id }, function(err, doc) {
-            if (doc.type !== 'status') return;
+        this.log(color.blue('-- Loading conversation. This might take a few seconds...'));
+
+        store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
                 self.log(color.error('Error: ' + err));
                 return;
             }
+            if (!doc || doc.type !== 'status') {
+                self.log(color.error('Warning: No status found with this id.'));
+                return;
+            }
+
             api.loadConversation(doc.status);
         });
         callback();
@@ -349,10 +367,10 @@ vorpal
                     nconf.set('auth:access_token', data.accessTokenKey);
                     nconf.set('auth:access_token_secret', data.accessTokenSecret);
 
-                    self.log('Saving access token...'.blue);
+                    self.log(color.blue('Saving access token...'));
                     nconf.save();
 
-                    self.log(color.success("Authentication successfull!\n\n"));
+                    self.log(color.success("Authentication successful!\n\n"));
 
                     self.log(color.blue('Logging in...'));
 
@@ -377,6 +395,7 @@ vorpal
     .command('/user <screen_name>')
     .description('Display user information')
     .action(function(args, callback) {
+        this.log(color.blue('-- Loading user information...'));
         api.loadUser(args.screen_name);
         callback();
     });
@@ -406,10 +425,14 @@ vorpal
 
 vorpal
     .on('keypress', function(event) {
-        if (event.key === 'tab') autocompleter.autocomplete(this, cache);
         if (this.ui.delimiter() === 'PIN: ') return;
+        if (event.key === 'tab') autocompleter.autocomplete(this, cache);
         birdknife_delimiter.set(this, store, api, this.ui.input());
     });
+
+
+var help = vorpal.find('help'); if (help) help.remove();
+var exit = vorpal.find('exit'); if (exit) exit.remove();
 
 vorpal.command('/exit').alias('/quit').description('Exits birdknife.').action(function (args) {
     args.options = args.options || {};
@@ -440,12 +463,11 @@ vorpal.command('/help [command...]').description('Provides help for a given comm
     cb();
 });
 
-vorpal.log('Welcome to birdknife! ' + '(' + pkg.version + ')');
+vorpal.log('Welcome to birdknife! (' + pkg.version + ')');
 
 update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ }).notify();
 
-timer.vorpal = vorpal;
-timer.start();
+timer.start(vorpal);
 
 if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
@@ -458,7 +480,6 @@ if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
               nconf.get('auth:access_token_secret'),
               vorpal, store, cache);
 }
-
 
 
 vorpal

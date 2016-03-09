@@ -30,7 +30,7 @@ module.exports = {
             setTimeout(function() {
                 self.startStream();
                 self.loadHome();
-            }, 5000);
+            }, 3000);
         }
     },
     startStream: function() {
@@ -204,7 +204,7 @@ module.exports = {
             })
             .then(function(result) {
                 if (result.data.errors) {
-                    statuses = statuses.reverse(); //TODO sort by status id
+                    statuses = statuses.reverse();
 
                     self.displayStatus(statuses[0], false);
                     statuses.slice(1).forEach(function(status) {
@@ -218,7 +218,7 @@ module.exports = {
                 if (result.data.in_reply_to_status_id_str) {
                     self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
                 } else {
-                    statuses = statuses.reverse(); //TODO sort by status id
+                    statuses = statuses.reverse();
 
                     self.displayStatus(statuses[0], false);
                     statuses.slice(1).forEach(function(status) {
@@ -421,38 +421,51 @@ module.exports = {
             });
     },
 
-    delete: function(status) {
-        if (!this.T) return;
+    delete: function(status, callback) {
+        callback = callback || function() {};
+        if (!this.T) {
+            callback();
+            return;
+        }
         const self = this;
 
-        if (status.user.id_str !== this.ME.id_str) {
+        if (status.user.id_str !== this.ME.id_str && !status.retweeted_status) {
             this.vorpal.log(color.error("Can't delete status posted by another user!"));
+            callback();
+            return;
         }
         
         if (status.retweeted_status) {
             this.T.post('statuses/unretweet/:id', { id: status.id_str })
                 .catch(function(err) {
                     self.vorpal.log(color.error('Error POST statuses/unretweet/:id: ' + err));
+                    callback();
                 })
                 .then(function(result) {
                     if (result.data.errors) {
                         self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                         return;
                     }
-                    self.vorpal.log(color.event('Deleted retweet of status ' + color.bold(result.data.id_str)));
+                    var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
+                    self.vorpal.log(color.event('Removed retweet from status: ' + text));
+                    callback();
                 });
         }
         else {
             this.T.post('statuses/destroy/:id', { id: status.id_str })
                 .catch(function(err) {
                     self.vorpal.log(color.error('Error POST statuses/destroy/:id: ' + err));
+                    callback();
                 })
                 .then(function(result) {
                     if (result.data.errors) {
                         self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                        callback();
                         return;
                     }
-                    self.vorpal.log(color.event('Deleted status ' + color.bold(result.data.id_str)));
+                    var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
+                    self.vorpal.log(color.event('Deleted status: ' + text));
+                    callback();
                 });
         }
     },
