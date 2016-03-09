@@ -12,16 +12,16 @@ module.exports = {
     store: null,
     cache: null,
     TEST: process.env.NODE_ENV == 'test',
-    login: function(ckey, csecret, akey, asecret, vorpal, store, cache) {
+    login: function(preferences, vorpal, store, cache) {
         const self = this;
         this.vorpal = vorpal;
         this.store = store;
         this.cache = cache;
         this.T = new Twit({
-            consumer_key:        ckey,
-            consumer_secret:     csecret,
-            access_token:        akey,
-            access_token_secret: asecret
+            consumer_key:        preferences.get('auth:consumer_key'),
+            consumer_secret:     preferences.get('auth:consumer_secret'),
+            access_token:        preferences.get('auth:access_token'),
+            access_token_secret: preferences.get('auth:access_token_secret')
         });
 
         this.loadMyself();
@@ -37,7 +37,7 @@ module.exports = {
         if (!this.T) return;
         const self = this;
 
-        this.vorpal.log(color.blue('Starting Stream...'));
+        this.vorpal.log(color.blue('Starting Stream...\n'));
 
         this.stream = this.T.stream('user');
 
