@@ -1,39 +1,22 @@
 #!/usr/bin/env node
 
 var vorpal = require('vorpal')(),
-    path = require('path'),
     DataStore = require('nedb'),
     store = new DataStore(),
-    nconf = require('nconf'),
     color = require('./libs/color_definitions'),
     api = require('./libs/TwitterAPI'),
     birdknife_delimiter = require('./libs/birdknife-delimiter'),
     birdknife_text = require('./libs/birdknife-text'),
     autocompleter = require('./libs/birdknife-autocompletion'),
     parser = require('./libs/birdknife-parser'),
+    preferences = require('./libs/birdknife-preferences'),
     timer = require('./libs/birdknife-timer'),
-    fs = require('fs'),
     _ = require('lodash');
 
 const pkg = require('./package.json'),
       update = require('update-notifier');
 
-var configPath = path.join(process.env[(process.platform == 'win32' ? 'USERPROFILE' : 'HOME')], '.birdknife.json');
-
-//Copy config file if needed
-try {
-    fs.accessSync(configPath, fs.F_OK); //config file already exists
-} catch (e) {
-    try {
-        fs.writeFileSync(configPath,
-            fs.readFileSync(path.join(path.dirname(require.main.filename), 'config.json'))
-        );
-    } catch (e) {
-        //Error copying file. Use config from inside the packge.
-        console.log(e);
-        configPath = path.join(path.dirname(require.main.filename), 'config.json');
-    }
-}
+preferences.init();
 
 var cache = {};
 cache.usernames = new DataStore({
@@ -52,10 +35,6 @@ cache.usernames.ensureIndex({ fieldName: 'k', unique: true}, function(error) {
 cache.hashtags.ensureIndex({ fieldName: 'k', unique: true}, function(error) {
     if (error) vorpal.log(color.error('Database error: ' + error));
 });
-
-nconf.argv()
-    .env()
-    .file({ file: configPath });
 
 vorpal
     .command('/show <id>', 'Show stored tweet by id')
@@ -471,15 +450,15 @@ update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ })
 
 timer.start(vorpal);
 
-if (!nconf.get('auth:access_token') || !nconf.get('auth:access_token_secret')) {
+if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
 } else {
     vorpal.log(color.blue('Logging in...'));
 
-    api.login(nconf.get('auth:consumer_key'),
-              nconf.get('auth:consumer_secret'),
-              nconf.get('auth:access_token'),
-              nconf.get('auth:access_token_secret'),
+    api.login(preferences.get('auth:consumer_key'),
+              preferences.get('auth:consumer_secret'),
+              preferences.get('auth:access_token'),
+              preferences.get('auth:access_token_secret'),
               vorpal, store, cache);
 }
 
