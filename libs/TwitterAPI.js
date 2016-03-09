@@ -52,7 +52,6 @@ module.exports = {
             self.displayStatus(status);
 
             if (self.isMention(status)) {
-                console.log('notifications: ' + self.preferences.get('preferences:notifications'));
                 if (self.preferences.get('preferences:notifications')) notifier.notify({
                     'title': '@' + status.user.screen_name,
                     'message': status.text
