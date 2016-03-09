@@ -1,7 +1,8 @@
 process.env.NODE_ENV = 'test';
 
 var expect = require('chai').expect,
-    birdknife_text = require('../libs/birdknife-text');
+    birdknife_text = require('../libs/birdknife-text'),
+    DummyStatus = require('./json/DummyStatus.json');
 
 describe('birdknife-text', function() {
 
@@ -102,6 +103,15 @@ describe('birdknife-text', function() {
             var res = birdknife_text.getStatusURL(dummy);
 
             expect(res).to.equal(ex);
+        });
+    });
+
+    describe('#autoBoldStatusEntities', function() {
+        it('bolds entities in a dummy status', function() {
+            var text = birdknife_text.autoBoldStatusEntities(DummyStatus);
+            expect(text).to.equal(
+                '\u001b[1m@_vanita5\u001b[22m asdf \u001b[1m#odersp\u001b[22m'
+            );
         });
     });
 });
