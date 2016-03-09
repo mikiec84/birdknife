@@ -20,7 +20,7 @@ module.exports = {
     set: function(vorpal, store, api, input) {
         const self = this;
 
-        var _c;
+        var _c, id;
 
         //if input is a command but not /reply or /quote
         //noinspection OverlyComplexBooleanExpressionJS
@@ -32,14 +32,14 @@ module.exports = {
         else if (text.isReply(input)) {
             var reply = text.isReply(input);
 
-            var id = reply[1];
+            id = reply[1];
             input = input.replace(reply[0], '');
             store.findOne({ id: id }, function(err, doc) {
-                if (doc.type !== 'status') return;
                 if (err) {
                     vorpal.log(color.error('Error: ' + err));
                     return;
                 }
+                if (!doc || doc.type !== 'status') return;
 
                 input = text.addMentionsToReply(api.ME.screen_name, input, doc.status);
                 _c = 140 - twitter.getTweetLength(input);
@@ -50,14 +50,14 @@ module.exports = {
         else if (text.isQuote(input)) {
             var quote = text.isQuote(input);
 
-            var id = quote[1];
+            id = quote[1];
             input = input.replace(quote[0], '');
             store.findOne({ id: id }, function(err, doc) {
-                if (doc.type !== 'status') return;
                 if (err) {
                     vorpal.log(color.error('Error: ' + err));
                     return;
                 }
+                if (!doc || doc.type !== 'status') return;
 
                 input += ' ' + text.getStatusURL(doc.status);
                 _c = 140 - twitter.getTweetLength(input);

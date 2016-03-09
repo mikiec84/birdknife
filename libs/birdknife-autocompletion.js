@@ -10,9 +10,6 @@ module.exports = {
         var words = input.split(' ');
         var word = words[words.length - 1];
 
-        word = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        var re = new RegExp("^" + word + ".+");
-
         var db;
         switch (word.charAt(0)) {
             case '@':
@@ -24,6 +21,9 @@ module.exports = {
             default:
                 return;
         }
+
+        word = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var re = new RegExp("^" + word + ".+");
 
         db.find({ "k": { $regex: re }}, { k: 1, _id: 0 })
             .limit(4)
@@ -49,7 +49,6 @@ module.exports = {
                     }
                     vorpal.ui.imprint();
                     vorpal.log(suggestions);
-
                 }
             });
     }
