@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Birdknife by vanita5</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Birdknife</h1>
+        <h2>birdknife is a Twitter CLI based on Vorpal inspired by TTYtter.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/vanita5/birdknife/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/vanita5/birdknife/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/vanita5/birdknife" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="birdknife" class="anchor" href="#birdknife" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>birdknife</h1>
+
+<p><a href="https://github.com/vanita5/birdknife"><img src="https://travis-ci.org/vanita5/birdknife.svg" alt="Build Status"></a> <a href="https://www.npmjs.com/package/birdknife"><img src="https://img.shields.io/npm/dt/birdknife.svg" alt="NPM Downloads"></a> <a href="https://www.npmjs.com/package/birdknife"><img src="https://img.shields.io/npm/v/birdknife.svg" alt="NPM Version"></a> <a href="https://www.versioneye.com/user/projects/56d83d23d716950040a0f014"><img src="https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat" alt="Dependency Status"></a></p>
+
+<blockquote>
+<p>Twitter CLI</p>
+</blockquote>
+
+<pre lang="text"><code>  `                   `-:/+++/:-`   `..                                                              ___
+  //.                :+++++++++++///+-                                                              |_  |
+ .+++/-`            /++++++++++++++/:::`                                                              | |
+ `++++++/-`        .++++++++++++++++:.        __                      ____                            | |
+  -+++++++++/:-.```-+++++++++++++++/          \ ````''''----....____.'\   ````''''--------------------| |--.               _____      .-.
+ ``./++++++++++++++++++++++++++++++/           :.                      `-._                           | |   `''-----''''```     ``''|`: :|
+ `++/++++++++++++++++++++++++++++++-            '::.                       `'--.._____________________| |                           | : :|
+  -++++++++++++++++++++++++++++++++`              '::..       ----....._______________________________| |                           | : :|
+   `:+++++++++++++++++++++++++++++-                 `'-::...__________________________________________| |   .-''-..-'`-..-'`-..-''-.cjr :|
+    `.:/+++++++++++++++++++++++++-                       ```'''---------------------------------------| |--'                         `'-'
+     :++++++++++++++++++++++++++-                                                                     | |
+      .:++++++++++++++++++++++/.                                                                     _| |
+         ..:++++++++++++++++/-                                                                      |___| cjr
+       `-:/+++++++++++++++/.                  
+`.:///++++++++++++++++/:-`                    
+   `.--:///++++//::-.`                        
+</code></pre>
+
+<blockquote>
+<p>Ascii Art from ascii-code.com by <code>cjr</code></p>
+</blockquote>
+
+<p>birdknife is a Twitter CLI based on <a href="https://github.com/dthree/vorpal">Vorpal</a> inspired by <a href="http://www.floodgap.com/software/ttytter/">TTYtter</a>.
+TTYtter hasn't been updated for some time now and doesn't support some new features introduced by Twitter. This project aims to be a completely
+functional Twitter client for your CLI.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install <code>birdknife</code> globally via npm:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ npm install birdknife -g</pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<h5>
+<a id="login-pin-authorization" class="anchor" href="#login-pin-authorization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Login (PIN authorization)</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /login
+
+Login and copy the PIN number: https://twitter.com/oauth/authorize<span class="pl-k">?</span>oauth_token=XXXX-XXXXXXXXXXXXXXXXXXXXXX
+PIN:</pre></div>
+
+<h5>
+<a id="tweet" class="anchor" href="#tweet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tweet</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [128]<span class="pl-k">&gt;</span> Hello World<span class="pl-k">!</span></pre></div>
+
+<h5>
+<a id="view-threads--conversations" class="anchor" href="#view-threads--conversations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>View threads / conversations</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /thread <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<h5>
+<a id="reply-to-a-tweet" class="anchor" href="#reply-to-a-tweet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Reply to a tweet</h5>
+
+<div class="highlight highlight-source-shell"><pre>a<span class="pl-k">1&gt;</span> <span class="pl-k">&lt;</span>@twitter<span class="pl-k">&gt;</span>: <span class="pl-c">#birdknife is kinda nice!</span>
+
+birdknife [133]<span class="pl-k">&gt;</span> /reply a1 FAAAKE<span class="pl-k">!</span></pre></div>
+
+<h5>
+<a id="quote-a-tweet" class="anchor" href="#quote-a-tweet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quote a tweet</h5>
+
+<div class="highlight highlight-source-shell"><pre>a<span class="pl-k">1&gt;</span> <span class="pl-k">&lt;</span>@twitter<span class="pl-k">&gt;</span>: <span class="pl-c">#birdknife is kinda nice!</span>
+
+birdknife [133]<span class="pl-k">&gt;</span> /quote a1 FAAAKE<span class="pl-k">!</span>
+
+a<span class="pl-k">2&gt;</span> <span class="pl-k">&lt;</span>@_vanita<span class="pl-k">5&gt;</span>: FAAAKE<span class="pl-k">!</span> https://twitter.com/twitter/status/12345678901234
+
+a<span class="pl-k">3&gt;</span> <span class="pl-k">|</span>   <span class="pl-k">&lt;</span>↑@twitter<span class="pl-k">&gt;</span>: <span class="pl-c">#birdknife is kinda nice!</span></pre></div>
+
+<h5>
+<a id="retweet" class="anchor" href="#retweet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Retweet</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /retweet <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<p>Alias: <code>/rt</code></p>
+
+<h5>
+<a id="like--favorite" class="anchor" href="#like--favorite" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Like / Favorite</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /like <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<p>Alias: <code>/fav</code></p>
+
+<h5>
+<a id="remove-from-likes--favorites" class="anchor" href="#remove-from-likes--favorites" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Remove from likes / favorites</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /unlike <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<p>Alias: <code>/unfav</code></p>
+
+<h5>
+<a id="follow--unfollow" class="anchor" href="#follow--unfollow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Follow / Unfollow</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /follow _vanita5</pre></div>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /unfollow _vanita5</pre></div>
+
+<h5>
+<a id="block--unblock" class="anchor" href="#block--unblock" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Block / Unblock</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /block _vanita5</pre></div>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /unblock _vanita5</pre></div>
+
+<h5>
+<a id="mute--unmute" class="anchor" href="#mute--unmute" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mute / Unmute</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /mute _vanita5</pre></div>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /unmute _vanita5</pre></div>
+
+<h5>
+<a id="mentions--replies" class="anchor" href="#mentions--replies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mentions / Replies</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /replies</pre></div>
+
+<p>Show recent mentions.</p>
+
+<h5>
+<a id="direct-messages" class="anchor" href="#direct-messages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Direct messages</h5>
+
+<p><strong>Note: You can reply to dms directly with the <code>/reply &lt;id&gt;</code> command!</strong> </p>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /dms</pre></div>
+
+<p>Display direct messages inbox.</p>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /dm _vanita5 Hello, this is a <span class="pl-c1">test</span> from birdknife.</pre></div>
+
+<p>Send DMs to a user.</p>
+
+<h5>
+<a id="search" class="anchor" href="#search" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Search</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /search <span class="pl-k">&lt;</span>query<span class="pl-k">&gt;</span></pre></div>
+
+<p>Search for tweets.</p>
+
+<h5>
+<a id="quit" class="anchor" href="#quit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quit</h5>
+
+<div class="highlight highlight-source-shell"><pre>birdknife [---]<span class="pl-k">&gt;</span> /exit</pre></div>
+
+<h5>
+<a id="other-commands" class="anchor" href="#other-commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other commands</h5>
+
+<div class="highlight highlight-source-shell"><pre>/again [screen_name]</pre></div>
+
+<p>Reloads your timeline or loads recent tweets of a user if screen_name is given.</p>
+
+<div class="highlight highlight-source-shell"><pre>/delete <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<p>Delete a tweet.</p>
+
+<div class="highlight highlight-source-shell"><pre>/user [screen_name]</pre></div>
+
+<p>Display user information</p>
+
+<div class="highlight highlight-source-shell"><pre>/show <span class="pl-k">&lt;</span>id<span class="pl-k">&gt;</span></pre></div>
+
+<p>Display a tweet with additional information.</p>
+
+<h2>
+<a id="development" class="anchor" href="#development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development</h2>
+
+<p>Fork, clone, <code>npm install</code>, code, pull request. :)</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<pre><code>(The MIT License)
+
+Copyright (c) 2016 vanita5 &lt;mail@vanit.as&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</code></pre>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
