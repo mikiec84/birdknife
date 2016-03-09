@@ -11,15 +11,20 @@ module.exports = {
             var local = require(this.originalPath);
             var user = require(this.configPath);
 
-            if (local.version !== user.version) this.copyUserDir();
+            if (local.version !== user.version) this.copyToUserDir();
         } else {
-            this.copyUserDir();
+            this.copyToUserDir();
         }
         this.load();
     },
 
     get: function(key) {
         return nconf.get(key);
+    },
+
+    set: function(key, value) {
+        nconf.set(key, value);
+        nconf.save();
     },
 
     isAccessible: function() {
@@ -31,12 +36,13 @@ module.exports = {
         return true;
     },
 
-    copyUserDir: function() {
+    copyToUserDir: function() {
         try {
             fs.writeFileSync(this.configPath,
                 fs.readFileSync(this.originalPath)
             );
         } catch (e) {
+            //fallback
             console.log(e);
             this.configPath = this.originalPath;
         }

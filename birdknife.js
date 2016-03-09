@@ -323,8 +323,8 @@ vorpal
 
         var TwitterPinAuth = require('twitter-pin-auth');
         twitterPinAuth = new TwitterPinAuth(
-            nconf.get('auth:consumer_key'),
-            nconf.get('auth:consumer_secret'));
+            preferences.get('auth:consumer_key'),
+            preferences.get('auth:consumer_secret'));
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
@@ -343,22 +343,14 @@ vorpal
             if (!result.pin) return;
             twitterPinAuth.authorize(result.pin)
                 .then(function(data) {
-                    nconf.set('auth:access_token', data.accessTokenKey);
-                    nconf.set('auth:access_token_secret', data.accessTokenSecret);
+                    preferences.set('auth:access_token', data.accessTokenKey);
+                    preferences.set('auth:access_token_secret', data.accessTokenSecret);
 
-                    self.log(color.blue('Saving access token...'));
-                    nconf.save();
-
-                    self.log(color.success("Authentication successful!\n\n"));
+                    self.log(color.success("\nAuthentication successful!\n"));
 
                     self.log(color.blue('Logging in...'));
 
-                    api.login(nconf.get('auth:consumer_key'),
-                        nconf.get('auth:consumer_secret'),
-                        nconf.get('auth:access_token'),
-                        nconf.get('auth:access_token_secret'),
-                        vorpal, store, cache);
-                    api.startStream();
+                    api.login(preferences, vorpal, store, cache);
 
                     callback();
                 })
@@ -454,12 +446,7 @@ if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
 } else {
     vorpal.log(color.blue('Logging in...'));
-
-    api.login(preferences.get('auth:consumer_key'),
-              preferences.get('auth:consumer_secret'),
-              preferences.get('auth:access_token'),
-              preferences.get('auth:access_token_secret'),
-              vorpal, store, cache);
+    api.login(preferences, vorpal, store, cache);
 }
 
 
