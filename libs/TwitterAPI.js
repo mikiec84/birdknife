@@ -1,7 +1,8 @@
 var Twit = require('twit'),
     ShortIdGenerator = require('./ShortIdGenerator'),
     color = require('./color_definitions'),
-    birdknife_text = require('./birdknife-text');
+    birdknife_text = require('./birdknife-text'),
+    notifier = require('node-notifier');
 
 module.exports = {
     T: null,
@@ -11,12 +12,14 @@ module.exports = {
     vorpal: null,
     store: null,
     cache: null,
+    preferences: null,
     TEST: process.env.NODE_ENV == 'test',
     login: function(preferences, vorpal, store, cache) {
         const self = this;
         this.vorpal = vorpal;
         this.store = store;
         this.cache = cache;
+        this.preferences = preferences;
         this.T = new Twit({
             consumer_key:        preferences.get('auth:consumer_key'),
             consumer_secret:     preferences.get('auth:consumer_secret'),
@@ -45,13 +48,26 @@ module.exports = {
             self.vorpal.log(color.error('Stream error: ' + error.twitterReply));
         });
 
-        this.stream.on('tweet', function(tweet) {
-            self.displayStatus(tweet);
+        this.stream.on('tweet', function(status) {
+            self.displayStatus(status);
+
+            if (self.isMention(status)) {
+                console.log('notifications: ' + self.preferences.get('preferences:notifications'));
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + status.user.screen_name,
+                    'message': status.text
+                });
+            }
         });
 
         this.stream.on('direct_message', function(message) {
             if (message.direct_message.recipient_screen_name !== self.ME.screen_name) return;
             self.displayDM(message.direct_message);
+
+            if (self.preferences.get('preferences:notifications')) notifier.notify({
+                'title': "Message from @" + message.sender_screen_name,
+                'message': message.text
+            });
         });
 
         this.stream.on('user_event', function(event) {
@@ -487,35 +503,70 @@ module.exports = {
                 line += color.bold('@' + event.source.screen_name);
                 line += ' liked your tweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + event.source.screen_name + ' liked',
+                    'message': event.target_object.text
+                });
                 break;
             case 'follow':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' started following you.';
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': 'New follower',
+                    'message': '@' + event.source.screen_name + ' followed you.'
+                });
                 break;
             case 'quoted_tweet':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' quoted your tweet: ';
                 status = event.target_object;
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + event.source.screen_name + ' commented',
+                    'message': event.target_object.text
+                });
                 break;
             case 'retweet':
                 line += color.bold('@' + event.status.user.screen_name);
                 line += ' retweeted your tweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.status.retweeted_status) + '"';
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + event.source.screen_name + ' retweeted',
+                    'message': event.status.retweeted_status.text
+                });
                 break;
             case 'blocked':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' blocked ';
                 line += color.bold('@' + event.target.screen_name);
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': 'New block',
+                    'message': '@' + event.source.screen_name + ' blocked ' + '@' + event.target.screen_name
+                });
                 break;
             case 'retweeted_retweet':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' retweeted your retweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + event.source.screen_name + ' retweeted your retweet',
+                    'message': event.target_object.text
+                });
                 break;
             case 'favorited_retweet':
                 line += color.bold('@' + event.source.screen_name);
                 line += ' liked your retweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
+
+                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                    'title': '@' + event.source.screen_name + ' liked your retweet',
+                    'message': event.target_object.text
+                });
                 break;
             default:
                 this.vorpal.log(color.unknown_event(event.source.screen_name + ' "' + event.event + '" ' + event.target.screen_name));
