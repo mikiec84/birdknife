@@ -91,7 +91,7 @@ module.exports = {
                 text = '@' + mention.screen_name + ' ' + text;
             }
         }
-        if (text.indexOf(status.user.screen_name) < 0) {
+        if (text.indexOf(status.user.screen_name) < 0 && status.user.screen_name !== ignore_screen_name) {
             text = '@' + status.user.screen_name + ' ' + text;
         }
         return text;
