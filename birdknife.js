@@ -475,12 +475,12 @@ update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ })
 
 timer.start(vorpal);
 
-// if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
-//     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
-// } else {
-//     vorpal.log(color.blue('Logging in...'));
-//     api.login(preferences, vorpal, store, cache);
-// }
+if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
+    vorpal.log(color.green('Type /login to authenticate with Twitter.'));
+} else {
+    vorpal.log(color.blue('Logging in...'));
+    api.login(preferences, vorpal, store, cache);
+}
 
 
 vorpal
