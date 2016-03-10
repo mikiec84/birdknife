@@ -117,12 +117,44 @@ Example:
     <tr>
         <td><code>location</code></td>
         <td>Enable/Disable posting your location. The location can detected automatically.<br/>Alternatively you can provide coordinations.</td>
-        <td><code>false</code>, <code>auto</code> (or <code>true</code>),<br/>
+        <td><code>false</code>, <code>"auto"</code> (or <code>true</code>),<br/>
         <code>{ lat: 57.52936, lng:  -6.24176 }</code>
         </td>
         <td><code>false</code></td>
     </tr>
 </table>
+
+#### Edit preferences
+
+_Note: You can also directly edit the config file!_
+
+##### List preferences
+
+```
+birdknife [---]> /preferences
+|
+|   debug:          false
+|   notifications:  true
+|   location:       "auto"
+|
+```
+
+##### Set preference
+
+```
+birdknife [---]> /set notification false
+notifications is now set to false
+
+birdknife [---]> /set location { "lat": 57.52936, "lng": -6.24176 }
+location is now set to [object Object]
+
+birdknife [---]> /preferences
+|
+|   debug:          false
+|   notifications:  false
+|   location:       {"lat":57.52936,"lng":-6.24176}
+|
+```
 
 ## Usage
 
