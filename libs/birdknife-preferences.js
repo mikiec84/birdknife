@@ -23,8 +23,10 @@ module.exports = {
     },
 
     set: function(key, value) {
+        if (typeof nconf.get(key) === 'undefined') return false;
         nconf.set(key, value);
         nconf.save();
+        return true;
     },
 
     isAccessible: function() {

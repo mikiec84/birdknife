@@ -384,6 +384,39 @@ vorpal
     });
 
 vorpal
+    .command('/preferences', 'List all preferences')
+    .action(function(args, callback) {
+        var pref = preferences.get('preferences');
+
+        var line = '|\n';
+        for (var k in pref) {
+            line += '|\t' + color.bold(k) + ': \t';
+            line += color.blue(JSON.stringify(pref[k])) + '\n';
+        }
+        line += '|';
+        this.log(line);
+        callback();
+    });
+
+vorpal
+    .command('/set <key> <value>', 'Set preference by key')
+    .parse(parser.parseCommand)
+    .action(function(args, callback) {
+        var value = typeof args.value === 'string' ? args.value.replace(/&bquot;/g, "'") : args.value;
+        try {
+            value = JSON.parse(value);
+        } catch (e) {
+        }
+
+        if (preferences.set('preferences:' + args.key, value)) {
+            this.log(color.blue(args.key + ' is now set to ' + preferences.get('preferences:' + args.key)));
+        } else {
+            this.log(color.error('Error: ' + args.key + ' is not a valid key!'))
+        }
+        callback();
+    });
+
+vorpal
     .catch('[words...]', 'Tweet')
     .parse(parser.parseStatus)
     .action(function(args, callback) {
@@ -442,12 +475,12 @@ update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ })
 
 timer.start(vorpal);
 
-if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
-    vorpal.log(color.green('Type /login to authenticate with Twitter.'));
-} else {
-    vorpal.log(color.blue('Logging in...'));
-    api.login(preferences, vorpal, store, cache);
-}
+// if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
+//     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
+// } else {
+//     vorpal.log(color.blue('Logging in...'));
+//     api.login(preferences, vorpal, store, cache);
+// }
 
 
 vorpal
