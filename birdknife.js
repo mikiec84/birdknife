@@ -69,7 +69,7 @@ vorpal
                     log += '|\t' + color.bold('Location: ') + obj.place.full_name + '\n';
                 }
                 if (obj.coordinates) {
-                    var coordinates = obj.coordinates[0];
+                    var coordinates = obj.coordinates.coordinates;
                     log += '|\t' + color.bold('Location (Coordinates): ') + coordinates[0] + ', ' + coordinates[1] + '\n';
                 }
                 log += '|\t' + color.bold('Source: ') + obj.source + '\n';

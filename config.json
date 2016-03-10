@@ -1,11 +1,12 @@
 {
-  "version": 4,
+  "version": 5,
   "auth": {
     "consumer_key": "aR9k5DGzmFlNfHYIXxU4MN9lK",
     "consumer_secret": "5zatekdWu1zQJKpq67NPFMMSVVqV4NLejoHfxfs2xUIcNwFRIn"
   },
   "preferences": {
     "debug": false,
-    "notifications": true
+    "notifications": true,
+    "location": false
   }
 }
