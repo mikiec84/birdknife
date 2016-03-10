@@ -30,6 +30,27 @@ birdknife is a Twitter CLI based on [Vorpal](https://github.com/dthree/vorpal) i
 TTYtter hasn't been updated for some time now and doesn't support new features introduced by Twitter. This project aims to be a completely
 functional Twitter client for your CLI.
 
+## Features
+
+* Full featured Twitter CLI
+* Cross platform
+* Update your status with location
+* Read your timeline and interact with tweets
+    * Reply, retweet, like (fav),...
+* Interact with users
+    * Follow, block, mute
+* Search
+* Hashtag and @screen_name autocomletion
+* Notifications (Cross platform)
+
+#### In the future
+
+* Update status with media
+* Work with lists
+    * Follow, view, create, add/remove users,...
+* Manage multiple accounts
+* Open/View media and urls (browser or image viewer)
+
 ## Installation
 
 Install `birdknife` globally via npm:
@@ -37,6 +58,71 @@ Install `birdknife` globally via npm:
 ```bash
 $ npm install birdknife -g
 ```
+
+## Configuration
+
+After initially calling birdknife, you should find a configuration file in your home directory.
+
+**GNU/Linux, Mac OS X,...**
+`~/.birdknife.json`
+
+**Windows**
+`C:\Users\user\.birdknife.json`
+
+Example:
+```json
+{
+  "version": 5,
+  "auth": {
+    "consumer_key": "XXXXXXXXXXXXXXXXXXXXXX",
+    "consumer_secret": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "access_token": "00000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "access_token_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "preferences": {
+    "debug": false,
+    "notifications": true,
+    "location": false
+  }
+}
+```
+
+**Only edit values under the `preferences` section!**
+
+### Preferences
+
+<table>
+    <tr>
+        <th>Preference</th>
+        <th>Description</th>
+        <th>Values</th>
+        <th>Default</th>
+    </tr>
+    <tr>
+        <td><code>debug</code></td>
+        <td>Enable/Disable debug output and the like. Not in use at the moment.</td>
+        <td><code>true</code>, <code>false</code></td>
+        <td><code>false</code></td>
+    </tr>
+    <tr>
+        <td><code>notifications</code></td>
+        <td>Enable/Disable notifications. <i>birdknife</i> can display notifications for <i>mentions, likes, retweets, followings,...</i><br/>
+        This is a cross platform feature running on <b>GNU/Linux</b> (<code>notify-osd</code> or <code>libnotify</code>),<br/>
+        <b>Mac OS X</b> (NotificationCenter, since 10.8) and <b>Windows 8</b> (and newer).<br/>
+        Alternatively it supports <b>Growl</b> in case nothing else works.
+        </td>
+        <td><code>true</code>, <code>false</code></td>
+        <td><code>true</code></td>
+    </tr>
+    <tr>
+        <td><code>location</code></td>
+        <td>Enable/Disable posting your location. The location can detected automatically.<br/>Alternatively you can provide coordinations.</td>
+        <td><code>false</code>, <code>auto</code> (or <code>true</code>),<br/>
+        <code>{ lat: 57.52936, lng:  -6.24176 }</code>
+        </td>
+        <td><code>false</code></td>
+    </tr>
+</table>
 
 ## Usage
 
