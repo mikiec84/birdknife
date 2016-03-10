@@ -2,7 +2,8 @@ var Twit = require('twit'),
     ShortIdGenerator = require('./ShortIdGenerator'),
     color = require('./color_definitions'),
     birdknife_text = require('./birdknife-text'),
-    notifier = require('node-notifier');
+    notifier = require('node-notifier'),
+    locator = require('./birdknife-locator');
 
 module.exports = {
     T: null,
@@ -250,7 +251,20 @@ module.exports = {
     reply: function(tweet, in_reply_to_status_id) {
         if (!this.T) return;
         const self = this;
-        this.T.post('statuses/update', { status: tweet, in_reply_to_status_id: in_reply_to_status_id })
+
+        var params = {};
+        params.status = tweet;
+        params.in_reply_to_status_id = in_reply_to_status_id;
+
+        var location = locator.getLocation(this.preferences);
+        if (location) {
+            this.vorpal.log(color.yellow('-- Reply with location: ' + location.lat + ', ' + location.lng));
+            params.lat = location.lat;
+            params.long = location.lng;
+            params.display_coordinates = true;
+        }
+
+        this.T.post('statuses/update', params)
             .catch(function(err) {
                 self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
@@ -264,7 +278,19 @@ module.exports = {
     update: function(tweet) {
         if (!this.T) return;
         const self = this;
-        this.T.post('statuses/update', { status: tweet })
+
+        var params = {};
+        params.status = tweet;
+
+        var location = locator.getLocation(this.preferences);
+        if (location) {
+            this.vorpal.log(color.yellow('-- Status update with location: ' + location.lat + ', ' + location.lng));
+            params.lat = location.lat;
+            params.long = location.lng;
+            params.display_coordinates = true;
+        }
+
+        this.T.post('statuses/update', params)
             .catch(function(err) {
                 self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
