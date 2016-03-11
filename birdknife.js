@@ -417,21 +417,63 @@ vorpal
     });
 
 vorpal
+    .command('/tweet', 'Tweet')
+    .action(function(args, callback) {
+        this.prompt({
+            type: 'input',
+            name: 'tweet',
+            default: null,
+            message: 'Tweet [140]: '
+        }, function(result) {
+            if (result.tweet) {
+                api.update(result.tweet);
+            }
+            callback();
+        });
+    });
+
+vorpal
     .catch('[words...]', 'Tweet')
     .parse(parser.parseStatus)
     .action(function(args, callback) {
         var status = args.words.join(' ');
         status = status.replace(/&bquot;/g, "'");
 
-        api.update(status);
+        var protectUpdate = preferences.get('preferences:tweet_protection');
+        
+        if (!protectUpdate && status.charAt(0) != '/') {
+            api.update(status);
+        }
+        else if (!protectUpdate && status.charAt(0) == '/') {
+            this.prompt({
+                type: 'confirm',
+                name: 'protin',
+                default: null,
+                message: color.yellow(color.bold('WARNING:')
+                    + ' Do you really want to tweet this?')
+            }, function(result) {
+                if (result.protin) {
+                    api.update(status);
+                }
+                callback();
+            });
+            return;
+        }
+        else if (protectUpdate) {
+            this.log(color.yellow(color.bold('WARNING:')
+                + ' You enabled tweet protection. Update status with '
+                + color.bold('/tweet')
+                + ' or disable tweet protection.'))
+        }
         callback();
     });
 
 vorpal
     .on('keypress', function(event) {
         if (this.ui.delimiter() === 'PIN: ') return;
+        var explicit = this.ui.delimiter().substring(0, 5) === 'Tweet';
         if (event.key === 'tab') autocompleter.autocomplete(this, cache);
-        birdknife_delimiter.set(this, store, api, this.ui.input());
+        birdknife_delimiter.set(this, store, api, this.ui.input(), explicit);
     });
 
 
