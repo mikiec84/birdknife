@@ -1,6 +1,8 @@
 process.env.NODE_ENV = 'test';
 
 var expect = require('chai').expect,
+    describe = require("mocha").describe,
+    it = require("mocha").it
     vorpal = require('vorpal')(),
     nconf = require('nconf'),
     path = require('path'),

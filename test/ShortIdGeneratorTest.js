@@ -1,7 +1,9 @@
 process.env.NODE_ENV = 'test';
 
 var expect = require('chai').expect,
-    shortIdGenerator = require('../libs/ShortIdGenerator');
+    shortIdGenerator = require('../libs/ShortIdGenerator'),
+    describe = require("mocha").describe,
+    it = require("mocha").it;
 
 describe('ShortIdGenerator', function() {
     describe('#generate', function() {

@@ -1,7 +1,9 @@
 process.env.NODE_ENV = 'test';
 
 var expect = require('chai').expect,
-    birdknife_parser = require('../libs/birdknife-parser');
+    birdknife_parser = require('../libs/birdknife-parser'),
+    describe = require("mocha").describe,
+    it = require("mocha").it;
 
 describe('birdknife-parser', function() {
     describe('#parseStatus', function() {
