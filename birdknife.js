@@ -386,15 +386,14 @@ vorpal
 vorpal
     .command('/preferences', 'List all preferences')
     .action(function(args, callback) {
+        var columnify = require('columnify');
         var pref = preferences.get('preferences');
 
-        var line = '|\n';
+        var data = {};
         for (var k in pref) {
-            line += '|\t' + color.bold(k) + ': \t';
-            line += color.blue(JSON.stringify(pref[k])) + '\n';
+            data[k] = color.blue(JSON.stringify(pref[k]));
         }
-        line += '|';
-        this.log(line);
+        this.log('\n' + columnify(data)+ '\n');
         callback();
     });
 
