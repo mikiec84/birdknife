@@ -603,16 +603,16 @@ module.exports = {
     },
 
     cacheFromStatus: function(status) {
-        this.cache.usernames.insert({ k: '@' + status.user.screen_name });
+        this.cache.usernames.update({ k: '@' + status.user.screen_name }, { $inc: { count: 1 } }, { upsert: true });
 
         for (var u in status.entities.user_mentions) {
             var mention = status.entities.user_mentions[u];
-            this.cache.usernames.insert({ k: '@' + mention.screen_name });
+            this.cache.usernames.update({ k: '@' + mention.screen_name }, { $inc: { count: 1 } }, { upsert: true });
         }
 
         for (var h in status.entities.hashtags) {
             var hashtag = status.entities.hashtags[h];
-            this.cache.hashtags.insert({ k: '#' + hashtag.text });
+            this.cache.hashtags.update({ k: '#' + hashtag.text }, { $inc: { count: 1 } }, { upsert: true });
         }
     },
 

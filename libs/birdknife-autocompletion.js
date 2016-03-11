@@ -26,7 +26,8 @@ module.exports = {
         var re = new RegExp("^" + word + ".+");
 
         db.find({ "k": { $regex: re }}, { k: 1, _id: 0 })
-            .limit(4)
+            .sort({ count: -1 })
+            .limit(5)
             .exec(function(err, docs) {
                 if (err) vorpal.log(color.error('Error: ' + err));
 
