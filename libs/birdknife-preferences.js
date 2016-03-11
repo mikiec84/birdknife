@@ -23,7 +23,8 @@ module.exports = {
     },
 
     set: function(key, value) {
-        if (typeof nconf.get(key) === 'undefined') return false;
+        if (key.substring(0, 11) === 'preferences'
+            && typeof nconf.get(key) === 'undefined') return false;
         nconf.set(key, value);
         nconf.save();
         return true;
