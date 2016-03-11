@@ -711,6 +711,7 @@ module.exports = {
         if (indented) line += "|\t";
         line += "<";
         if (indented) line += "↑";
+        else if (status.in_reply_to_status_id) line += '*';
         line += "@";
         line += status.user.screen_name === this.ME.screen_name
             ? color.my_screen_name(status.user.screen_name)

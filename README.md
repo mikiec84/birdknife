@@ -164,6 +164,30 @@ birdknife [---]> /preferences
 |
 ```
 
+## Information
+
+##### Tweet prefix
+
+Some tweets have a prefix before the username. Those prefixes indicate characteristics of a tweet.
+
+Example: `b1> <*@username>: What a beautiful day!`
+
+<table>
+    <tr>
+        <th>Prefix</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>*</td>
+        <td>Indicates that this tweet is a reply to another tweet. It is probably part of a conversation/thread.<br/>
+        <b>Hint:</b> Run <code>/thread <id></code> to view the thread.</td>
+    </tr>
+    <tr>
+        <td>↑</td>
+        <td>This tweet is either a reply to the tweet above (only in conversations) or has been quoted by the tweet above.</td>
+    </tr>
+</table>
+
 ## Usage
 
 ##### Login (PIN authorization)
@@ -314,7 +338,6 @@ Display user information
 /show <id>
 ```
 Display a tweet with additional information.
-
 
 ## Development
 
