@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "auth": {
     "consumer_key": "aR9k5DGzmFlNfHYIXxU4MN9lK",
     "consumer_secret": "5zatekdWu1zQJKpq67NPFMMSVVqV4NLejoHfxfs2xUIcNwFRIn"
@@ -7,6 +7,7 @@
   "preferences": {
     "debug": false,
     "notifications": true,
-    "location": false
+    "location": false,
+    "tweet_protection": false
   }
 }

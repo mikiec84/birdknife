@@ -82,7 +82,8 @@ Example:
   "preferences": {
     "debug": false,
     "notifications": true,
-    "location": false
+    "location": false,
+    "tweet_protection": false
   }
 }
 ```
@@ -116,10 +117,17 @@ Example:
     </tr>
     <tr>
         <td><code>location</code></td>
-        <td>Enable/Disable posting your location. The location can detected automatically.<br/>Alternatively you can provide coordinations.</td>
+        <td>Enable/Disable posting your location. The location can be detected automatically.<br/>Alternatively you can provide coordinations.</td>
         <td><code>false</code>, <code>"auto"</code> (or <code>true</code>),<br/>
         <code>{ lat: 57.52936, lng:  -6.24176 }</code>
         </td>
+        <td><code>false</code></td>
+    </tr>
+    <tr>
+        <td><code>tweet_protection</code></td>
+        <td>If set to true this should prevent accidentally posting a status update. To post a status, enter <code>/tweet</code> first.<br/>
+        This command provides a new prompt where you can enter your status update.</td>
+        <td><code>false</code>, <code>true</code></td>
         <td><code>false</code></td>
     </tr>
 </table>
@@ -298,7 +306,7 @@ Reloads your timeline or loads recent tweets of a user if screen_name is given.
 Delete a tweet.
 
 ```
-/user [screen_name]
+/user <screen_name>
 ```
 Display user information
 
