@@ -2,7 +2,9 @@ process.env.NODE_ENV = 'test';
 
 var expect = require('chai').expect,
     birdknife_text = require('../libs/birdknife-text'),
-    DummyStatus = require('./json/DummyStatus.json');
+    DummyStatus = require('./json/DummyStatus.json'),
+    describe = require("mocha").describe,
+    it = require("mocha").it;
 
 describe('birdknife-text', function() {
 
@@ -89,7 +91,7 @@ describe('birdknife-text', function() {
             expect(nr8).to.not.be.ok;
         });
     });
-    
+
     describe('#getStatusURL', function() {
         it('returns a valid status url', function() {
             var ex = 'https://twitter.com/screenname/status/123456789012345678';

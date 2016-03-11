@@ -40,7 +40,7 @@ functional Twitter client for your CLI.
 * Interact with users
     * Follow, block, mute
 * Search
-* Hashtag and @screen_name autocomletion
+* Hashtag and @screen_name autocompletion
 * Notifications (Cross platform)
 
 #### In the future
