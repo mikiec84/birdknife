@@ -83,10 +83,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET account/verify_credentials: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 if (!self.TEST) self.vorpal.log(color.success("Logged in as " + color.bold(result.data.screen_name)));
                 self.ME = result.data;
             });
@@ -105,10 +102,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET statuses/home_timeline: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 result.data.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -123,10 +117,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET statuses/user_timeline: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 result.data.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -141,10 +132,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET statuses/mentions_timeline: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 result.data.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -159,10 +147,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET direct_messages: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 result.data.reverse().forEach(function(message) {
                     self.displayDM(message);
                 });
@@ -177,11 +162,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET users/show: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
-
+                if (self.isError(result)) return;
                 self.T.get('friendships/show', { source_id: self.ME.id_str, target_id: result.data.id_str })
                     .catch(function(err) {
                         self.vorpal.log(color.error('Error GET users/show: ' + err));
@@ -201,10 +182,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET search/tweets: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 result.data.statuses.reverse().forEach(function(tweet) {
                     self.displayStatus(tweet);
                 });
@@ -219,6 +197,10 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET statuses/show/:id: ' + err));
             })
             .then(function(result) {
+                if (!result || result.resp === null) {
+                    self.vorpal.log(color.error('No result! Please check your internet connection and relogin...'));
+                    return;
+                }
                 if (result.data.errors) {
                     statuses = statuses.reverse();
 
@@ -269,9 +251,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                }
+                self.isError(result);
             });
     },
 
@@ -295,9 +275,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST statuses/update: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                }
+                self.isError(result);
             });
     },
 
@@ -309,9 +287,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST direct_messages/new: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                }
+                self.isError(result);
             });
     },
 
@@ -323,10 +299,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST statuses/retweet/:id: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
                 self.vorpal.log(color.event('-- Retweeted status: ' + text));
             });
@@ -340,10 +313,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST favorites/create: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
                 self.vorpal.log(color.event('-- Liked status: ' + text));
             })
@@ -357,10 +327,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST favorites/destroy: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
                 self.vorpal.log(color.event('-- Removed like from status: ' + text));
             });
@@ -374,10 +341,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST friendships/create: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Followed user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -390,10 +354,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST friendships/destroy: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Unfollowed user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -406,10 +367,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST blocks/create: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Blocked user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -422,10 +380,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST blocks/destroy: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Unblocked user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -438,10 +393,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST mutes/users/create: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Muted user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -454,10 +406,7 @@ module.exports = {
                 self.vorpal.log(color.error('Error POST mutes/users/destroy: ' + err));
             })
             .then(function(result) {
-                if (result.data.errors) {
-                    self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                    return;
-                }
+                if (self.isError(result)) return;
                 self.vorpal.log(color.event('-- Unmuted user: ' + color.bold('@' + result.data.screen_name)));
             });
     },
@@ -483,10 +432,7 @@ module.exports = {
                     callback();
                 })
                 .then(function(result) {
-                    if (result.data.errors) {
-                        self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
-                        return;
-                    }
+                    if (self.isError(result)) return;
                     var text = '"' + birdknife_text.autoBoldStatusEntities(result.data) + '"';
                     self.vorpal.log(color.event('Removed retweet from status: ' + text));
                     callback();
@@ -499,8 +445,7 @@ module.exports = {
                     callback();
                 })
                 .then(function(result) {
-                    if (result.data.errors) {
-                        self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+                    if (self.isError(result)) {
                         callback();
                         return;
                     }
@@ -509,6 +454,18 @@ module.exports = {
                     callback();
                 });
         }
+    },
+
+    isError: function(result) {
+        if (!result || result.resp === null) {
+            this.vorpal.log(color.error('No result! Please check your internet connection and relogin...'));
+            return true;
+        }
+        if (result.data.errors) {
+            self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
+            return true;
+        }
+        return false;
     },
 
     isMention: function(status) {
