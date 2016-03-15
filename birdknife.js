@@ -244,7 +244,7 @@ vorpal
         const self = this;
 
         var text = args.text.join(' ');
-        text =  text.replace(/&bquot;/g, "'");
+        text = parser.postParse(text);
 
         store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
@@ -275,7 +275,7 @@ vorpal
         const self = this;
 
         var text = args.text.join(' ');
-        text =  text.replace(/&bquot;/g, "'");
+        text = parser.postParse(text);
 
         store.findOne({ id: args.id }, function(err, doc) {
             if (err) {
@@ -378,7 +378,7 @@ vorpal
     .action(function(args, callback) {
         var screen_name = args.screen_name;
         var message = args.words.join(' ');
-        message = message.replace(/&bquot;/g, "'");
+        message = parser.postParse(message);
         api.message(screen_name, message);
         callback();
     });
@@ -401,7 +401,9 @@ vorpal
     .command('/set <key> <value>', 'Set preference by key')
     .parse(parser.parseCommand)
     .action(function(args, callback) {
-        var value = typeof args.value === 'string' ? args.value.replace(/&bquot;/g, "'") : args.value;
+        var value = typeof args.value === 'string'
+            ? parser.postParse(args.value)
+            : args.value;
         try {
             value = JSON.parse(value);
         } catch (e) {
@@ -436,7 +438,7 @@ vorpal
     .parse(parser.parseStatus)
     .action(function(args, callback) {
         var status = args.words.join(' ');
-        status = status.replace(/&bquot;/g, "'");
+        status = parser.postParse(status);
 
         var protectUpdate = preferences.get('preferences:tweet_protection');
         
