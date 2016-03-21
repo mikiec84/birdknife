@@ -1,4 +1,5 @@
 var color = require('./color_definitions'),
+    twitter = require('twitter-text'),
     Entities = require('html-entities').AllHtmlEntities;
 
 var htmlEntities = new Entities();
@@ -18,6 +19,8 @@ module.exports = {
     },
 
     autoBoldText: function(text, entities) {
+        twitter.convertUnicodeIndices(text, entities, false);
+
         var result = "";
         entities.sort(function(a, b) {
             return a.indices[0] - b.indices[0];
