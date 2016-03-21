@@ -47,6 +47,7 @@ module.exports = {
 
         this.stream.on('error', function(error) {
             self.vorpal.log(color.error('Stream error: ' + error.twitterReply));
+            self.vorpal.log(error);
         });
 
         this.stream.on('tweet', function(status) {
