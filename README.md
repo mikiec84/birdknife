@@ -205,6 +205,8 @@ Login and copy the PIN number: https://twitter.com/oauth/authorize?oauth_token=X
 PIN:
 ```
 
+To remove your account from birdknife: `/logout`
+
 ##### Tweet
 
 ```

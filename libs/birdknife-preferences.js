@@ -47,6 +47,12 @@ module.exports = {
         return nconf.get('auth:access_token') && nconf.get('auth:access_token_secret');
     },
 
+    removeAccessToken: function() {
+        nconf.set('auth:access_token', null);
+        nconf.set('auth:access_token_secret', null);
+        nconf.save();
+    },
+
     set: function(key, value) {
         try {
             value = JSON.parse(value);
