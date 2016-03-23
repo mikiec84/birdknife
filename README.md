@@ -130,6 +130,12 @@ Example:
         <td><code>false</code>, <code>true</code></td>
         <td><code>false</code></td>
     </tr>
+        <td><code>timestamp</code></td>
+        <td>Set the time interval in minutes where birdknife will print out timestamps.<br/>
+        To disable timestamps, set <code>timestamp</code> to <code>0</code>.</td>
+        <td><code>0</code>-<code>59</code></td>
+        <td><code>5</code></td>
+    </tr>
 </table>
 
 #### Edit preferences
