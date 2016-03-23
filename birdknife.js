@@ -505,7 +505,7 @@ vorpal.log('Welcome to birdknife! (' + pkg.version + ')');
 
 update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ }).notify();
 
-timer.start(vorpal);
+timer.start(vorpal, preferences);
 
 if (!preferences.checkAccessToken()) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
