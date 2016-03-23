@@ -323,8 +323,8 @@ vorpal
 
         var TwitterPinAuth = require('twitter-pin-auth');
         twitterPinAuth = new TwitterPinAuth(
-            preferences.get('auth:consumer_key'),
-            preferences.get('auth:consumer_secret'));
+            preferences.getAuth('consumer_key'),
+            preferences.getAuth('consumer_secret'));
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
@@ -343,15 +343,12 @@ vorpal
             if (!result.pin) return;
             twitterPinAuth.authorize(result.pin)
                 .then(function(data) {
-                    preferences.set('auth:access_token', data.accessTokenKey);
-                    preferences.set('auth:access_token_secret', data.accessTokenSecret);
+                    preferences.setAccessToken(data.accessTokenKey, data.accessTokenSecret);
 
                     self.log(color.success("\nAuthentication successful!\n"));
-
                     self.log(color.blue('Logging in...'));
 
                     api.login(preferences, vorpal, store, cache);
-
                     callback();
                 })
                 .catch(function(err) {
@@ -387,7 +384,7 @@ vorpal
     .command('/preferences', 'List all preferences')
     .action(function(args, callback) {
         var columnify = require('columnify');
-        var pref = preferences.get('preferences');
+        var pref = preferences.getAll();
 
         var data = {};
         for (var k in pref) {
@@ -404,13 +401,9 @@ vorpal
         var value = typeof args.value === 'string'
             ? parser.postParse(args.value)
             : args.value;
-        try {
-            value = JSON.parse(value);
-        } catch (e) {
-        }
 
-        if (preferences.set('preferences:' + args.key, value)) {
-            this.log(color.blue(args.key + ' is now set to ' + preferences.get('preferences:' + args.key)));
+        if (preferences.set(args.key, value)) {
+            this.log(color.blue(args.key + ' is now set to ' + preferences.get(args.key)));
         } else {
             this.log(color.error('Error: ' + args.key + ' is not a valid key!'))
         }
@@ -440,7 +433,7 @@ vorpal
         var status = args.words.join(' ');
         status = parser.postParse(status);
 
-        if (preferences.get('preferences:tweet_protection')) {
+        if (preferences.get('tweet_protection')) {
             this.log(color.yellow(color.bold('WARNING:')
                 + ' You enabled tweet protection. Update status with '
                 + color.bold('/tweet')
@@ -514,7 +507,7 @@ update({ "pkg": pkg, updateCheckInterval: 1000 * 60 * 60 * 24 /* every day */ })
 
 timer.start(vorpal);
 
-if (!preferences.get('auth:access_token') || !preferences.get('auth:access_token_secret')) {
+if (!preferences.checkAccessToken()) {
     vorpal.log(color.green('Type /login to authenticate with Twitter.'));
 } else {
     vorpal.log(color.blue('Logging in...'));
