@@ -15,6 +15,12 @@ module.exports = {
     cache: null,
     preferences: null,
     TEST: process.env.NODE_ENV == 'test',
+    logout: function() {
+        this.stream.stop();
+        this.T = null;
+        this.ME = null;
+        this.preferences.removeAccessToken();
+    },
     login: function(preferences, vorpal, store, cache) {
         const self = this;
         this.vorpal = vorpal;

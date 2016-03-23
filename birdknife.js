@@ -316,9 +316,19 @@ vorpal
     });
 
 vorpal
+    .command('/logout')
+    .description('Logout')
+    .action(function(args, callback) {
+        api.logout();
+        this.log(color.success("\nLogged out.\n"));
+        this.log(color.green('Type /login to authenticate with Twitter.'));
+        callback();
+    });
+
+vorpal
     .command('/login')
     .description('Authenticate with your Twitter account')
-    .action(function(arg, callback) {
+    .action(function(args, callback) {
         const self = this;
 
         var TwitterPinAuth = require('twitter-pin-auth');
