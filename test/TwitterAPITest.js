@@ -4,20 +4,18 @@ var expect = require('chai').expect,
     describe = require("mocha").describe,
     it = require("mocha").it
     vorpal = require('vorpal')(),
-    nconf = require('nconf'),
+    preferences = require('../libs/birdknife-preferences'),
     path = require('path'),
     DataStore = require('nedb'),
     store = new DataStore(),
     api = require('../libs/TwitterAPI');
 
-nconf.argv()
-    .env()
-    .file({ file: path.join(path.dirname(__filename), 'config_travis.json') });
+preferences.init();
 
 describe('TwitterAPI', function() {
     describe('Login', function() {
         before('Authorizing', function() {
-            api.login(nconf, vorpal, store);
+            api.login(preferences, vorpal, store);
         });
 
         it('should have authorized after 4 seconds', function(done) {
