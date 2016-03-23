@@ -440,12 +440,13 @@ vorpal
         var status = args.words.join(' ');
         status = parser.postParse(status);
 
-        var protectUpdate = preferences.get('preferences:tweet_protection');
-        
-        if (!protectUpdate && status.charAt(0) != '/') {
-            api.update(status);
+        if (preferences.get('preferences:tweet_protection')) {
+            this.log(color.yellow(color.bold('WARNING:')
+                + ' You enabled tweet protection. Update status with '
+                + color.bold('/tweet')
+                + ' or disable tweet protection.'))
         }
-        else if (!protectUpdate && status.charAt(0) == '/') {
+        else if (status.charAt(0) == '/') {
             this.prompt({
                 type: 'confirm',
                 name: 'protin',
@@ -458,13 +459,8 @@ vorpal
                 }
                 callback();
             });
-            return;
-        }
-        else if (protectUpdate) {
-            this.log(color.yellow(color.bold('WARNING:')
-                + ' You enabled tweet protection. Update status with '
-                + color.bold('/tweet')
-                + ' or disable tweet protection.'))
+        } else {
+            api.update(status);
         }
         callback();
     });
