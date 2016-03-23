@@ -4,9 +4,12 @@ var schedule = require('node-schedule'),
 module.exports = {
     vorpal: null,
     rule: new schedule.RecurrenceRule(),
-    start: function(vorpal) {
+    start: function(vorpal, preferences) {
+        var ts = preferences.getInteger('timestamp');
+        if (!ts || ts <= 0) return;
+
         this.vorpal = vorpal;
-        this.rule.minute = new schedule.Range(0, 59, 5);
+        this.rule.minute = new schedule.Range(0, 59, ts);
 
         const self = this;
 

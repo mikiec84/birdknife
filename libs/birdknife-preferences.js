@@ -25,6 +25,10 @@ module.exports = {
         return nconf.get(KEY_PREFERENCES + key);
     },
 
+    getInteger: function(key) {
+        return parseInt(this.get(key));
+    },
+
     getAuth: function(key) {
         return nconf.get(KEY_AUTH + key);
     },
@@ -66,7 +70,7 @@ module.exports = {
             case 'timestamp':
                 value = parseInt(value);
                 if (isNaN(value) || value <= 0) value = 0;
-                else if (value > 1440) value = 1440;
+                else if (value > 59) value = 59;
                 break;
             default:
                 return false;
