@@ -22,10 +22,10 @@ module.exports = {
         this.cache = cache;
         this.preferences = preferences;
         this.T = new Twit({
-            consumer_key:        preferences.get('auth:consumer_key'),
-            consumer_secret:     preferences.get('auth:consumer_secret'),
-            access_token:        preferences.get('auth:access_token'),
-            access_token_secret: preferences.get('auth:access_token_secret')
+            consumer_key:        preferences.getAuth('consumer_key'),
+            consumer_secret:     preferences.getAuth('consumer_secret'),
+            access_token:        preferences.getAuth('access_token'),
+            access_token_secret: preferences.getAuth('access_token_secret')
         });
 
         this.loadMyself();
@@ -54,7 +54,7 @@ module.exports = {
             self.displayStatus(status);
 
             if (self.isMention(status)) {
-                if (self.preferences.get('preferences:notifications')) notifier.notify({
+                if (self.preferences.get('notifications')) notifier.notify({
                     'title': '@' + status.user.screen_name,
                     'message': status.text
                 });
@@ -65,7 +65,7 @@ module.exports = {
             if (message.direct_message.recipient_screen_name !== self.ME.screen_name) return;
             self.displayDM(message.direct_message);
 
-            if (self.preferences.get('preferences:notifications')) notifier.notify({
+            if (self.preferences.get('notifications')) notifier.notify({
                 'title': "Message from @" + message.sender_screen_name,
                 'message': message.text
             });
@@ -487,7 +487,7 @@ module.exports = {
                 line += ' liked your tweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' liked',
                     'message': event.target_object.text
                 });
@@ -496,7 +496,7 @@ module.exports = {
                 line += color.bold('@' + event.source.screen_name);
                 line += ' started following you.';
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': 'New follower',
                     'message': '@' + event.source.screen_name + ' followed you.'
                 });
@@ -506,7 +506,7 @@ module.exports = {
                 line += ' quoted your tweet: ';
                 status = event.target_object;
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' commented',
                     'message': event.target_object.text
                 });
@@ -516,7 +516,7 @@ module.exports = {
                 line += ' retweeted your tweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.status.retweeted_status) + '"';
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' retweeted',
                     'message': event.status.retweeted_status.text
                 });
@@ -526,7 +526,7 @@ module.exports = {
                 line += ' blocked ';
                 line += color.bold('@' + event.target.screen_name);
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': 'New block',
                     'message': '@' + event.source.screen_name + ' blocked ' + '@' + event.target.screen_name
                 });
@@ -536,7 +536,7 @@ module.exports = {
                 line += ' retweeted your retweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' retweeted your retweet',
                     'message': event.target_object.text
                 });
@@ -546,7 +546,7 @@ module.exports = {
                 line += ' liked your retweet: ';
                 line += '"' + birdknife_text.autoBoldStatusEntities(event.target_object) + '"';
 
-                if (this.preferences.get('preferences:notifications')) notifier.notify({
+                if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' liked your retweet',
                     'message': event.target_object.text
                 });

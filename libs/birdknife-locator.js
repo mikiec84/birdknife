@@ -16,7 +16,7 @@ module.exports = {
     },
 
     getLocation: function(preferences) {
-        var pref = preferences.get('preferences:location');
+        var pref = preferences.get('location');
 
         //allowed values are false, 'auto' (or true), { lat: 0.0, lng: 0.0 }
         if (pref && pref.constructor === Object) return pref;

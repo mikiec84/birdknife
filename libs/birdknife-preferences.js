@@ -2,6 +2,9 @@ var nconf = require('nconf'),
     fs = require('fs'),
     path = require('path');
 
+const KEY_PREFERENCES = 'preferences:',
+    KEY_AUTH = 'auth:';
+
 module.exports = {
     originalPath: path.join(path.dirname(require.main.filename), 'config.json'),
     configPath: path.join(process.env[(process.platform == 'win32' ? 'USERPROFILE' : 'HOME')], '.birdknife.json'),
@@ -19,13 +22,56 @@ module.exports = {
     },
 
     get: function(key) {
-        return nconf.get(key);
+        return nconf.get(KEY_PREFERENCES + key);
+    },
+
+    getAuth: function(key) {
+        return nconf.get(KEY_AUTH + key);
+    },
+
+    getAll: function() {
+        return nconf.get(KEY_PREFERENCES.slice(0, -1));
+    },
+
+    setAccessToken: function(access_token, access_token_secret) {
+        nconf.set('auth:access_token', access_token);
+        nconf.set('auth:access_token_secret', access_token_secret);
+        nconf.save();
+    },
+
+    checkAccessToken: function() {
+        return nconf.get('auth:access_token') && nconf.get('auth:access_token_secret');
     },
 
     set: function(key, value) {
-        if (key.substring(0, 11) === 'preferences'
-            && typeof nconf.get(key) === 'undefined') return false;
-        nconf.set(key, value);
+        try {
+            value = JSON.parse(value);
+        } catch (e) {
+        }
+        switch(key) {
+            case 'debug':
+            case 'notifications':
+            case 'tweet_protection':
+                if (value !== true && value !== 'true') value = false;
+                break;
+            case 'location':
+                if (value.constructor === Object) {
+                    value = value.lat && value.lng ? value : false;
+                } else if (value === true || value === 'true' || value === 'auto') {
+                    value = 'auto';
+                } else {
+                    value = false;
+                }
+                break;
+            case 'timestamp':
+                value = parseInt(value);
+                if (isNaN(value) || value <= 0) value = 0;
+                else if (value > 1440) value = 1440;
+                break;
+            default:
+                return false;
+        }
+        nconf.set(KEY_PREFERENCES + key, value);
         nconf.save();
         return true;
     },
