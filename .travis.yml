@@ -10,4 +10,4 @@ sudo: false
 
 before_install:
   - mkdir -p node_modules/gulp/bin/
-  - openssl aes-256-cbc -K $encrypted_9bb834128f14_key -iv $encrypted_9bb834128f14_iv -in config_travis.json.enc -out node_modules/gulp/bin/config.json -d
+  - openssl aes-256-cbc -K $encrypted_9bb834128f14_key -iv $encrypted_9bb834128f14_iv -in config_travis.json.enc -out /home/travis/build/vanita5/birdknife/node_modules/gulp/bin/config.json -d
