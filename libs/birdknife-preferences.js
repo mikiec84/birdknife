@@ -6,7 +6,8 @@ const KEY_PREFERENCES = 'preferences:',
     KEY_AUTH = 'auth:';
 
 module.exports = {
-    originalPath: path.join(path.dirname(require.main.filename), 'config.json'),
+    originalPath: path.join(path.dirname(require.main.filename),
+        process.env.NODE_ENV == 'test' ? 'test/config.json' : 'config.json'),
     configPath: path.join(process.env[(process.platform == 'win32' ? 'USERPROFILE' : 'HOME')], '.birdknife.json'),
 
     init: function() {
@@ -18,6 +19,7 @@ module.exports = {
         } else {
             this.copyToUserDir();
         }
+        console.log(this.originalPath);
         this.load();
     },
 
