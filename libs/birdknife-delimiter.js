@@ -4,6 +4,11 @@ var color = require('./color_definitions'),
 
 module.exports = {
     PAD: '000',
+    explicit_count: 0,
+
+    updateExplicitCount: function(status) {
+        this.explicit_count = twitter.getTweetLength(status);
+    },
 
     setDelimiter: function(ui, count, explicit) {
         if (count < 0) count = 0;
@@ -16,8 +21,8 @@ module.exports = {
     },
 
     setDefaultDelimiter: function(ui, explicit) {
-        if (explicit) ui.delimiter('Tweet [140]: ');
-        ui.delimiter('birdknife [---]> ');
+        if (explicit) ui.delimiter('Tweet [140]> ');
+        else ui.delimiter('birdknife [---]> ');
     },
 
     set: function(vorpal, store, api, input, explicit) {
@@ -45,7 +50,7 @@ module.exports = {
                 if (!doc || doc.type !== 'status') return;
 
                 input = text.addMentionsToReply(api.ME.screen_name, input, doc.status);
-                _c = 140 - twitter.getTweetLength(input);
+                _c = text.getRemainingTweetLength(input);
 
                 self.setDelimiter(vorpal.ui, _c, false);
             });
@@ -63,13 +68,14 @@ module.exports = {
                 if (!doc || doc.type !== 'status') return;
 
                 input += ' ' + text.getStatusURL(doc.status);
-                _c = 140 - twitter.getTweetLength(input);
+                _c = text.getRemainingTweetLength(input);
 
                 self.setDelimiter(vorpal.ui, _c, false);
             });
         }
         else {
-            _c = 140 - twitter.getTweetLength(input);
+            _c = text.getRemainingTweetLength(input);
+            _c -= this.explicit_count;
             this.setDelimiter(vorpal.ui, _c, explicit);
         }
     }

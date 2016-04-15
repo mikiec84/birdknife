@@ -6,6 +6,10 @@ var htmlEntities = new Entities();
 
 module.exports = {
 
+    getRemainingTweetLength: function(status) {
+        return 140 - twitter.getTweetLength(status);
+    },
+
     isCommand: function(input) {
         return input.match(/^\//);
     },
