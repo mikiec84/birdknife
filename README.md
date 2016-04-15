@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img src="birdknife.png"/ width="360">
+  <img src="birdknife2.png"/>
 </p>
 
 > Twitter CLI
