@@ -688,5 +688,8 @@ module.exports = {
         if (status.quoted_status) {
             this.displayStatus(status.quoted_status, true);
         }
+        if (status.retweeted_status && status.retweeted_status.quoted_status) {
+            this.displayStatus(status.retweeted_status.quoted_status, true);
+        }
     }
 };
