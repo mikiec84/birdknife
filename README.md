@@ -192,8 +192,29 @@ To remove your account from birdknife: `/logout`
 
 ##### Tweet
 
+The easy way:
 ```
 birdknife [128]> Hello World!
+```
+
+
+If you want to post *multiline* tweets:
+```
+birdknife [...]> /tweet
+
+Enter /send to update your status.
+Tweet [136]> This
+Tweet [133]> is
+Tweet [131]> a
+Tweet [121]> multiline
+Tweet [114]> tweet!
+Tweet [...]> /send
+
+a1> <@_vanita5>: This
+is
+a
+multiline
+tweet!
 ```
 
 ##### View threads / conversations
@@ -207,7 +228,7 @@ birdknife [---]> /thread <id>
 ```
 a1> <@twitter>: #birdknife is kinda nice!
 
-birdknife [133]> /reply a1 FAAAKE!
+birdknife [124]> /reply a1 FAAAKE!
 ```
 
 ##### Quote a tweet
@@ -215,7 +236,7 @@ birdknife [133]> /reply a1 FAAAKE!
 ```
 a1> <@twitter>: #birdknife is kinda nice!
 
-birdknife [133]> /quote a1 FAAAKE!
+birdknife [109]> /quote a1 FAAAKE!
 
 a2> <@_vanita5>: FAAAKE! https://twitter.com/twitter/status/12345678901234
 

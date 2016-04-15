@@ -426,18 +426,31 @@ vorpal
 vorpal
     .command('/tweet', 'Tweet')
     .action(function(args, callback) {
-        this.prompt({
-            type: 'input',
-            name: 'tweet',
-            default: null,
-            message: 'Tweet [140]: '
-        }, function(result) {
-            if (result.tweet) {
-                api.update(result.tweet);
-            }
-            callback();
-        });
+        this.log(color.yellow('\nEnter ') + color.blue('/send ') + color.yellow('to update your status.'));
+
+        birdknife_delimiter.updateExplicitCount('');
+        exp_prompt(this, callback);
     });
+
+var exp_prompt = function(cmd, cb, status) {
+    status = status || "";
+    var _c =  birdknife_text.getRemainingTweetLength(status);
+    return cmd.prompt({
+        type: 'input',
+        name: 'tweet',
+        default: null,
+        message: 'Tweet [' + _c + ']> '
+    }, function(result) {
+        if (result.tweet === '/send') {
+            api.update(status);
+            cb();
+        } else if (result.tweet !== '/send') {
+            status += '\n' + result.tweet;
+            birdknife_delimiter.updateExplicitCount(status);
+            exp_prompt(cmd, cb, status);
+        }
+    });
+};
 
 vorpal
     .catch('[words...]', 'Tweet')
