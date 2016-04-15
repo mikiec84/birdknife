@@ -287,7 +287,10 @@ vorpal
                 return;
             }
 
-            text += ' https://twitter.com/' + doc.status.screen_name + '/status/' + doc.status.id_str;
+            var screen_name = doc.status.retweeted_status
+                ? doc.status.retweeted_status.user.screen_name : doc.status.user.screen_name;
+
+            text += ' https://twitter.com/' + screen_name + '/status/' + doc.status.id_str;
             api.update(text);
         });
         callback();
