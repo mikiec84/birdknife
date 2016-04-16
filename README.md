@@ -198,7 +198,7 @@ birdknife [128]> Hello World!
 ```
 
 
-If you want to post *multiline* tweets:
+How to post *multiline* tweets:
 ```
 birdknife [...]> /tweet
 
@@ -216,6 +216,21 @@ a
 multiline
 tweet!
 ```
+
+
+How to post tweets with media:
+```
+birdknife [...]> /tweet /home/vanita5/dog.png /home/vanita5/cat.png
+
+Enter /send to update your status.
+Tweet [124]> Look at my pets!
+Tweet [123]> /send
+-- Uploading file: /home/vanita5/dog.png
+-- Uploading file: /home/vanita5/cat.png
+
+ab> <@_vanita5>: Look at my pets! pic.twitter.com/xxxxxxxxx
+```
+*Note: This command has filesystem autocompletion!*
 
 ##### View threads / conversations
 
