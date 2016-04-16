@@ -1,30 +1,13 @@
-# birdknife
-[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://travis-ci.org/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![Dependency Status](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014)
+
+
+
+<p align="center">
+  <img src="birdknife2.png"/>
+</p>
 
 > Twitter CLI
 
-```text
-  `                   `-:/+++/:-`   `..                                                              ___
-  //.                :+++++++++++///+-                                                              |_  |
- .+++/-`            /++++++++++++++/:::`                                                              | |
- `++++++/-`        .++++++++++++++++:.        __                      ____                            | |
-  -+++++++++/:-.```-+++++++++++++++/          \ ````''''----....____.'\   ````''''--------------------| |--.               _____      .-.
- ``./++++++++++++++++++++++++++++++/           :.                      `-._                           | |   `''-----''''```     ``''|`: :|
- `++/++++++++++++++++++++++++++++++-            '::.                       `'--.._____________________| |                           | : :|
-  -++++++++++++++++++++++++++++++++`              '::..       ----....._______________________________| |                           | : :|
-   `:+++++++++++++++++++++++++++++-                 `'-::...__________________________________________| |   .-''-..-'`-..-'`-..-''-.cjr :|
-    `.:/+++++++++++++++++++++++++-                       ```'''---------------------------------------| |--'                         `'-'
-     :++++++++++++++++++++++++++-                                                                     | |
-      .:++++++++++++++++++++++/.                                                                     _| |
-         ..:++++++++++++++++/-                                                                      |___| cjr
-       `-:/+++++++++++++++/.                  
-`.:///++++++++++++++++/:-`                    
-   `.--:///++++//::-.`                        
-```
-
-
-
-> Ascii Art from ascii-code.com by `cjr`
+[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://travis-ci.org/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![Dependency Status](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014)
 
 birdknife is a Twitter CLI based on [Vorpal](https://github.com/dthree/vorpal) inspired by [TTYtter](http://www.floodgap.com/software/ttytter/).
 TTYtter hasn't been updated for some time now and doesn't support new features introduced by Twitter. This project aims to be a completely
@@ -209,8 +192,29 @@ To remove your account from birdknife: `/logout`
 
 ##### Tweet
 
+The easy way:
 ```
 birdknife [128]> Hello World!
+```
+
+
+If you want to post *multiline* tweets:
+```
+birdknife [...]> /tweet
+
+Enter /send to update your status.
+Tweet [136]> This
+Tweet [133]> is
+Tweet [131]> a
+Tweet [121]> multiline
+Tweet [114]> tweet!
+Tweet [...]> /send
+
+a1> <@_vanita5>: This
+is
+a
+multiline
+tweet!
 ```
 
 ##### View threads / conversations
@@ -224,7 +228,7 @@ birdknife [---]> /thread <id>
 ```
 a1> <@twitter>: #birdknife is kinda nice!
 
-birdknife [133]> /reply a1 FAAAKE!
+birdknife [124]> /reply a1 FAAAKE!
 ```
 
 ##### Quote a tweet
@@ -232,7 +236,7 @@ birdknife [133]> /reply a1 FAAAKE!
 ```
 a1> <@twitter>: #birdknife is kinda nice!
 
-birdknife [133]> /quote a1 FAAAKE!
+birdknife [109]> /quote a1 FAAAKE!
 
 a2> <@_vanita5>: FAAAKE! https://twitter.com/twitter/status/12345678901234
 

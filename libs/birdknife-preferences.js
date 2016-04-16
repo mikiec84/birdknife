@@ -8,7 +8,7 @@ const KEY_PREFERENCES = 'preferences:',
 module.exports = {
     originalPath: process.env.NODE_ENV !== 'test'
         ? path.join(path.dirname(require.main.filename), 'config.json')
-        : path.join(path.dirname(__dirname), 'test/config.json'),
+        : path.join(path.dirname(__dirname), 'config.json'),
     configPath: path.join(process.env[(process.platform == 'win32' ? 'USERPROFILE' : 'HOME')], '.birdknife.json'),
 
     init: function() {
