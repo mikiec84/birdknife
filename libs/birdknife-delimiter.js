@@ -6,8 +6,8 @@ module.exports = {
     PAD: '000',
     explicit_count: 0,
 
-    updateExplicitCount: function(status) {
-        this.explicit_count = twitter.getTweetLength(status);
+    updateExplicitCount: function(status, withMedia) {
+        this.explicit_count = twitter.getTweetLength(status) + (withMedia ? 24 : 0);
     },
 
     setDelimiter: function(ui, count, explicit) {

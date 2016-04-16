@@ -2,6 +2,7 @@ var chalk = require('chalk');
 
 module.exports = {
     blue: chalk.blue,
+    red: chalk.red,
     green: chalk.green,
     bold: chalk.bold,
     yellow: chalk.yellow,

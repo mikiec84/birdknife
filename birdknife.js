@@ -428,27 +428,29 @@ vorpal
     .command('/tweet [dirs...]', 'Tweet (optional: add media)')
     .autocomplete(fsAutocomplete())
     .action(function(args, callback) {
-        this.log(color.yellow('\nEnter ') + color.blue('/send ') + color.yellow('to update your status.'));
+        this.log(color.yellow('\nEnter ') + color.blue('/send ') + color.yellow('to update your status or ') + color.red('/cancel') + color.yellow(' to return to the main prompt.'));
 
-        birdknife_delimiter.updateExplicitCount('');
+        birdknife_delimiter.updateExplicitCount('', args.dirs);
         exp_prompt(this, callback, args.dirs);
     });
 
 var exp_prompt = function(cmd, cb, dirs, status) {
     status = status || "";
-    var _c =  birdknife_text.getRemainingTweetLength(status);
+    var _c =  birdknife_text.getRemainingTweetLength(status, dirs);
     return cmd.prompt({
         type: 'input',
         name: 'tweet',
         default: null,
         message: 'Tweet [' + _c + ']> '
     }, function(result) {
-        if (result.tweet === '/send') {
+        if (result.tweet === '/cancel') {
+            cb();
+        } else if (result.tweet === '/send') {
             api.updateWithMedia(status, dirs);
             cb();
         } else if (result.tweet !== '/send') {
             status += '\n' + result.tweet;
-            birdknife_delimiter.updateExplicitCount(status);
+            birdknife_delimiter.updateExplicitCount(status, dirs);
             exp_prompt(cmd, cb, dirs, status);
         }
     });

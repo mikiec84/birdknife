@@ -6,8 +6,8 @@ var htmlEntities = new Entities();
 
 module.exports = {
 
-    getRemainingTweetLength: function(status) {
-        return 140 - twitter.getTweetLength(status);
+    getRemainingTweetLength: function(status, withMedia) {
+        return 140 - (twitter.getTweetLength(status) + (withMedia ? 24 : 0));
     },
 
     isCommand: function(input) {
