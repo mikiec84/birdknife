@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var vorpal = require('vorpal')(),
+    fsAutocomplete = require('vorpal-autocomplete-fs'),
     DataStore = require('nedb'),
     store = new DataStore(),
     color = require('./libs/color_definitions'),
@@ -424,15 +425,16 @@ vorpal
     });
 
 vorpal
-    .command('/tweet', 'Tweet')
+    .command('/tweet [dirs...]', 'Tweet (optional: add media)')
+    .autocomplete(fsAutocomplete())
     .action(function(args, callback) {
         this.log(color.yellow('\nEnter ') + color.blue('/send ') + color.yellow('to update your status.'));
 
         birdknife_delimiter.updateExplicitCount('');
-        exp_prompt(this, callback);
+        exp_prompt(this, callback, args.dirs);
     });
 
-var exp_prompt = function(cmd, cb, status) {
+var exp_prompt = function(cmd, cb, dirs, status) {
     status = status || "";
     var _c =  birdknife_text.getRemainingTweetLength(status);
     return cmd.prompt({
@@ -442,12 +444,12 @@ var exp_prompt = function(cmd, cb, status) {
         message: 'Tweet [' + _c + ']> '
     }, function(result) {
         if (result.tweet === '/send') {
-            api.update(status);
+            api.updateWithMedia(status, dirs);
             cb();
         } else if (result.tweet !== '/send') {
             status += '\n' + result.tweet;
             birdknife_delimiter.updateExplicitCount(status);
-            exp_prompt(cmd, cb, status);
+            exp_prompt(cmd, cb, dirs, status);
         }
     });
 };
