@@ -3,7 +3,8 @@ var Twit = require('twit'),
     color = require('./color_definitions'),
     birdknife_text = require('./birdknife-text'),
     notifier = require('node-notifier'),
-    locator = require('./birdknife-locator');
+    locator = require('./birdknife-locator'),
+    fs = require('fs');
 
 module.exports = {
     T: null,
@@ -262,21 +263,8 @@ module.exports = {
             });
     },
 
-    update: function(tweet) {
-        if (!this.T) return;
+    _update: function (params) {
         const self = this;
-
-        var params = {};
-        params.status = tweet;
-
-        var location = locator.getLocation(this.preferences);
-        if (location) {
-            this.vorpal.log(color.yellow('-- Status update with location: ' + location.lat + ', ' + location.lng));
-            params.lat = location.lat;
-            params.long = location.lng;
-            params.display_coordinates = true;
-        }
-
         this.T.post('statuses/update', params)
             .catch(function(err) {
                 self.vorpal.log(color.error('Error POST statuses/update: ' + err));
@@ -284,6 +272,61 @@ module.exports = {
             .then(function(result) {
                 self.isError(result);
             });
+    },
+
+    update: function(tweet) {
+        if (!this.T) return;
+
+        var params = {};
+        params.status = tweet;
+        params = this.addLocation(params);
+
+        this._update(params);
+    },
+
+    updateWithMedia: function (tweet, medias) {
+        if (!this.T) return;
+        if (!medias || medias.length === 0) this.update(tweet);
+
+        const self = this;
+
+        var params = {};
+        params.status = tweet;
+        params = this.addLocation(params);
+        params.media_ids = [];
+
+        var _upload = function (medias, i) {
+            var media = medias[i];
+            console.log(media);
+            self.vorpal.log(color.yellow('-- Uploading file: ' + color.file(media)));
+            var b64content = fs.readFileSync(media, { encoding: 'base64' });
+            self.T.post('media/upload', { media_data: b64content }, function (err, data, response) {
+                if (err) {
+                    self.vorpal.log(color.error('Error POST media/upload: ' + err));
+                    return;
+                }
+                params.media_ids.push(data.media_id_string);
+
+                i++;
+                if (i < medias.length) {
+                    _upload(medias, i)
+                } else {
+                    self._update(params);
+                }
+            })
+        };
+        _upload(medias, 0);
+    },
+
+    addLocation: function (params) {
+        var location = locator.getLocation(this.preferences);
+        if (location) {
+            this.vorpal.log(color.yellow('-- Status update with location: ' + location.lat + ', ' + location.lng));
+            params.lat = location.lat;
+            params.long = location.lng;
+            params.display_coordinates = true;
+        }
+        return params;
     },
 
     message: function(screen_name, message) {
