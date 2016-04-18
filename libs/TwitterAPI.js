@@ -286,7 +286,10 @@ module.exports = {
 
     updateWithMedia: function (tweet, medias) {
         if (!this.T) return;
-        if (!medias || medias.length === 0) this.update(tweet);
+        if (!medias || medias.length === 0) {
+            this.update(tweet);
+            return;
+        }
 
         const self = this;
 
