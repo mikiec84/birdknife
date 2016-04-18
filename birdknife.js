@@ -437,11 +437,12 @@ vorpal
 var exp_prompt = function(cmd, cb, dirs, status) {
     status = status || "";
     var _c =  birdknife_text.getRemainingTweetLength(status, dirs);
+    var _s = (birdknife_delimiter.PAD + _c).slice(-birdknife_delimiter.PAD.length);
     return cmd.prompt({
         type: 'input',
         name: 'tweet',
         default: null,
-        message: 'Tweet [' + _c + ']> '
+        message: 'Tweet [' + _s + ']> '
     }, function(result) {
         if (result.tweet === '/cancel') {
             cb();
