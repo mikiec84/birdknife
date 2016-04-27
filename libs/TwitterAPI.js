@@ -149,7 +149,7 @@ module.exports = {
     loadDMs: function() {
         if (!this.T) return;
         const self = this;
-        this.T.get('direct_messages')
+        this.T.get('direct_messages', { full_text: true })
             .catch(function(err) {
                 self.vorpal.log(color.error('Error GET direct_messages: ' + err));
             })
