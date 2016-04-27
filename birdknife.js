@@ -112,9 +112,14 @@ vorpal
 
 vorpal
     .command('/dms', 'Show DMs')
+    .option('--sent', 'Show sent DMs')
     .action(function(args, callback) {
         this.log(color.blue('-- Loading DMs...'));
-        api.loadDMs();
+        if (args.options.sent) {
+            api.loadSentDMs();
+        } else {
+            api.loadDMs();
+        }
         callback();
     });
 

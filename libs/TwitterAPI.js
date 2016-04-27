@@ -161,6 +161,21 @@ module.exports = {
             });
     },
 
+    loadSentDMs: function() {
+        if (!this.T) return;
+        const self = this;
+        this.T.get('direct_messages/sent', { full_text: true })
+            .catch(function(err) {
+                self.vorpal.log(color.error('Error GET direct_messages/sent: ' + err));
+            })
+            .then(function(result) {
+                if (self.isError(result)) return;
+                result.data.reverse().forEach(function(message) {
+                    self.displayDM(message);
+                });
+            });
+    },
+
     loadUser: function(screen_name) {
         if (!this.T) return;
         const self = this;
