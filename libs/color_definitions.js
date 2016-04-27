@@ -6,6 +6,7 @@ module.exports = {
     green: chalk.green,
     bold: chalk.bold,
     yellow: chalk.yellow,
+    italic: chalk.italic,
 
     error: chalk.red,
     success: chalk.green,

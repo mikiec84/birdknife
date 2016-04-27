@@ -69,7 +69,6 @@ module.exports = {
         });
 
         this.stream.on('direct_message', function(message) {
-            if (message.direct_message.recipient_screen_name !== self.ME.screen_name) return;
             self.displayDM(message.direct_message);
 
             if (self.preferences.get('notifications')) notifier.notify({
@@ -681,6 +680,9 @@ module.exports = {
         this.store.update({ id: id }, doc, { upsert: true });
 
         var line = id + '> ';
+        if (message.recipient_screen_name !== this.ME.screen_name) {
+            line += color.italic('@' + message.sender_screen_name + ' -> ' + '@' + message.recipient_screen_name + ' ');
+        }
         line += color.bold('[@' + message.sender_screen_name + ' | ' + message.created_at + ']: ');
         line += message.text;
         line += '\n';
