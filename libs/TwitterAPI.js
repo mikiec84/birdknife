@@ -249,6 +249,7 @@ module.exports = {
     },
 
     loadConversation: function(originalStatus) {
+        originalStatus = originalStatus.retweeted_status || originalStatus;
         this.loadConversationRec([], originalStatus.id_str);
     },
 
