@@ -57,7 +57,10 @@ vorpal
 
             var obj = doc.status ? doc.status : doc.message;
             if (args.options.debug || doc.type === 'message') {
-                self.log(obj);
+                var util = require('util');
+                self.log(
+                    util.inspect(obj, {showHidden: false, depth: null})
+                );
             } else {
                 var log = '\n';
                 log += '|\t' + color.bold('User: ') + obj.user.name + ' (@' + obj.user.screen_name + ')\n';
