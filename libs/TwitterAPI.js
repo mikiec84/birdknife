@@ -537,6 +537,10 @@ module.exports = {
             this.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
             return true;
         }
+        else if (result.data.error) {
+            this.vorpal.log(color.error('Error: ' + result.data.error));
+            return true;
+        }
         return false;
     },
 
