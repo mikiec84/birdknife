@@ -725,7 +725,8 @@ module.exports = {
 
         var isRetweet = status.retweeted_status ? true : false;
 
-        if (isRetweet && status.retweeted_status.user.id_str === this.ME.id_str) {
+        if (isRetweet && status.retweeted_status.user.id_str === this.ME.id_str
+                && status.user.id_str !== this.ME.id_str) {
             this.displayRetweet(status, indented);
             return;
         }
