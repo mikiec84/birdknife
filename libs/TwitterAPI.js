@@ -315,9 +315,13 @@ module.exports = {
 
         var _upload = function (medias, i) {
             var media = medias[i];
-            console.log(media);
             self.vorpal.log(color.yellow('-- Uploading file: ' + color.file(media)));
-            var b64content = fs.readFileSync(media, { encoding: 'base64' });
+            try {
+                var b64content = fs.readFileSync(media, {encoding: 'base64'});
+            } catch (e) {
+                self.vorpal.log(color.error('Error uploading file: ') + e.message);
+                return;
+            }
             self.T.post('media/upload', { media_data: b64content }, function (err, data, response) {
                 if (err) {
                     self.vorpal.log(color.error('Error POST media/upload: ' + err));
