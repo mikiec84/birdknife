@@ -52,8 +52,12 @@ module.exports = {
 
     autoBoldStatusEntities: function(status) {
         var retweet = status.retweeted_status;
-        var text = retweet ? retweet.text : status.text;
-        var entities = retweet ? retweet.entities : status.entities;
+        var extended_tweet = retweet ? retweet.extended_tweet : status.extended_tweet;
+        var text = extended_tweet ? extended_tweet.full_text
+            : (retweet ? retweet.text : status.text);
+        var entities = extended_tweet ? extended_tweet.entities
+            : (retweet ? retweet.entities : status.entities);
+
 
         var flat_entities = [];
 

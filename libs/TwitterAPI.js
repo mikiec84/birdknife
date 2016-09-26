@@ -556,6 +556,9 @@ module.exports = {
         if (event.source.id_str === this.ME.id_str) return;
         var line = '-- ';
         var status = null;
+        var extended_tweet = event.target_object.extended_tweet;
+        var extended_retweet = (event.status && event.status.retweeted_status)
+            ? event.target_object.retweeted_status.extended_tweet : null;
         switch (event.event) {
             case 'favorite':
                 line += color.bold('@' + event.source.screen_name);
@@ -564,7 +567,7 @@ module.exports = {
 
                 if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' liked',
-                    'message': event.target_object.text
+                    'message': extended_tweet ? extended_tweet.full_text : event.target_object.text
                 });
                 break;
             case 'follow':
@@ -583,7 +586,7 @@ module.exports = {
 
                 if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' commented',
-                    'message': event.target_object.text
+                    'message': extended_tweet ? extended_tweet.full_text : event.target_object.text
                 });
                 break;
             case 'retweet':
@@ -593,7 +596,7 @@ module.exports = {
 
                 if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' retweeted',
-                    'message': event.status.retweeted_status.text
+                    'message': extended_retweet ? extended_retweet.text : event.status.retweeted_status.text
                 });
                 break;
             case 'blocked':
@@ -613,7 +616,7 @@ module.exports = {
 
                 if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' retweeted your retweet',
-                    'message': event.target_object.text
+                    'message': extended_tweet ? extended_tweet.full_text : event.target_object.text
                 });
                 break;
             case 'favorited_retweet':
@@ -623,7 +626,7 @@ module.exports = {
 
                 if (this.preferences.get('notifications')) notifier.notify({
                     'title': '@' + event.source.screen_name + ' liked your retweet',
-                    'message': event.target_object.text
+                    'message': extended_tweet ? extended_tweet.full_text : event.target_object.text
                 });
                 break;
             default:
@@ -727,7 +730,7 @@ module.exports = {
         this.store.update({ id: id }, doc, { upsert: true });
         this.cacheFromStatus(status);
 
-        var isRetweet = status.retweeted_status ? true : false;
+        var isRetweet = !!status.retweeted_status;
 
         if (isRetweet && status.retweeted_status.user.id_str === this.ME.id_str
                 && status.user.id_str !== this.ME.id_str) {
