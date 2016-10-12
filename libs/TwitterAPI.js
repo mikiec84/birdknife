@@ -558,8 +558,8 @@ module.exports = {
         var status = null;
         var extended_tweet = event.target_object ? event.target_object.extended_tweet : null;
         var extended_retweet = (event.status && event.status.retweeted_status)
-            ? (event.target_object.retweeted_status ? event.target_object.retweeted_status.extended_tweet : null)
-            : null;
+            ? event.status.retweeted_status.extended_tweet : null;
+
         switch (event.event) {
             case 'favorite':
                 line += color.bold('@' + event.source.screen_name);
