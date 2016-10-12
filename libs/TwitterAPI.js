@@ -556,7 +556,7 @@ module.exports = {
         if (event.source.id_str === this.ME.id_str) return;
         var line = '-- ';
         var status = null;
-        var extended_tweet = event.target_object.extended_tweet;
+        var extended_tweet = event.target_object ? event.target_object.extended_tweet : null;
         var extended_retweet = (event.status && event.status.retweeted_status)
             ? event.target_object.retweeted_status.extended_tweet : null;
         switch (event.event) {
