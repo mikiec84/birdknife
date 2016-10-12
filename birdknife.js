@@ -55,7 +55,7 @@ vorpal
                 return;
             }
 
-            var obj = doc.status ? doc.status : doc.message;
+            var obj = doc.status || doc.message;
             if (args.options.debug || doc.type === 'message') {
                 var util = require('util');
                 self.log(
@@ -135,11 +135,14 @@ vorpal
     });
 
 vorpal
-    .command('/search <query>', 'Search')
+    .command('/search <query...>', 'Search')
     .alias('/se')
+    .parse(parser.parseCommand)
     .action(function(args, callback) {
         this.log(color.blue('-- Searching...'));
-        api.search(args.query);
+        var query = args.query.join(' ');
+        query = parser.postParse(query);
+        api.search(query);
         callback();
     });
 
@@ -149,14 +152,10 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc || doc.type !== 'status') {
-                self.log(color.error('Warning: No status found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
+
+            if (!doc || doc.type !== 'status')
+                return self.log(color.error('Warning: No status found with this id.'));
 
             api.retweet(doc.status.id_str);
         });
@@ -169,14 +168,10 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc || doc.type !== 'status') {
-                self.log(color.error('Warning: No status found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
+
+            if (!doc || doc.type !== 'status')
+                return self.log(color.error('Warning: No status found with this id.'));
 
             api.like(doc.status.id_str);
         });
@@ -189,14 +184,10 @@ vorpal
     .action(function(args, callback) {
         const self = this;
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc || doc.type !== 'status') {
-                self.log(color.error('Warning: No status found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
+
+            if (!doc || doc.type !== 'status')
+                return self.log(color.error('Warning: No status found with this id.'));
 
             api.unlike(doc.status.id_str);
         });
@@ -256,22 +247,23 @@ vorpal
         text = parser.postParse(text);
 
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc) {
-                self.log(color.error('Warning: No status or message found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
 
-            if (doc.type === 'status') {
-                text = birdknife_text.addMentionsToReply(api.ME.screen_name, text, doc.status);
-                api.reply(text, doc.status.id_str);
-            } else if (doc.type === 'message') {
-                api.message(doc.message.sender_screen_name, text);
-            } else {
-                self.log(color.error('Warning: Unsupported command for this element.'));
+            if (!doc)
+                return self.log(color.error('Warning: No status or message found with this id.'));
+
+            switch (doc.type) {
+                case 'status':
+                    text = birdknife_text.addMentionsToReply(api.ME.screen_name, text, doc.status);
+                    api.reply(text, doc.status.id_str);
+                    break;
+
+                case 'message':
+                    api.message(doc.message.sender_screen_name, text);
+                    break;
+
+                default:
+                    self.log(color.error('Warning: Unsupported command for this element.'));
             }
         });
         callback();
@@ -287,19 +279,15 @@ vorpal
         text = parser.postParse(text);
 
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc || doc.type !== 'status') {
-                self.log(color.error('Warning: No status found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
+
+            if (!doc || doc.type !== 'status')
+                return self.log(color.error('Warning: No status found with this id.'));
 
             var screen_name = doc.status.retweeted_status
                 ? doc.status.retweeted_status.user.screen_name : doc.status.user.screen_name;
+            text += ' ' + birdknife_text._getStatusURL(screen_name, doc.status.id_str);
 
-            text += ' https://twitter.com/' + screen_name + '/status/' + doc.status.id_str;
             api.update(text);
         });
         callback();
@@ -313,14 +301,10 @@ vorpal
         this.log(color.blue('-- Loading conversation. This might take a few seconds...'));
 
         store.findOne({ id: args.id }, function(err, doc) {
-            if (err) {
-                self.log(color.error('Error: ' + err));
-                return;
-            }
-            if (!doc || doc.type !== 'status') {
-                self.log(color.error('Warning: No status found with this id.'));
-                return;
-            }
+            if (err) return self.log(color.error('Error: ' + err));
+
+            if (!doc || doc.type !== 'status')
+                return self.log(color.error('Warning: No status found with this id.'));
 
             api.loadConversation(doc.status);
         });
@@ -346,7 +330,8 @@ vorpal
         var TwitterPinAuth = require('twitter-pin-auth');
         twitterPinAuth = new TwitterPinAuth(
             preferences.getAuth('consumer_key'),
-            preferences.getAuth('consumer_secret'));
+            preferences.getAuth('consumer_secret')
+        );
 
         twitterPinAuth.requestAuthUrl()
             .then(function(url) {
@@ -436,7 +421,13 @@ vorpal
     .command('/tweet [dirs...]', 'Tweet (optional: add media)')
     .autocomplete(fsAutocomplete())
     .action(function(args, callback) {
-        this.log(color.yellow('\nEnter ') + color.blue('/send ') + color.yellow('to update your status or ') + color.red('/cancel') + color.yellow(' to return to the main prompt.'));
+        this.log(
+            color.yellow('\nEnter ')
+            + color.blue('/send ')
+            + color.yellow('to update your status or ')
+            + color.red('/cancel')
+            + color.yellow(' to return to the main prompt.')
+        );
 
         birdknife_delimiter.updateExplicitCount('', args.dirs);
         exp_prompt(this, callback, args.dirs);
@@ -476,15 +467,15 @@ vorpal
             this.log(color.yellow(color.bold('WARNING:')
                 + ' You enabled tweet protection. Update status with '
                 + color.bold('/tweet')
-                + ' or disable tweet protection.'))
+                + ' or disable tweet protection.')
+            );
         }
         else if (status.charAt(0) == '/') {
             this.prompt({
                 type: 'confirm',
                 name: 'protin',
                 default: null,
-                message: color.yellow(color.bold('WARNING:')
-                    + ' Do you really want to tweet this?')
+                message: color.yellow(color.bold('WARNING:') + ' Do you really want to tweet this?')
             }, function(result) {
                 if (result.protin) {
                     api.update(status);

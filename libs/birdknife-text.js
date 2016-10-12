@@ -1,10 +1,12 @@
 var color = require('./color_definitions'),
     twitter = require('twitter-text'),
-    Entities = require('html-entities').AllHtmlEntities;
+    Entities = require('html-entities').AllHtmlEntities,
+    util = require('util');
 
 var htmlEntities = new Entities();
 
 module.exports = {
+    STATUS_URL: 'https://twitter.com/%s/status/%s',
 
     getRemainingTweetLength: function(status, withMedia) {
         return 140 - (twitter.getTweetLength(status) + (withMedia ? 24 : 0));
@@ -109,6 +111,10 @@ module.exports = {
     },
     
     getStatusURL: function(status) {
-        return 'https://twitter.com/' + status.user.screen_name + '/status/' + status.id_str;
+        return this._getStatusURL(status.user.screen_name, status.id_str);
+    },
+
+    _getStatusURL: function(screen_name, id_str) {
+        return util.format(this.STATUS_URL, screen_name, id_str);
     }
 };

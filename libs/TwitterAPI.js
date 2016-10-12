@@ -219,10 +219,9 @@ module.exports = {
                 self.vorpal.log(color.error('Error GET statuses/show/:id: ' + err));
             })
             .then(function(result) {
-                if (!result || result.resp === null) {
-                    self.vorpal.log(color.error('No result! Please check your internet connection and relogin...'));
-                    return;
-                }
+                if (!result || result.resp === null)
+                    return self.vorpal.log(color.error('No result! Please check your internet connection and relogin...'));
+
                 if (result.data.errors) {
                     statuses = statuses.reverse();
 
@@ -234,6 +233,7 @@ module.exports = {
                     self.vorpal.log(color.error('Error: ' + result.data.errors[0].message));
                     return;
                 }
+
                 statuses.push(result.data);
                 if (result.data.in_reply_to_status_id_str) {
                     self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
@@ -301,10 +301,7 @@ module.exports = {
 
     updateWithMedia: function (tweet, medias) {
         if (!this.T) return;
-        if (!medias || medias.length === 0) {
-            this.update(tweet);
-            return;
-        }
+        if (!medias || medias.length === 0) return this.update(tweet);
 
         const self = this;
 
@@ -319,14 +316,10 @@ module.exports = {
             try {
                 var b64content = fs.readFileSync(media, {encoding: 'base64'});
             } catch (e) {
-                self.vorpal.log(color.error('Error uploading file: ') + e.message);
-                return;
+                return self.vorpal.log(color.error('Error uploading file: ') + e.message);
             }
             self.T.post('media/upload', { media_data: b64content }, function (err, data, response) {
-                if (err) {
-                    self.vorpal.log(color.error('Error POST media/upload: ' + err));
-                    return;
-                }
+                if (err) return self.vorpal.log(color.error('Error POST media/upload: ' + err));
                 params.media_ids.push(data.media_id_string);
 
                 i++;

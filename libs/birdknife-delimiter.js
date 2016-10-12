@@ -43,10 +43,7 @@ module.exports = {
             id = reply[1];
             input = input.replace(reply[0], '');
             store.findOne({ id: id }, function(err, doc) {
-                if (err) {
-                    vorpal.log(color.error('Error: ' + err));
-                    return;
-                }
+                if (err) return vorpal.log(color.error('Error: ' + err));
                 if (!doc || doc.type !== 'status') return;
 
                 input = text.addMentionsToReply(api.ME.screen_name, input, doc.status);
@@ -61,10 +58,7 @@ module.exports = {
             id = quote[1];
             input = input.replace(quote[0], '');
             store.findOne({ id: id }, function(err, doc) {
-                if (err) {
-                    vorpal.log(color.error('Error: ' + err));
-                    return;
-                }
+                if (err) return vorpal.log(color.error('Error: ' + err));
                 if (!doc || doc.type !== 'status') return;
 
                 input += ' ' + text.getStatusURL(doc.status);
