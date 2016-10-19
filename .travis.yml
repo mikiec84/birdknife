@@ -6,6 +6,8 @@ node_js:
   - "5"
 sudo: false
 
-before_install:
+install:
   - mkdir -p lib/test
   - openssl aes-256-cbc -K $encrypted_6029cfe078d1_key -iv $encrypted_6029cfe078d1_iv -in birdknife.json.enc -out lib/test/config.json -d
+  - npm install
+  - npm test
