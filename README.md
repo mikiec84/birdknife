@@ -17,18 +17,17 @@ functional Twitter client for your CLI.
 
 * Full featured Twitter CLI
 * Cross platform
-* Update your status with location
 * Read your timeline and interact with tweets
-    * Reply, retweet, like (fav),...
+    * Reply, retweet, like (fav), quote,...
 * Interact with users
     * Follow, block, mute
-* Search
+* Update your status with media and location
+* Search on Twitter
 * Hashtag and @screen_name autocompletion
 * Notifications (Cross platform)
 
 #### In the future
 
-* Update status with media
 * Work with lists
     * Follow, view, create, add/remove users,...
 * Manage multiple accounts
@@ -139,7 +138,7 @@ birdknife [---]> /preferences
 ##### Set preference
 
 ```
-birdknife [---]> /set notification false
+birdknife [---]> /set notifications false
 notifications is now set to false
 
 birdknife [---]> /set location { "lat": 57.52936, "lng": -6.24176 }
