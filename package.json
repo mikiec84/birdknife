@@ -1,6 +1,6 @@
 {
   "name": "birdknife",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Twitter CLI based on vorpal",
   "main": "./lib/birdknife.js",
   "homepage": "https://github.com/vanita5/birdknife",
@@ -18,7 +18,7 @@
   "scripts": {
     "test": "./node_modules/.bin/gulp test",
     "start": "./node_modules/.bin/gulp",
-    "prepublish": "./node_modules/.bin/gulp clean && ./node_modules/.bin/gulp clean"
+    "prepublish": "./node_modules/.bin/gulp clean && ./node_modules/.bin/gulp build"
   },
   "license": "MIT",
   "keywords": [
