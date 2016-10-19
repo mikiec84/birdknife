@@ -189,14 +189,14 @@ class BirdknifeText {
     static addMentionsToReply(ignoreScreenName, text, status) {
         if (status.entities.user_mentions) {
             for (const mention of status.entities.user_mentions) {
-                if (text.indexOf(mention.screen_name) < 0) {
+                if (!text.includes(mention.screen_name)) {
                     if (mention.screen_name === ignoreScreenName) continue;
                     text = `@${mention.screen_name} ${text}`;
                 }
             }
         }
 
-        if (text.indexOf(status.user.screen_name) < 0 && status.user.screen_name !== ignoreScreenName) {
+        if (!text.includes(status.user.screen_name) && status.user.screen_name !== ignoreScreenName) {
             text = `@${status.user.screen_name} ${text}`;
         }
         return text;
