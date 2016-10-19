@@ -343,39 +343,63 @@ class TwitterAPI {
     loadConversationRec(statuses, inReplyToStatusId) {
         if (!this.T) return;
         const self = this;
-        this.T.get('statuses/show/:id', { id: inReplyToStatusId, include_entities: 'true' })
-            .catch(err => {
-                self.vorpal.log(Color.error(`Error GET statuses/show/:id: ${err}`));
-            })
-            .then(result => {
-                if (!result || result.resp === null) {
-                    return self.vorpal.log(Color.error('No result! Please check your internet connection and relogin...'));
-                }
 
-                if (result.data.errors) {
-                    statuses = statuses.reverse();
+        this.store.findOne({ $and: [{ type: 'status' }, { 'status.id_str': inReplyToStatusId }] }, (err, doc) => {
+            if (err) return self.vorpal.log(`Error getting from cache: ${err}`);
+            if (!doc) return self.vorpal.log(`Didn't find anything`);
 
-                    self.displayStatus(statuses[0], false);
-                    statuses.slice(1).forEach(status => {
-                        self.displayStatus(status, true);
+            self.vorpal.log(`Found with text!!! ${doc.status.text}`);
+
+            if (err || !doc) {
+                this.T.get('statuses/show/:id', { id: inReplyToStatusId, include_entities: 'true' })
+                    .catch(err => {
+                        self.vorpal.log(Color.error(`Error GET statuses/show/:id: ${err}`));
+                    })
+                    .then(result => {
+                        if (!result || result.resp === null) {
+                            return self.vorpal.log(Color.error('No result! Please check your internet connection and relogin...'));
+                        }
+
+                        if (result.data.errors) {
+                            self.displayConversationStatuses(statuses);
+
+                            self.vorpal.log(Color.error(`Error: ${result.data.errors[0].message}`));
+                            return;
+                        }
+
+                        statuses.push(result.data);
+                        if (result.data.in_reply_to_status_id_str) {
+                            self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
+                        } else {
+                            self.displayConversationStatuses(statuses);
+                        }
                     });
-
-                    self.vorpal.log(Color.error(`Error: ${result.data.errors[0].message}`));
-                    return;
-                }
-
-                statuses.push(result.data);
-                if (result.data.in_reply_to_status_id_str) {
-                    self.loadConversationRec(statuses, result.data.in_reply_to_status_id_str);
+            } else {
+                statuses.push(doc.status);
+                if (doc.status.in_reply_to_status_id_str) {
+                    self.loadConversationRec(statuses, doc.status.in_reply_to_status_id_str);
                 } else {
-                    statuses = statuses.reverse();
-
-                    self.displayStatus(statuses[0], false);
-                    statuses.slice(1).forEach(status => {
-                        self.displayStatus(status, true);
-                    });
+                    self.displayConversationStatuses(statuses);
                 }
-            });
+            }
+        });
+    }
+
+    /**
+     * Display multiple statuses
+     *
+     * Note: array gets reversed!
+     *
+     * @param statuses
+     */
+    displayConversationStatuses(statuses) {
+        if (!statuses) return;
+        statuses = statuses.reverse();
+
+        this.displayStatus(statuses[0], false);
+        statuses.slice(1).forEach(status => {
+            this.displayStatus(status, true);
+        });
     }
 
     /**
