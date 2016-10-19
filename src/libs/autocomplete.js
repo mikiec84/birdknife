@@ -36,8 +36,7 @@ class Autocomplete {
                     vorpal.ui.input(inp);
                 } else {
                     let suggestions = '';
-                    for (let i = 0; i < docs.length; i++) {
-                        const suggestion = docs[i];
+                    for (let suggestion of docs) {
                         suggestions += suggestion.k + ' ';
                     }
                     vorpal.ui.imprint();

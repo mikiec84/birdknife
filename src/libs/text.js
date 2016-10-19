@@ -77,6 +77,7 @@ class BirdknifeText {
      * @returns {string}
      */
     static autoBoldText(text, entities) {
+        if (!entities) return;
         twitter.convertUnicodeIndices(text, entities, false);
 
         let result = '';
@@ -85,9 +86,7 @@ class BirdknifeText {
         );
 
         let beginIndex = 0;
-        for (let i = 0; i < entities.length; i++) {
-            const entity = entities[i];
-
+        for (let entity of entities) {
             result += text.substring(beginIndex, entity.indices[0]);
             if (entity.type) { // Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
                 result += Color.bold(entity.display_url);
@@ -125,24 +124,24 @@ class BirdknifeText {
         const flatEntities = [];
 
         if (entities.user_mentions) {
-            for (let i = 0; i < entities.user_mentions.length; i++) {
-                flatEntities.push(entities.user_mentions[i]);
-            }
+            entities.user_mentions.forEach(mention =>
+                flatEntities.push(mention)
+            );
         }
         if (entities.urls) {
-            for (let i = 0; i < entities.urls.length; i++) {
-                flatEntities.push(entities.urls[i]);
-            }
+            entities.urls.forEach(url =>
+                flatEntities.push(url)
+            );
         }
         if (entities.hashtags) {
-            for (let i = 0; i < entities.hashtags.length; i++) {
-                flatEntities.push(entities.hashtags[i]);
-            }
+            entities.hashtags.forEach(hashtag =>
+                flatEntities.push(hashtag)
+            );
         }
         if (entities.media) {
-            for (let i = 0; i < entities.media.length; i++) {
-                flatEntities.push(entities.media[i]);
-            }
+            entities.media.forEach(media =>
+                flatEntities.push(media)
+            );
         }
 
         return BirdknifeText.autoBoldText(text, flatEntities);
@@ -158,11 +157,9 @@ class BirdknifeText {
         const flatEntities = [];
 
         if (user.entities.description.urls) {
-            const urls = user.entities.description.urls;
-
-            for (let i = 0; i < urls.length; i++) {
-                flatEntities.push(urls[i]);
-            }
+            user.entities.description.urls.forEach(url =>
+                flatEntities.push(url)
+            );
         }
 
         return BirdknifeText.autoBoldText(user.description, flatEntities);
@@ -191,9 +188,7 @@ class BirdknifeText {
      */
     static addMentionsToReply(ignoreScreenName, text, status) {
         if (status.entities.user_mentions) {
-            for (let i = 0; i < status.entities.user_mentions.length; i++) {
-                const mention = status.entities.user_mentions[i];
-
+            for (let mention of status.entities.user_mentions) {
                 if (text.indexOf(mention.screen_name) < 0) {
                     if (mention.screen_name === ignoreScreenName) continue;
                     text = `@${mention.screen_name} ${text}`;
