@@ -140,7 +140,7 @@ class Preferences {
                 break;
             case 'timestamp':
                 value = parseInt(value, 10);
-                if (isNaN(value) || value <= 0) value = 0;
+                if (Number.isNaN(value) || value <= 0) value = 0;
                 else if (value > 59) value = 59;
                 break;
             default:
