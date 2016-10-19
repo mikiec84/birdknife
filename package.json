@@ -17,7 +17,8 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/gulp test",
-    "start": "./node_modules/.bin/gulp"
+    "start": "./node_modules/.bin/gulp",
+    "prepublish": "./node_modules/.bin/gulp build"
   },
   "license": "MIT",
   "keywords": [
