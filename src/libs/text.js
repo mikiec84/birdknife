@@ -86,7 +86,7 @@ class BirdknifeText {
         );
 
         let beginIndex = 0;
-        for (let entity of entities) {
+        for (const entity of entities) {
             result += text.substring(beginIndex, entity.indices[0]);
             if (entity.type) { // Only 'photo' for now (https://dev.twitter.com/overview/api/entities-in-twitter-objects)
                 result += Color.bold(entity.display_url);
@@ -188,7 +188,7 @@ class BirdknifeText {
      */
     static addMentionsToReply(ignoreScreenName, text, status) {
         if (status.entities.user_mentions) {
-            for (let mention of status.entities.user_mentions) {
+            for (const mention of status.entities.user_mentions) {
                 if (text.indexOf(mention.screen_name) < 0) {
                     if (mention.screen_name === ignoreScreenName) continue;
                     text = `@${mention.screen_name} ${text}`;
