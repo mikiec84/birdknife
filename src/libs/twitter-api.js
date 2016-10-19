@@ -719,7 +719,7 @@ class TwitterAPI {
      */
     isMention(status) {
         if (status.entities.user_mentions) {
-            for (const mention of status.entities.user_mentions.length) {
+            for (const mention of status.entities.user_mentions) {
                 if (mention.id_str === this.ME.id_str) return true;
             }
         }
@@ -845,13 +845,13 @@ class TwitterAPI {
         this.cache.usernames.update({ k: `@${status.user.screen_name}` }, { $inc: { count: 1 } }, { upsert: true });
 
         if (status.entities.user_mentions) {
-            for (const mention of status.entities.user_mentions.length) {
+            for (const mention of status.entities.user_mentions) {
                 this.cache.usernames.update({ k: `@${mention.screen_name}` }, { $inc: { count: 1 } }, { upsert: true });
             }
         }
 
         if (status.entities.hashtags) {
-            for (const hashtag of status.entities.hashtags.length) {
+            for (const hashtag of status.entities.hashtags) {
                 this.cache.hashtags.update({ k: `#${hashtag.text}` }, { $inc: { count: 1 } }, { upsert: true });
             }
         }
