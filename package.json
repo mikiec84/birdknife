@@ -18,7 +18,7 @@
   "scripts": {
     "test": "./node_modules/.bin/gulp test",
     "start": "./node_modules/.bin/gulp",
-    "prepublish": "./node_modules/.bin/gulp build"
+    "prepublish": "./node_modules/.bin/gulp clean && ./node_modules/.bin/gulp clean"
   },
   "license": "MIT",
   "keywords": [
