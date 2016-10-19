@@ -100,7 +100,7 @@ vorpal
                 return callback();
             }
 
-            api.delete(doc.status, callback);
+            api.deleteStatus(doc.status, callback);
         });
     });
 
