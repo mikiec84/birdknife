@@ -4,6 +4,12 @@ import Color from './color-definitions';
 
 class Autocomplete {
 
+    /**
+     * Autocomplete usernames and hashtags
+     *
+     * @param vorpal
+     * @param cache
+     */
     static autocomplete(vorpal, cache) {
         const input = vorpal.ui.input();
 

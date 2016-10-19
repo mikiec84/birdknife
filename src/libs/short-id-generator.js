@@ -3,6 +3,9 @@ const MAX = 1295;
 
 class ShortIdGenerator {
 
+    /**
+     * Constructor
+     */
     constructor() {
         this.current = MIN;
         this.specialCurrent = MIN;
@@ -20,6 +23,13 @@ class ShortIdGenerator {
         return id;
     }
 
+    /**
+     * Generate a new id from a0 to zz
+     * with a given prefix
+     *
+     * @param specialKey
+     * @return {string}
+     */
     generateSpecial(specialKey) {
         if (this.specialCurrent >= MAX) this.specialCurrent = MIN;
         const id = specialKey + this.specialCurrent.toString(36);

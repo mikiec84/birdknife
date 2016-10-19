@@ -202,10 +202,23 @@ class BirdknifeText {
         return text;
     }
 
+    /**
+     * Get status url by status object
+     *
+     * @param status
+     * @return {string}
+     */
     static getStatusURL(status) {
         return BirdknifeText._getStatusURL(status.user.screen_name, status.id_str);
     }
 
+    /**
+     * Get status url by screen_name and id (internal)
+     *
+     * @param screenName
+     * @param idStr
+     * @private
+     */
     static _getStatusURL(screenName, idStr) {
         return util.format(STATUS_URL, screenName, idStr);
     }

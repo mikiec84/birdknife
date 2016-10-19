@@ -12,6 +12,14 @@ const shortIdGenerator = new ShortIdGenerator();
 
 class TwitterAPI {
 
+    /**
+     * Constructor
+     *
+     * @param preferences
+     * @param vorpal
+     * @param store
+     * @param cache
+     */
     constructor(preferences, vorpal, store, cache) {
         this.vorpal = vorpal;
         this.preferences = preferences;
@@ -25,6 +33,12 @@ class TwitterAPI {
         this.TEST = process.env.NODE_ENV === 'test';
     }
 
+    /**
+     * Logout
+     *
+     * Removes access_token and access_token_secret
+     * from preferences
+     */
     logout() {
         this.stream.stop();
         this.T = null;
@@ -32,6 +46,13 @@ class TwitterAPI {
         this.preferences.removeAccessToken();
     }
 
+    /**
+     * Login
+     *
+     * Authenticate with Twitter and save
+     * access_token and access_token_secret in
+     * preferences
+     */
     login() {
         const self = this;
 
@@ -54,6 +75,9 @@ class TwitterAPI {
         }
     }
 
+    /**
+     * Start user stream
+     */
     startStream() {
         if (!this.T) return;
         const self = this;
@@ -96,6 +120,9 @@ class TwitterAPI {
         });
     }
 
+    /**
+     * Load authenticated user information
+     */
     loadMyself() {
         if (!this.T) return;
         const self = this;
@@ -110,11 +137,21 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load tweets of user by screen_name.
+     * If screen_name is not given, load authenticated
+     * users home timeline.
+     *
+     * @param screenName
+     */
     loadTimeline(screenName) {
         if (screenName) this.loadUserTimeline(screenName);
         else this.loadHome();
     }
 
+    /**
+     * Load authenticated users home timeline
+     */
     loadHome() {
         if (!this.T) return;
         const self = this;
@@ -130,6 +167,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load tweets of user by screen_name
+     *
+     * @param screenName
+     */
     loadUserTimeline(screenName) {
         if (!this.T) return;
         const self = this;
@@ -145,6 +187,9 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load replies of authenticated user
+     */
     loadReplies() {
         if (!this.T) return;
         const self = this;
@@ -160,6 +205,9 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load direct messages of authenticated user
+     */
     loadDMs() {
         if (!this.T) return;
         const self = this;
@@ -175,6 +223,9 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load direct messages sent by the authenticated user
+     */
     loadSentDMs() {
         if (!this.T) return;
         const self = this;
@@ -190,6 +241,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Load user information by screen_name
+     *
+     * @param screenName
+     */
     loadUser(screenName) {
         if (!this.T) return;
         const self = this;
@@ -209,6 +265,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Search
+     *
+     * @param query
+     */
     search(query) {
         if (!this.T) return;
         const self = this;
@@ -225,6 +286,12 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Recursively load a conversation/thread
+     *
+     * @param statuses
+     * @param inReplyToStatusId
+     */
     loadConversationRec(statuses, inReplyToStatusId) {
         if (!this.T) return;
         const self = this;
@@ -263,11 +330,22 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Inits recursive loading of a conversation/thread
+     *
+     * @param originalStatus
+     */
     loadConversation(originalStatus) {
         originalStatus = originalStatus.retweeted_status || originalStatus;
         this.loadConversationRec([], originalStatus.id_str);
     }
 
+    /**
+     * Reply to a status
+     *
+     * @param tweet
+     * @param inReplyToStatusId
+     */
     reply(tweet, inReplyToStatusId) {
         if (!this.T) return;
         const self = this;
@@ -293,6 +371,12 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Update Twitter status
+     *
+     * @param params
+     * @private
+     */
     _update(params) {
         const self = this;
         this.T.post('statuses/update', params)
@@ -304,6 +388,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Handles updating Twitter status
+     *
+     * @param tweet
+     */
     update(tweet) {
         if (!this.T) return;
 
@@ -314,6 +403,13 @@ class TwitterAPI {
         this._update(params);
     }
 
+    /**
+     * Update status with media
+     *
+     * @param tweet
+     * @param medias
+     * @return {*}
+     */
     updateWithMedia(tweet, medias) {
         if (!this.T) return;
         if (!medias || medias.length === 0) return this.update(tweet);
@@ -349,6 +445,12 @@ class TwitterAPI {
         _upload(medias, 0);
     }
 
+    /**
+     * Get location depending on preference
+     *
+     * @param params
+     * @return {*}
+     */
     addLocation(params) {
         const location = Location.getLocation(this.preferences);
         if (location) {
@@ -360,6 +462,12 @@ class TwitterAPI {
         return params;
     }
 
+    /**
+     * Sent direct message to given screen_name
+     *
+     * @param screenName
+     * @param message
+     */
     message(screenName, message) {
         if (!this.T) return;
         const self = this;
@@ -372,6 +480,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Retweet by id
+     *
+     * @param id
+     */
     retweet(id) {
         if (!this.T) return;
         const self = this;
@@ -386,6 +499,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Like/Favorite by id
+     *
+     * @param id
+     */
     like(id) {
         if (!this.T) return;
         const self = this;
@@ -400,6 +518,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Remove like/favorite
+     *
+     * @param id
+     */
     unlike(id) {
         if (!this.T) return;
         const self = this;
@@ -414,6 +537,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Follow user by screen_name
+     *
+     * @param screenName
+     */
     follow(screenName) {
         if (!this.T) return;
         const self = this;
@@ -427,6 +555,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Unfollow user by screen_name
+     *
+     * @param screenName
+     */
     unfollow(screenName) {
         if (!this.T) return;
         const self = this;
@@ -440,6 +573,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Block user by screen_name
+     *
+     * @param screenName
+     */
     block(screenName) {
         if (!this.T) return;
         const self = this;
@@ -453,6 +591,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Unblock user by screen_name
+     *
+     * @param screenName
+     */
     unblock(screenName) {
         if (!this.T) return;
         const self = this;
@@ -466,6 +609,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Mute user by screen_name
+     *
+     * @param screenName
+     */
     mute(screenName) {
         if (!this.T) return;
         const self = this;
@@ -479,6 +627,11 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Unmute user by screen_name
+     *
+     * @param screenName
+     */
     unmute(screenName) {
         if (!this.T) return;
         const self = this;
@@ -492,6 +645,12 @@ class TwitterAPI {
             });
     }
 
+    /**
+     * Delete status or unretweet
+     *
+     * @param status
+     * @param callback
+     */
     deleteStatus(status, callback = function () {}) {
         if (!this.T) {
             return callback();
@@ -530,6 +689,12 @@ class TwitterAPI {
         }
     }
 
+    /**
+     * Check if result is/contains an error
+     *
+     * @param result
+     * @return {boolean}
+     */
     isError(result) {
         if (!result || result.resp === null) {
             this.vorpal.log(Color.error('No result! Please check your internet connection and relogin...'));
@@ -545,6 +710,13 @@ class TwitterAPI {
         return false;
     }
 
+    /**
+     * Check if status is a mention for the
+     * authenticated user
+     *
+     * @param status
+     * @return {boolean}
+     */
     isMention(status) {
         if (status.entities.user_mentions) {
             for (const mention of status.entities.user_mentions.length) {
@@ -554,6 +726,11 @@ class TwitterAPI {
         return false;
     }
 
+    /**
+     * Display event
+     *
+     * @param event
+     */
     displayEvent(event) {
         if (event.source.id_str === this.ME.id_str) return;
 
@@ -659,6 +836,11 @@ class TwitterAPI {
         if (status) this.displayStatus(status, true);
     }
 
+    /**
+     * Upsert status entities into cache
+     *
+     * @param status
+     */
     cacheFromStatus(status) {
         this.cache.usernames.update({ k: `@${status.user.screen_name}` }, { $inc: { count: 1 } }, { upsert: true });
 
@@ -675,6 +857,11 @@ class TwitterAPI {
         }
     }
 
+    /**
+     * Display retweet as a pseudo event
+     *
+     * @param status
+     */
     displayRetweet(status) {
         const dummy = {
             event: 'retweet',
@@ -686,6 +873,12 @@ class TwitterAPI {
         this.displayEvent(dummy);
     }
 
+    /**
+     * Display user information including bio
+     *
+     * @param user
+     * @param relationship
+     */
     displayUser(user, relationship) {
         let line = '\n';
         line += `|\t${Color.bold('Name:')} ${user.name} (@${user.screen_name})\n`;
@@ -718,6 +911,11 @@ class TwitterAPI {
         this.vorpal.log(line);
     }
 
+    /**
+     * Display direct message
+     *
+     * @param message
+     */
     displayDM(message) {
         const id = shortIdGenerator.generateSpecial('d');
 
@@ -739,6 +937,13 @@ class TwitterAPI {
         this.vorpal.log(Color.dm(line));
     }
 
+    /**
+     * Display status
+     *
+     * @param status
+     * @param indented
+     * @return {*}
+     */
     displayStatus(status, indented) {
         if (!this.ME) return;
 

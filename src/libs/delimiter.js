@@ -21,10 +21,23 @@ class Delimiter {
         return PAD;
     }
 
+    /**
+     * Update explicit count
+     *
+     * @param status
+     * @param withMedia
+     */
     updateExplicitCount(status, withMedia) {
         this.explicitCount = BirdknifeText.getTweetLength(status, withMedia);
     }
 
+    /**
+     * Set delimiter of the UI
+     *
+     * @param ui
+     * @param count
+     * @param explicit
+     */
     setDelimiter(ui, count, explicit) {
         if (count < 0) count = 0;
 
@@ -35,11 +48,26 @@ class Delimiter {
         ui.delimiter(`${pre} [${_s}]> `);
     }
 
+    /**
+     * Set delimiter of the UI to default
+     *
+     * @param ui
+     * @param explicit
+     */
     setDefaultDelimiter(ui, explicit) {
         if (explicit) ui.delimiter(`${PREFIX_EXPLICIT} [140]> `);
         else ui.delimiter(`${PREFIX} [---]> `);
     }
 
+    /**
+     * Set delimiter depending on the input
+     *
+     * @param vorpal
+     * @param store
+     * @param api
+     * @param input
+     * @param explicit
+     */
     set(vorpal, store, api, input, explicit) {
         const self = this;
         let _c;
