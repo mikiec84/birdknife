@@ -1,6 +1,6 @@
-var chalk = require('chalk');
+import chalk from 'chalk';
 
-module.exports = {
+export default {
     blue: chalk.blue,
     red: chalk.red,
     green: chalk.green,
@@ -10,14 +10,14 @@ module.exports = {
 
     error: chalk.red,
     success: chalk.green,
-    delimiter_warning: chalk.red,
+    delimiterWarning: chalk.red,
     url: chalk.underline,
     event: chalk.yellow,
-    unknown_event: chalk.bgRed,
+    unknownEvent: chalk.bgRed,
     dm: chalk.green,
     reply: chalk.red,
-    screen_name: chalk.underline.blue,
-    my_screen_name: chalk.underline.yellow,
+    screenName: chalk.underline.blue,
+    myScreenName: chalk.underline.yellow,
     indented: chalk.green,
     timer: chalk.blue,
     file: chalk.italic.blue
