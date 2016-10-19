@@ -24,7 +24,7 @@ gulp.task('clean', () =>
         .pipe(clean())
 );
 
-gulp.task('build', ['lint', 'clean'], () =>
+gulp.task('build', ['lint'], () =>
     gulp.src(paths.srcJs)
         .pipe(babel())
         .pipe(gulp.dest('lib'))
