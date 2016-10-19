@@ -483,7 +483,7 @@ vorpal
 vorpal
     .on('keypress', function (event) {
         if (this.ui.delimiter() === 'PIN: ') return;
-        const explicit = this.ui.delimiter().substring(0, 5) === 'Tweet';
+        const explicit = this.ui.delimiter().startsWith('Tweet');
         if (event.key === 'tab') Autocomplete.autocomplete(this, cache);
         delimiter.set(this, store, api, this.ui.input(), explicit);
     });
