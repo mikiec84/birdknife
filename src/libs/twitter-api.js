@@ -651,7 +651,7 @@ class TwitterAPI {
      * @param status
      * @param callback
      */
-    deleteStatus(status, callback = function () {}) {
+    deleteStatus(status, callback = () => {}) {
         if (!this.T) {
             return callback();
         }
