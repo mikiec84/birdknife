@@ -1,8 +1,10 @@
-/* eslint-disable import/no-dynamic-require */
+/* eslint-disable import/no-dynamic-require, import/no-unresolved */
 
 import fs from 'fs';
 import path from 'path';
 import nconf from 'nconf';
+import columnify from 'columnify';
+import Color from './color-definitions';
 
 const KEY_PREFERENCES = 'preferences:';
 const KEY_AUTH = 'auth:';
@@ -181,6 +183,21 @@ class Preferences {
             console.error(err);
             this.configPath = this.originalPath;
         }
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    toString() {
+        const obj = this.getAll();
+        const data = {};
+        for (const k in obj) {
+            if ({}.hasOwnProperty.call(obj, k)) {
+                data[k] = Color.blue(JSON.stringify(obj[k]));
+            }
+        }
+        return `\n${columnify(data)}\n`;
     }
 }
 

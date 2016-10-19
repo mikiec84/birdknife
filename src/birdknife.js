@@ -2,14 +2,11 @@
 
 /* eslint-disable import/no-unresolved */
 
-import util from 'util';
 import _ from 'lodash';
 import Vorpal from 'vorpal';
 import vorpalAutocomplete from 'vorpal-autocomplete-fs';
 import Update from 'update-notifier';
-import columnify from 'columnify';
 import DataStore from 'nedb';
-import TwitterPinAuth from 'twitter-pin-auth';
 import Delimiter from './libs/delimiter';
 import TwitterAPI from './libs/twitter-api';
 import Color from './libs/color-definitions';
@@ -49,59 +46,14 @@ vorpal
     .command('/show <id>', 'Show stored tweet by id')
     .option('--debug', 'Show full tweet object')
     .action((args, callback) => {
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) {
-                vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-                return callback();
-            }
-            if (!doc) {
-                vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-                return callback();
-            }
-
-            const obj = doc.status || doc.message;
-            if (args.options.debug || doc.type === 'message') {
-                vorpal.activeCommand.log(
-                    util.inspect(obj, { showHidden: false, depth: null })
-                );
-            } else {
-                let log = '\n';
-                log += `|\t${Color.bold('User:')} ${obj.user.name} (@${obj.user.screen_name})\n`;
-                log += '|\t\n';
-                log += `|\t${Color.bold('Text:')} ${obj.text}\n`;
-                log += `|\t${Color.bold('Created At:')} ${obj.created_at}\n`;
-                log += `|\t${Color.bold('Favorites:')} ${obj.favorite_count || '0'}\n`;
-                log += `|\t${Color.bold('Retweets:')} ${obj.retweet_count || '0'}\n`;
-                if (obj.place) {
-                    log += `|\t${Color.bold('Location: ')}${obj.place.full_name}\n`;
-                }
-                if (obj.coordinates) {
-                    const coordinates = obj.coordinates.coordinates;
-                    log += `|\t${Color.bold('Location (Coordinates):')} ${coordinates[0]}, ${coordinates[1]}\n`;
-                }
-                log += `|\t${Color.bold('Source:')} ${obj.source}\n`;
-                vorpal.activeCommand.log(log);
-            }
-            callback();
-        });
+        api.showStatus(args.id, args.options.debug, vorpal.activeCommand, callback);
     });
 
 vorpal
     .command('/delete <id>', 'Delete a tweet')
     .alias('/del')
     .action((args, callback) => {
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) {
-                vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-                return callback();
-            }
-            if (!doc || doc.type !== 'status') {
-                vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-                return callback();
-            }
-
-            api.deleteStatus(doc.status, callback);
-        });
+        api.deleteStatus(args.id, vorpal.activeCommand, callback);
     });
 
 vorpal
@@ -139,8 +91,7 @@ vorpal
     .parse(Parser.parseCommand)
     .action((args, callback) => {
         vorpal.activeCommand.log(Color.blue('-- Searching...'));
-        let query = args.query.join(' ');
-        query = Parser.postParse(query);
+        const query = Parser.postParse(args.query.join(' '));
         api.search(query);
         callback();
     });
@@ -149,15 +100,7 @@ vorpal
     .command('/retweet <id>', 'Retweet status with id')
     .alias('/rt')
     .action((args, callback) => {
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc || doc.type !== 'status') {
-                return vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-            }
-
-            api.retweet(doc.status.id_str);
-        });
+        api.retweet(args.id, vorpal.activeCommand);
         callback();
     });
 
@@ -165,15 +108,7 @@ vorpal
     .command('/like <id>', 'Like/Favorite status with id')
     .alias('/fav')
     .action((args, callback) => {
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc || doc.type !== 'status') {
-                return vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-            }
-
-            api.like(doc.status.id_str);
-        });
+        api.like(args.id, vorpal.activeCommand);
         callback();
     });
 
@@ -181,15 +116,7 @@ vorpal
     .command('/unlike <id>', 'Remove like/favorite from status with id')
     .alias('/unfav')
     .action((args, callback) => {
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc || doc.type !== 'status') {
-                return vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-            }
-
-            api.unlike(doc.status.id_str);
-        });
+        api.unlike(args.id, vorpal.activeCommand);
         callback();
     });
 
@@ -243,27 +170,7 @@ vorpal
         let text = args.text.join(' ');
         text = Parser.postParse(text);
 
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc) {
-                return vorpal.activeCommand.log(Color.error('Warning: No status or message found with this id.'));
-            }
-
-            switch (doc.type) {
-                case 'status':
-                    text = BirdknifeText.addMentionsToReply(api.ME.screen_name, text, doc.status);
-                    api.reply(text, doc.status.id_str);
-                    break;
-
-                case 'message':
-                    api.message(doc.message.sender_screen_name, text);
-                    break;
-
-                default:
-                    vorpal.activeCommand.log(Color.error('Warning: Unsupported command for this element.'));
-            }
-        });
+        api.reply(args.id, text, vorpal.activeCommand);
         callback();
     });
 
@@ -274,19 +181,7 @@ vorpal
         let text = args.text.join(' ');
         text = Parser.postParse(text);
 
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc || doc.type !== 'status') {
-                return vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-            }
-
-            const screenName = doc.status.retweeted_status
-                ? doc.status.retweeted_status.user.screen_name : doc.status.user.screen_name;
-            text += ' ' + BirdknifeText._getStatusURL(screenName, doc.status.id_str);
-
-            api.update(text);
-        });
+        api.quote(args.id, text, vorpal.activeCommand);
         callback();
     });
 
@@ -295,15 +190,7 @@ vorpal
     .action((args, callback) => {
         vorpal.activeCommand.log(Color.blue('-- Loading conversation. This might take a few seconds...'));
 
-        store.findOne({ id: args.id }, (err, doc) => {
-            if (err) return vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-
-            if (!doc || doc.type !== 'status') {
-                return vorpal.activeCommand.log(Color.error('Warning: No status found with this id.'));
-            }
-
-            api.loadConversation(doc.status);
-        });
+        api.loadConversation(args.id, vorpal.activeCommand);
         callback();
     });
 
@@ -321,42 +208,7 @@ vorpal
     .command('/login')
     .description('Authenticate with your Twitter account')
     .action((args, callback) => {
-        const twitterPinAuth = new TwitterPinAuth(
-            preferences.getAuth('consumer_key'),
-            preferences.getAuth('consumer_secret')
-        );
-
-        twitterPinAuth.requestAuthUrl()
-            .then(url => {
-                vorpal.activeCommand.log(`${Color.yellow('Login and copy the PIN number:')} ${Color.url(url)}`);
-            })
-            .catch(err => {
-                vorpal.activeCommand.log(Color.error(`Error: ${err}`));
-            });
-
-        vorpal.activeCommand.prompt({
-            type: 'input',
-            name: 'pin',
-            default: null,
-            message: 'PIN: '
-        }, result => {
-            if (!result.pin) return;
-            twitterPinAuth.authorize(result.pin)
-                .then(data => {
-                    preferences.setAccessToken(data.accessTokenKey, data.accessTokenSecret);
-
-                    vorpal.activeCommand.log(Color.success('\nAuthentication successful!\n'));
-                    vorpal.activeCommand.log(Color.blue('Logging in...'));
-
-                    api.login(preferences, vorpal, store, cache);
-                    callback();
-                })
-                .catch(err => {
-                    vorpal.activeCommand.log(Color.error('Authentication failed!'));
-                    vorpal.activeCommand.log(err);
-                    callback();
-                });
-        });
+        api.authenticate(vorpal.activeCommand, callback);
     });
 
 vorpal
@@ -383,15 +235,7 @@ vorpal
 vorpal
     .command('/preferences', 'List all preferences')
     .action((args, callback) => {
-        const pref = preferences.getAll();
-
-        const data = {};
-        for (const k in pref) {
-            if ({}.hasOwnProperty.call(pref, k)) {
-                data[k] = Color.blue(JSON.stringify(pref[k]));
-            }
-        }
-        vorpal.activeCommand.log(`\n${columnify(data)}\n`);
+        vorpal.activeCommand.log(preferences.toString());
         callback();
     });
 
@@ -456,28 +300,7 @@ vorpal
         let status = args.words.join(' ');
         status = Parser.postParse(status);
 
-        if (preferences.get('tweet_protection')) {
-            vorpal.activeCommand.log(Color.yellow(Color.bold('WARNING:') +
-                ' You enabled tweet protection. Update status with ' +
-                Color.bold('/tweet') +
-                ' or disable tweet protection.')
-            );
-        } else if (status.charAt(0) === '/') {
-            vorpal.activeCommand.prompt({
-                type: 'confirm',
-                name: 'protin',
-                default: null,
-                message: Color.yellow(`${Color.bold('WARNING:')} Do you really want to tweet this?`)
-            }, result => {
-                if (result.protin) {
-                    api.update(status);
-                }
-                callback();
-            });
-        } else {
-            api.update(status);
-        }
-        callback();
+        api.tweet(status, vorpal.activeCommand, callback);
     });
 
 vorpal
@@ -539,7 +362,7 @@ new Timer(vorpal, preferences).start();
 
 if (preferences.checkAccessToken()) {
     vorpal.log(Color.blue('Logging in...'));
-    api.login(preferences, vorpal, store, cache);
+    api.login();
 } else {
     vorpal.log(Color.green('Type /login to authenticate with Twitter.'));
 }

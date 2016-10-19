@@ -1,8 +1,10 @@
 /* eslint-disable import/no-unresolved, camelcase */
 
 import fs from 'fs';
+import util from 'util';
 import Twit from 'twit';
 import notifier from 'node-notifier';
+import TwitterPinAuth from 'twitter-pin-auth';
 import Color from './color-definitions';
 import Location from './location';
 import BirdknifeText from './text';
@@ -73,6 +75,51 @@ class TwitterAPI {
                 self.loadHome();
             }, 3000);
         }
+    }
+
+    /**
+     * Authenticate via PIN auth
+     *
+     * @param cmd
+     * @param callback
+     */
+    authenticate(cmd, callback) {
+        const twitterPinAuth = new TwitterPinAuth(
+            this.preferences.getAuth('consumer_key'),
+            this.preferences.getAuth('consumer_secret')
+        );
+
+        twitterPinAuth.requestAuthUrl()
+            .then(url => {
+                cmd.log(`${Color.yellow('Login and copy the PIN number:')} ${Color.url(url)}`);
+            })
+            .catch(err => {
+                cmd.log(Color.error(`Error: ${err}`));
+            });
+
+        cmd.prompt({
+            type: 'input',
+            name: 'pin',
+            default: null,
+            message: 'PIN: '
+        }, result => {
+            if (!result.pin) return;
+            twitterPinAuth.authorize(result.pin)
+                .then(data => {
+                    this.preferences.setAccessToken(data.accessTokenKey, data.accessTokenSecret);
+
+                    cmd.log(Color.success('\nAuthentication successful!\n'));
+                    cmd.log(Color.blue('Logging in...'));
+
+                    this.login();
+                    callback();
+                })
+                .catch(err => {
+                    cmd.log(Color.error('Authentication failed!'));
+                    cmd.log(err);
+                    callback();
+                });
+        });
     }
 
     /**
@@ -291,6 +338,7 @@ class TwitterAPI {
      *
      * @param statuses
      * @param inReplyToStatusId
+     * @todo #54
      */
     loadConversationRec(statuses, inReplyToStatusId) {
         if (!this.T) return;
@@ -333,11 +381,50 @@ class TwitterAPI {
     /**
      * Inits recursive loading of a conversation/thread
      *
-     * @param originalStatus
+     * @param id cache
+     * @param cmd
      */
-    loadConversation(originalStatus) {
-        originalStatus = originalStatus.retweeted_status || originalStatus;
-        this.loadConversationRec([], originalStatus.id_str);
+    loadConversation(id, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc || doc.type !== 'status') {
+                return cmd.log(Color.error('Warning: No status found with this id.'));
+            }
+
+            const originalStatus = doc.status.retweeted_status || doc.status;
+            this.loadConversationRec([], originalStatus.id_str);
+        });
+    }
+
+    /**
+     *
+     * @param id cache
+     * @param text
+     * @param cmd
+     */
+    reply(id, text, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc) {
+                return cmd.log(Color.error('Warning: No status or message found with this id.'));
+            }
+
+            switch (doc.type) {
+                case 'status':
+                    text = BirdknifeText.addMentionsToReply(this.ME.screen_name, text, doc.status);
+                    this._reply(text, doc.status.id_str);
+                    break;
+
+                case 'message':
+                    this.message(doc.message.sender_screen_name, text);
+                    break;
+
+                default:
+                    cmd.log(Color.error('Warning: Unsupported command for this element.'));
+            }
+        });
     }
 
     /**
@@ -346,7 +433,7 @@ class TwitterAPI {
      * @param tweet
      * @param inReplyToStatusId
      */
-    reply(tweet, inReplyToStatusId) {
+    _reply(tweet, inReplyToStatusId) {
         if (!this.T) return;
         const self = this;
 
@@ -365,6 +452,47 @@ class TwitterAPI {
         this.T.post('statuses/update', params)
             .catch(err => {
                 self.vorpal.log(Color.error(`Error POST statuses/update: ${err}`));
+            })
+            .then(result => {
+                self.isError(result);
+            });
+    }
+
+    /**
+     * Quote tweet
+     *
+     * @param id cache
+     * @param text
+     * @param cmd
+     */
+    quote(id, text, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc || doc.type !== 'status') {
+                return cmd.log(Color.error('Warning: No status found with this id.'));
+            }
+
+            const screenName = doc.status.retweeted_status
+                ? doc.status.retweeted_status.user.screen_name : doc.status.user.screen_name;
+            text += ' ' + BirdknifeText._getStatusURL(screenName, doc.status.id_str);
+
+            this.update(text);
+        });
+    }
+
+    /**
+     * Sent direct message to given screen_name
+     *
+     * @param screenName
+     * @param message
+     */
+    message(screenName, message) {
+        if (!this.T) return;
+        const self = this;
+        this.T.post('direct_messages/new', { screen_name: screenName, text: message })
+            .catch(err => {
+                self.vorpal.log(Color.error(`Error POST direct_messages/new: ${err}`));
             })
             .then(result => {
                 self.isError(result);
@@ -446,6 +574,39 @@ class TwitterAPI {
     }
 
     /**
+     * Tweet
+     *
+     * @param text
+     * @param cmd
+     * @param callback
+     * @return {Vorpal|*}
+     */
+    tweet(text, cmd, callback) {
+        if (this.preferences.get('tweet_protection')) {
+            cmd.log(Color.yellow(Color.bold('WARNING:') +
+                ' You enabled tweet protection. Update status with ' +
+                Color.bold('/tweet') +
+                ' or disable tweet protection.')
+            );
+        } else if (text.charAt(0) === '/') {
+            return cmd.prompt({
+                type: 'confirm',
+                name: 'protin',
+                default: null,
+                message: Color.yellow(`${Color.bold('WARNING:')} Do you really want to tweet this?`)
+            }, result => {
+                if (result.protin) {
+                    this.update(text);
+                }
+                callback();
+            });
+        } else {
+            this.update(text);
+        }
+        callback();
+    }
+
+    /**
      * Get location depending on preference
      *
      * @param params
@@ -463,29 +624,29 @@ class TwitterAPI {
     }
 
     /**
-     * Sent direct message to given screen_name
      *
-     * @param screenName
-     * @param message
+     * @param id cache
+     * @param cmd
      */
-    message(screenName, message) {
-        if (!this.T) return;
-        const self = this;
-        this.T.post('direct_messages/new', { screen_name: screenName, text: message })
-            .catch(err => {
-                self.vorpal.log(Color.error(`Error POST direct_messages/new: ${err}`));
-            })
-            .then(result => {
-                self.isError(result);
-            });
+    retweet(id, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc || doc.type !== 'status') {
+                return cmd.log(Color.error('Warning: No status found with this id.'));
+            }
+
+            this._retweet(doc.status.id_str);
+        });
     }
 
     /**
      * Retweet by id
      *
-     * @param id
+     * @param id Status
+     * @private
      */
-    retweet(id) {
+    _retweet(id) {
         if (!this.T) return;
         const self = this;
         this.T.post('statuses/retweet/:id', { id })
@@ -500,11 +661,28 @@ class TwitterAPI {
     }
 
     /**
+     *
+     * @param id cache
+     * @param cmd
+     */
+    like(id, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc || doc.type !== 'status') {
+                return cmd.log(Color.error('Warning: No status found with this id.'));
+            }
+
+            this._like(doc.status.id_str);
+        });
+    }
+
+    /**
      * Like/Favorite by id
      *
-     * @param id
+     * @param id Status
      */
-    like(id) {
+    _like(id) {
         if (!this.T) return;
         const self = this;
         this.T.post('favorites/create', { id })
@@ -519,11 +697,28 @@ class TwitterAPI {
     }
 
     /**
+     *
+     * @param id cache
+     * @param cmd
+     */
+    unlike(id, cmd) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) return cmd.log(Color.error(`Error: ${err}`));
+
+            if (!doc || doc.type !== 'status') {
+                return cmd.log(Color.error('Warning: No status found with this id.'));
+            }
+
+            this._unlike(doc.status.id_str);
+        });
+    }
+
+    /**
      * Remove like/favorite
      *
-     * @param id
+     * @param id Status
      */
-    unlike(id) {
+    _unlike(id) {
         if (!this.T) return;
         const self = this;
         this.T.post('favorites/destroy', { id })
@@ -645,13 +840,29 @@ class TwitterAPI {
             });
     }
 
+    deleteStatus(id, cmd, callback = () => {}) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) {
+                cmd.log(Color.error(`Error: ${err}`));
+                return callback();
+            }
+            if (!doc || doc.type !== 'status') {
+                cmd.log(Color.error('Warning: No status found with this id.'));
+                return callback();
+            }
+
+            this._deleteStatus(doc.status, callback);
+        });
+    }
+
     /**
      * Delete status or unretweet
      *
      * @param status
      * @param callback
+     * @private
      */
-    deleteStatus(status, callback = () => {}) {
+    _deleteStatus(status, callback) {
         if (!this.T) {
             return callback();
         }
@@ -992,6 +1203,44 @@ class TwitterAPI {
         if (status.retweeted_status && status.retweeted_status.quoted_status) {
             this.displayStatus(status.retweeted_status.quoted_status, true);
         }
+    }
+
+    showStatus(id, debug, cmd, callback) {
+        this.store.findOne({ id }, (err, doc) => {
+            if (err) {
+                cmd.log(Color.error(`Error: ${err}`));
+                return callback();
+            }
+            if (!doc) {
+                cmd.log(Color.error('Warning: No status found with this id.'));
+                return callback();
+            }
+
+            const obj = doc.status || doc.message;
+            if (debug || doc.type === 'message') {
+                cmd.log(
+                    util.inspect(obj, { showHidden: false, depth: null })
+                );
+            } else {
+                let log = '\n';
+                log += `|\t${Color.bold('User:')} ${obj.user.name} (@${obj.user.screen_name})\n`;
+                log += '|\t\n';
+                log += `|\t${Color.bold('Text:')} ${obj.text}\n`;
+                log += `|\t${Color.bold('Created At:')} ${obj.created_at}\n`;
+                log += `|\t${Color.bold('Favorites:')} ${obj.favorite_count || '0'}\n`;
+                log += `|\t${Color.bold('Retweets:')} ${obj.retweet_count || '0'}\n`;
+                if (obj.place) {
+                    log += `|\t${Color.bold('Location: ')}${obj.place.full_name}\n`;
+                }
+                if (obj.coordinates) {
+                    const coordinates = obj.coordinates.coordinates;
+                    log += `|\t${Color.bold('Location (Coordinates):')} ${coordinates[0]}, ${coordinates[1]}\n`;
+                }
+                log += `|\t${Color.bold('Source:')} ${obj.source}\n`;
+                cmd.log(log);
+            }
+            callback();
+        });
     }
 }
 
