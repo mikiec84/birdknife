@@ -26,11 +26,8 @@ describe('TwitterAPI', () => {
             }, 4000);
         });
 
-        it('should have loaded my user profile', done => {
-            setTimeout(() => {
-                expect(api.ME.screen_name).to.equal('_vanita5');
-                done();
-            }, 500);
+        it('should have loaded my user profile', () => {
+            expect(api.ME.screen_name).to.equal('_vanita5');
         });
     });
 });
