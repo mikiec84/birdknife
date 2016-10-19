@@ -65,7 +65,8 @@ Example:
     "debug": false,
     "notifications": true,
     "location": false,
-    "tweet_protection": false
+    "tweet_protection": false,
+    "timestamp": 5
   }
 }
 ```
