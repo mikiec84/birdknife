@@ -338,20 +338,14 @@ class TwitterAPI {
      *
      * @param statuses
      * @param inReplyToStatusId
-     * @todo #54
      */
     loadConversationRec(statuses, inReplyToStatusId) {
         if (!this.T) return;
         const self = this;
 
         this.store.findOne({ $and: [{ type: 'status' }, { 'status.id_str': inReplyToStatusId }] }, (err, doc) => {
-            if (err) return self.vorpal.log(`Error getting from cache: ${err}`);
-            if (!doc) return self.vorpal.log(`Didn't find anything`);
-
-            self.vorpal.log(`Found with text!!! ${doc.status.text}`);
-
             if (err || !doc) {
-                this.T.get('statuses/show/:id', { id: inReplyToStatusId, include_entities: 'true' })
+                self.T.get('statuses/show/:id', { id: inReplyToStatusId, include_entities: 'true' })
                     .catch(err => {
                         self.vorpal.log(Color.error(`Error GET statuses/show/:id: ${err}`));
                     })
