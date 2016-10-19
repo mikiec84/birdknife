@@ -411,8 +411,7 @@ vorpal
         callback();
     });
 
-const expPrompt = (cmd, cb, dirs, status) => {
-    status = status || '';
+const expPrompt = (cmd, cb, dirs, status = '') => {
     const _c = BirdknifeText.getRemainingTweetLength(status, dirs);
     const _s = (Delimiter.PAD + _c).slice(-Delimiter.PAD.length);
     return cmd.prompt({

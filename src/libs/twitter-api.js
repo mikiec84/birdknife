@@ -492,8 +492,7 @@ class TwitterAPI {
             });
     }
 
-    delete(status, callback) {
-        callback = callback || function () {};
+    delete(status, callback = function () {}) {
         if (!this.T) {
             return callback();
         }
