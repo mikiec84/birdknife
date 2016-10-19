@@ -7,7 +7,7 @@
 
 > Twitter CLI
 
-[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://travis-ci.org/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![Dependency Status](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014)
+[![Build Status](https://travis-ci.org/vanita5/birdknife.svg)](https://travis-ci.org/vanita5/birdknife) [![NPM Downloads](https://img.shields.io/npm/dt/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![NPM Version](https://img.shields.io/npm/v/birdknife.svg)](https://www.npmjs.com/package/birdknife) [![Dependency Status](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56d83d23d716950040a0f014) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 
 birdknife is a Twitter CLI based on [Vorpal](https://github.com/dthree/vorpal) inspired by [TTYtter](http://www.floodgap.com/software/ttytter/).
 TTYtter hasn't been updated for some time now and doesn't support new features introduced by Twitter. This project aims to be a completely
