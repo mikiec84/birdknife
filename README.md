@@ -245,6 +245,7 @@ a1> <@twitter>: #birdknife is kinda nice!
 
 birdknife [124]> /reply a1 FAAAKE!
 ```
+Alias: ```/re```
 
 ##### Quote a tweet
 

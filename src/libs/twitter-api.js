@@ -165,6 +165,48 @@ class TwitterAPI {
         this.stream.on('user_event', event => {
             self.displayEvent(event);
         });
+
+        this.stream.on('connected', () => {
+            self.vorpal.log(Color.green('Stream connected!'));
+        });
+
+        this.stream.on('disconnect', message => {
+            self.vorpal.log(Color.error(`Stream disconnected: ${message}`));
+        });
+
+        this.stream.on('connect', message => {
+            if (this.preferences.get('debug')) {
+                self.vorpal.log(Color.unknownEvent('Connect event,'));
+                self.vorpal.log(message);
+            }
+        });
+
+        this.stream.on('reconnect', () => {
+            if (this.preferences.get('debug')) {
+                self.vorpal.log(Color.unknownEvent('Reconnect event,'));
+            }
+        });
+
+        this.stream.on('delete', message => {
+            if (this.preferences.get('debug')) {
+                self.vorpal.log(Color.unknownEvent('Delete event.'));
+                self.vorpal.log(message);
+            }
+        });
+
+        this.stream.on('limit', message => {
+            if (this.preferences.get('debug')) {
+                self.vorpal.log(Color.error('Limit event.'));
+                self.vorpal.log(message);
+            }
+        });
+
+        this.stream.on('warning', message => {
+            if (this.preferences.get('debug')) {
+                self.vorpal.log(Color.error('Warning event.'));
+                self.vorpal.log(message);
+            }
+        });
     }
 
     /**
