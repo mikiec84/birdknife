@@ -84,7 +84,7 @@ Example:
     </tr>
     <tr>
         <td><code>debug</code></td>
-        <td>Enable/Disable debug output and the like. Not in use at the moment.</td>
+        <td>Enable/Disable debug output for streaming events like limits, disconnects and reconnects.</td>
         <td><code>true</code>, <code>false</code></td>
         <td><code>false</code></td>
     </tr>
