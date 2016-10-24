@@ -174,10 +174,9 @@ class TwitterAPI {
             self.vorpal.log(Color.error(`Stream disconnected: ${message}`));
         });
 
-        this.stream.on('connect', message => {
+        this.stream.on('connect', () => {
             if (this.preferences.get('debug')) {
                 self.vorpal.log(Color.unknownEvent('Connect event,'));
-                self.vorpal.log(message);
             }
         });
 
