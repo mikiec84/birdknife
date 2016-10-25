@@ -1098,7 +1098,7 @@ class TwitterAPI {
                 }
                 break;
             default:
-                this.vorpal.log(Color.unknown_event(`${event.source.screen_name} "${event.event}" ${event.target.screen_name}`));
+                this.vorpal.log(Color.unknownEvent(`${event.source.screen_name} "${event.event}" ${event.target.screen_name}`));
                 break;
         }
         line += '\n';
