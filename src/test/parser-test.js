@@ -51,5 +51,14 @@ describe('Parser', () => {
             expect(parsed).to.equal('/reply a1 \'This is a &bquot;Test&bquot; reply with "Quotes"\'');
         });
     });
+
+    describe('#postParse', () => {
+        it('should replace placeholders with their original value', () => {
+            const parsed = '/reply a1 \'This is a &bquot;Test&bquot; reply with "Quotes" and an &bequals; char.\'';
+            const postParsed = Parser.postParse(parsed);
+
+            expect(postParsed).to.equal('/reply a1 \'This is a \'Test\' reply with "Quotes" and an = char.\'');
+        });
+    });
 });
 
